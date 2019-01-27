@@ -97,7 +97,6 @@ or
     (Linux)
     $ python linux_build.py
 ```
-- Enter TestingFramework/ folder, open config.cfg file in a text editor and specify all the necessary paths.
 - Open the command line in this folder and launch the tests from it:
 ```bash
     (from the root folder of the repository)
