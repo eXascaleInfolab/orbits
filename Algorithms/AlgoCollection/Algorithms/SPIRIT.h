@@ -13,7 +13,7 @@ namespace Algorithms
 class SPIRIT
 {
   public:
-    static void doSpirit(arma::mat &A, uint64_t k0, uint64_t w, double lambda);
+    static int64_t doSpirit(arma::mat &A, uint64_t k0, uint64_t w, double lambda, bool stream = false);
   
   private:
     static void grams(arma::mat &A);

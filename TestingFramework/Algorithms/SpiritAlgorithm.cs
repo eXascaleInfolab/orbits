@@ -66,7 +66,7 @@ namespace TestingFramework.Algorithms
             
             spiritproc.StartInfo.Arguments = $"-alg spirit -test rt -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
                                              $"-in ./{SubFolderDataIn}{data.Code}_m{tcase}.txt " +
-                                             $"-out ./{SubFolderDataOut}{AlgCode}{tcase}.txt";
+                                             $"-out ./{SubFolderDataOut}{AlgCode}{tcase}.txt" + (streaming ? " -xtra stream" : "");
 
             return spiritproc;
         }

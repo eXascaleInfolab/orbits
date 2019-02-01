@@ -52,7 +52,7 @@ void SVT::doSVT(arma::mat &X, uint64_t rank)
     
     arma::vec b = X.elem(omega);
     
-    arma::sp_mat Y(observed, data);
+    arma::sp_mat Y(observed, data, X.n_rows, X.n_cols);
     
     // rest of parameters & init process
     
@@ -76,7 +76,12 @@ void SVT::doSVT(arma::mat &X, uint64_t rank)
         
         if (SMALLSCALE)
         {
-            arma::svd_econ(U, S, V, arma::mat(Y), "both", "std"); // mat() constructor to convert to dense
+            bool code = arma::svd_econ(U, S, V, arma::mat(Y), "both", "std"); // mat() constructor to convert to dense
+            if (!code)
+            {
+                std::cout << "economical svd failed, aborting recovery" << std::endl;
+                return;
+            }
         }
         else
         {
@@ -84,13 +89,27 @@ void SVT::doSVT(arma::mat &X, uint64_t rank)
             
             while (!OK)
             {
-                arma::svds(U, S, V, Y, s);
-                OK = (S(s - 1) <= tau) || (s == std::min(n1, n2));
+                bool code = arma::svds(U, S, V, Y, s);
+                if (!code)
+                {
+                    std::cout << "sparse svd failed, aborting recovery" << std::endl;
+                    return;
+                }
+                if (S.n_elem < s)
+                {
+                    OK = true;
+                }
+                else
+                {
+                    OK = (S(s - 1) <= tau) || (s == std::min(n1, n2));
+                }
                 s = std::min(s + incre, std::min(n1, n2));
             }
         }
         
         rank = arma::sum(S > tau);
+        
+        rank = rank > 0 ? rank : 1;
         
         U = U.submat(arma::span::all, arma::span(0, rank - 1));
         V = V.submat(arma::span::all, arma::span(0, rank - 1));
@@ -113,6 +132,7 @@ void SVT::doSVT(arma::mat &X, uint64_t rank)
         if (arma::norm(x - b) / normb > 1e5)
         {
             std::cout << "Divergence!" << std::endl;
+            X = U * arma::diagmat(S) * V.t();
             break;
         }
         

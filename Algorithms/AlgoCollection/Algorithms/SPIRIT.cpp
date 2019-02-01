@@ -8,13 +8,17 @@
 #include <numeric>
 #include <algorithm>
 
+#include <chrono>
+
 #include "SPIRIT.h"
 
 namespace Algorithms
 {
 
-void SPIRIT::doSpirit(arma::mat &A, uint64_t k0, uint64_t w, double lambda)
+int64_t SPIRIT::doSpirit(arma::mat &A, uint64_t k0, uint64_t w, double lambda, bool stream)
 {
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    
     //
     // Step 0: prep
     // impute last exising value instead of all NaNs
@@ -67,7 +71,7 @@ void SPIRIT::doSpirit(arma::mat &A, uint64_t k0, uint64_t w, double lambda)
     
     arma::mat prevW(W);
     arma::mat Yvalues(totalTime, k0);
-    arma::mat ARc(w, k0); //AR coefficients, one for each hidden variable
+    arma::mat ARc = arma::zeros<arma::mat>(w, k0); //AR coefficients, one for each hidden variable
     std::vector<arma::mat> G;  //"Gain-Matrix", one for each hidden variable
     
     //initialize the "Gain-Matrix" with the identity matrix
@@ -81,6 +85,10 @@ void SPIRIT::doSpirit(arma::mat &A, uint64_t k0, uint64_t w, double lambda)
     
     for (uint64_t t = 0; t < totalTime; ++t)
     {
+        if (stream && blockStart == t)
+        {
+            begin = std::chrono::steady_clock::now();
+        }
         //Simulate a missing block
         if (blockStart <= t && t <= blockEnd)
         {
@@ -190,6 +198,8 @@ void SPIRIT::doSpirit(arma::mat &A, uint64_t k0, uint64_t w, double lambda)
     {
         A.at(i, 0) = recon.at(i, 0);
     }
+    
+    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
 }
 
 void SPIRIT::grams(arma::mat &A)

@@ -152,14 +152,9 @@ namespace TestingFramework.Algorithms
             cdproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             cdproc.StartInfo.UseShellExecute = false;
 
-            int istep = data.MissingBlocks[0].Item3;
-            int max = n;
-            n = max - istep;
-
-            cdproc.StartInfo.Arguments = $"-test rt -n {n} -m {m} -k {k} " +
-                                         $"-istep {istep} -max {max} " +
+            cdproc.StartInfo.Arguments = $"-alg cd -test rt -n {n} -m {m} -k {k} " +
                                          $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                         $"-out ./{SubFolderDataOut}{AlgCode}{len}_k{k}.txt";
+                                         $"-out ./{SubFolderDataOut}{AlgCode}{len}_k{k}.txt" + " -xtra stream";
 
             return cdproc;
         }

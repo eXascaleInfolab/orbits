@@ -122,16 +122,14 @@ namespace TestingFramework.Algorithms
             Process tkcmproc = new Process();
             
             tkcmproc.StartInfo.WorkingDirectory = EnvPath;
-            tkcmproc.StartInfo.FileName = "python";
+            tkcmproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
             tkcmproc.StartInfo.CreateNoWindow = true;
             tkcmproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             tkcmproc.StartInfo.UseShellExecute = false;
-
-            //def experimentRun(n, m, code, missing, missing_start, tcase):
-            string functionArgs = $"{data.N}, {data.M}, \"{data.Code}\", {data.MissingBlocks[0].Item3}, {data.MissingBlocks[0].Item2}, {len}";
             
-            tkcmproc.StartInfo.Arguments = "-c 'from _tests.testscript import streamingExperimentRun; " +
-                                           $"streamingExperimentRun({functionArgs})'";
+            tkcmproc.StartInfo.Arguments = $"-alg tkcm -test rt -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
+                                           $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
+                                           $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt" + " -xtra stream";
 
             return tkcmproc;
         }

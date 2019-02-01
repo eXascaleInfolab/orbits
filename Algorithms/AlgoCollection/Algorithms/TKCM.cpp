@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <iostream>
 #include <limits>
+#include <chrono>
 
 #include "TKCM.h"
 
@@ -91,8 +92,10 @@ void TKCM::actionTkcm(const arma::mat &ref_ts, arma::vec &ts, uint64_t &offset, 
     ts[offset] = sum / (double)k;
 }
 
-void TKCM::performRecovery()
+int64_t TKCM::performRecovery(bool stream)
 {
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    
     uint64_t L = matrix.n_rows - 1;
     
     for (uint64_t i = 0; i < matrix.n_rows; ++i)
@@ -125,6 +128,10 @@ void TKCM::performRecovery()
         
         if (i >= L)
         {
+            if (stream && i == L)
+            {
+                begin = std::chrono::steady_clock::now();
+            }
             actionTkcm(ref_ts, ts, offset, L);
         }
     }
@@ -135,6 +142,7 @@ void TKCM::performRecovery()
         offset = mod(offset + 1, L);
         matrix.at(i, 0) = ts[offset];
     }
+    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count();
 }
 
 } // namespace Algorithms

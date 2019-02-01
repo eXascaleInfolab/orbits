@@ -25,7 +25,7 @@ class TKCM
   public:
     explicit TKCM(arma::mat &mx);
     
-    void performRecovery();
+    int64_t performRecovery(bool stream = false);
 };
 
 } // namespace Algorithms

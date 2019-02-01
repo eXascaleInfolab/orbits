@@ -10,6 +10,7 @@
 #include "Algorithms/CDMissingValueRecovery.h"
 #include "Stats/Correlation.h"
 #include "Algebra/Auxiliary.h"
+#include "Algebra/RSVD.h"
 
 #include <armadillo>
 

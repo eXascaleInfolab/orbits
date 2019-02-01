@@ -26,6 +26,20 @@ using namespace Algorithms;
 namespace Performance
 {
 
+void verifyRecovery(arma::mat &mat)
+{
+    for (uint64_t j = 0; j < mat.n_cols; ++j)
+    {
+        for (uint64_t i = 0; i < mat.n_rows; ++i)
+        {
+            if (std::isnan(mat.at(i, j)))
+            {
+                mat.at(i, j) = std::sqrt(std::numeric_limits<double>::max() / 100000.0);
+            }
+        }
+    }
+}
+
 int64_t Recovery_CD(arma::mat &mat, uint64_t truncation)
 {
     // Local
@@ -47,14 +61,14 @@ int64_t Recovery_CD(arma::mat &mat, uint64_t truncation)
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
     std::cout << "Time (CD): " << result << std::endl;
     
+    verifyRecovery(mat);
     return result;
 }
 
 int64_t Recovery_TKCM(arma::mat &mat, uint64_t truncation)
 {
     (void) truncation;
-
-    //todo
+    
     // Local
     int64_t result;
     Algorithms::TKCM tkcm(mat);
@@ -69,7 +83,8 @@ int64_t Recovery_TKCM(arma::mat &mat, uint64_t truncation)
 
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
     std::cout << "Time (TKCM): " << result << std::endl;
-
+    
+    verifyRecovery(mat);
     return result;
 }
 
@@ -90,7 +105,8 @@ int64_t Recovery_ST_MVL(arma::mat &mat, uint64_t truncation, const std::string &
 
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
     std::cout << "Time (ST-MVL): " << result << std::endl;
-
+    
+    verifyRecovery(mat);
     return result;
 }
 
@@ -110,6 +126,7 @@ int64_t Recovery_SPIRIT(arma::mat &mat, uint64_t truncation)
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
     std::cout << "Time (SPIRIT): " << result << std::endl;
     
+    verifyRecovery(mat);
     return result;
 }
 
@@ -134,6 +151,7 @@ int64_t Recovery_GROUSE(arma::mat &mat, uint64_t truncation)
     
     mat = mat.t();
     
+    verifyRecovery(mat);
     return result;
 }
 
@@ -153,6 +171,7 @@ int64_t Recovery_NNMF(arma::mat &mat, uint64_t truncation)
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
     std::cout << "Time (TE-NMF): " << result << std::endl;
     
+    verifyRecovery(mat);
     return result;
 }
 
@@ -177,6 +196,7 @@ int64_t Recovery_DynaMMo(arma::mat &mat, uint64_t truncation)
     
     mat = mat.t();
     
+    verifyRecovery(mat);
     return result;
 }
 
@@ -196,6 +216,7 @@ int64_t Recovery_SVT(arma::mat &mat, uint64_t truncation)
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
     std::cout << "Time (SVT): " << result << std::endl;
     
+    verifyRecovery(mat);
     return result;
 }
 
@@ -215,6 +236,7 @@ int64_t Recovery_ROSL(arma::mat &mat, uint64_t truncation)
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
     std::cout << "Time (ROSL): " << result << std::endl;
     
+    verifyRecovery(mat);
     return result;
 }
 
@@ -234,6 +256,7 @@ int64_t Recovery_IterativeSVD(arma::mat &mat, uint64_t truncation)
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
     std::cout << "Time (Iter-SVD): " << result << std::endl;
     
+    verifyRecovery(mat);
     return result;
 }
 
@@ -253,12 +276,115 @@ int64_t Recovery_SoftImpute(arma::mat &mat, uint64_t truncation)
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
     std::cout << "Time (SoftImpute): " << result << std::endl;
     
+    verifyRecovery(mat);
+    return result;
+}
+
+// ================ streaming ==
+
+int64_t Recovery_CD_Streaming(arma::mat &mat, uint64_t truncation)
+{
+    uint64_t streamStart = 0;
+    
+    for (uint64_t i = 0; i < mat.n_rows; ++i)
+    {
+        if (std::isnan(mat.at(i, 0)))
+        {
+            streamStart = i;
+            break;
+        }
+    }
+    
+    arma::mat before_streaming = mat.submat(arma::span(0, streamStart - 1), arma::span::all);
+    
+    // Local
+    int64_t result;
+    CDMissingValueRecovery rmv(before_streaming);
+    std::chrono::steady_clock::time_point begin;
+    std::chrono::steady_clock::time_point end;
+    
+    // Recovery
+    rmv.setReduction(truncation);
+    rmv.disableCaching = false;
+    rmv.useNormalization = false;
+    
+    rmv.autoDetectMissingBlocks();
+    rmv.performRecovery(truncation == mat.n_cols);
+    
+    for (uint64_t i = streamStart; i < mat.n_rows; ++i)
+    {
+        rmv.increment(mat.row(i).t());
+    }
+    
+    begin = std::chrono::steady_clock::now();
+    rmv.autoDetectMissingBlocks();
+    rmv.performRecovery(truncation == mat.n_cols);
+    end = std::chrono::steady_clock::now();
+    
+    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    std::cout << "Time (CD): " << result << std::endl;
+    
+    mat = std::move(before_streaming);
+    verifyRecovery(mat);
+    return result;
+}
+
+int64_t Recovery_TKCM_Streaming(arma::mat &mat, uint64_t truncation)
+{
+    (void) truncation;
+    
+    // Local
+    int64_t result;
+    Algorithms::TKCM tkcm(mat);
+    
+    // Recovery
+    result = tkcm.performRecovery(true);
+    
+    std::cout << "Time (TKCM): " << result << std::endl;
+    
+    verifyRecovery(mat);
+    return result;
+}
+
+
+int64_t Recovery_SPIRIT_Streaming(arma::mat &mat, uint64_t truncation)
+{
+    // Local
+    int64_t result;
+    
+    // Recovery
+    result = SPIRIT::doSpirit(mat, truncation, 6, 1.0);
+    
+    std::cout << "Time (SPIRIT): " << result << std::endl;
+    
+    verifyRecovery(mat);
     return result;
 }
 
 int64_t Recovery(arma::mat &mat, uint64_t truncation,
                  const std::string &algorithm, const std::string &xtra)
 {
+    if (xtra == "stream")
+    {
+        if (algorithm == "cd")
+        {
+            return Recovery_CD_Streaming(mat, truncation);
+        }
+        else if (algorithm == "tkcm")
+        {
+            return Recovery_TKCM_Streaming(mat, truncation);
+        }
+        else if (algorithm == "spirit")
+        {
+            return Recovery_SPIRIT_Streaming(mat, truncation);
+        }
+        else
+        {
+            std::cout << "Algorithm name '" << algorithm << "' does not exist or is not valid option for streaming" << std::endl;
+            abort();
+        }
+    }
+    
     if (algorithm == "cd")
     {
         return Recovery_CD(mat, truncation);

@@ -150,8 +150,8 @@ void interpolate(arma::mat &X, bool horizontal_interp, std::vector<arma::uvec> *
                 
                 if (std::isnan(val1) && std::isnan(val2))
                 {
-                    // starting conditions violation
-                    throw std::runtime_error("Can't perform linear interpolation: the entire time series is undefined");
+                    val1 = 0.0;
+                    step = 0;
                 }
                 else if (std::isnan(val1)) // start block is missing
                 {
@@ -221,8 +221,8 @@ void interpolate(arma::mat &X, bool horizontal_interp, std::vector<arma::uvec> *
             
                 if (std::isnan(val1) && std::isnan(val2))
                 {
-                    // starting conditions violation
-                    throw std::runtime_error("Can't perform linear interpolation: the entire time series is undefined");
+                    val1 = 0.0;
+                    step = 0;
                 }
                 else if (std::isnan(val1)) // start block is missing
                 {

@@ -171,7 +171,7 @@ namespace TestingFramework
                 codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Continuous, ExperimentScenario.MissingMultiColumn, c, 1000));
             }
             
-            if (EnumMethods.EnableStreaming) throw new Exception("Streaming can't be enabled in this version of the benchmark.");
+            if (EnumMethods.EnableStreaming) FullStreaming();
             
             FullPrecision();
             
