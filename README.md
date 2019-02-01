@@ -90,7 +90,7 @@ or
 #### Build & tests
 
 - Restart the terminal window after all the dependencies are installed. Open it in the root folder of the repository.
-- Build all the algorithms and Testing Framework using a script depending on your platform:
+- Build all the algorithms and Testing Framework using a script depending on your platform (the building takes ~1min):
 ```bash
     (macOS)
     $ python mac_build.py
