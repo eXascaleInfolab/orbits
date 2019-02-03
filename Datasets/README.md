@@ -44,7 +44,7 @@ Folders named after dataset's code contains code_normal.txt file which is a matr
 |  |  |
 | Granularity | 10 minutes, consistent save for missing values in the raw TS |
 |  |  |
-| Dataset dimensions | N=192069 M=4 |
+| Dataset dimensions | N=192069 M=4; M=12 |
 | Remarks | Only a subset of rows is considered |
 | Versions | Two versions - with 4 columns (meteo4) and 12 columns (meteo12) |
 |  | TBA |
