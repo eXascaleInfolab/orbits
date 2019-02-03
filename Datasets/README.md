@@ -14,6 +14,7 @@ Folders named after dataset's code contains code_normal.txt file which is a matr
 | Observations | spans years 1974 to 2015 |
 |  |  |
 | Dataset dimensions | N=85203 M=12 |
+| Url | https://www.bafu.admin.ch/bafu/en/home.html |
 
 
 #### Correlation matrix
@@ -47,7 +48,7 @@ Folders named after dataset's code contains code_normal.txt file which is a matr
 | Dataset dimensions | N=192069 M=4; M=12 |
 | Remarks | Only a subset of rows is considered |
 | Versions | Two versions - with 4 columns (meteo4) and 12 columns (meteo12) |
-|  | TBA |
+| Url | https://www.meteosuisse.admin.ch/ |
 
 ##### Stations - meteo 4
 | stn | Name| Parameter| Data source | Longitude/Latitude | Coordinates [km] | Elevation [m] |
