@@ -47,6 +47,7 @@ Folders named after dataset's code contains code_normal.txt file which is a matr
 |  |  |
 | Dataset dimensions | N=192069 M=4; M=12 |
 | Remarks | Only a subset of rows is considered |
+| Observations | spans years 1980 to 2018 |
 | Versions | Two versions - with 4 columns (meteo4) and 12 columns (meteo12) |
 | Url | https://www.meteosuisse.admin.ch/ |
 
