@@ -38,7 +38,7 @@ Parameters:
 - learning_factors = [0.75, 0.75, 0.75]
 - max_iterations = 100
 
-## NNMF
+## TeNMF
 
 Parameters:
 - n_components = 3
