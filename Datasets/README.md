@@ -36,7 +36,7 @@ Folders named after dataset's code contains code_normal.txt file which is a matr
 
 | Data info |  |
 | -------- | -------- |
-| Dataset codename | meteo |
+| Dataset codename | meteo4 and meteo12 |
 | Dataset source | Federal Office of Meteorology and Climatology, MeteoSwiss |
 |  | Operation Center 1 |
 |  | Postfach 257 |
@@ -46,14 +46,36 @@ Folders named after dataset's code contains code_normal.txt file which is a matr
 |  |  |
 | Dataset dimensions | N=192069 M=4 |
 | Remarks | Only a subset of rows is considered |
+| Versions | Two versions - with 4 columns (meteo4) and 12 columns (meteo12) |
 |  | TBA |
 
-#### Dataset description
+##### Stations - meteo 4
+| stn | Name| Parameter| Data source | Longitude/Latitude | Coordinates [km] | Elevation [m] |
+| -------- | --------| --------| -------- | -------- | -------- | -------- |
+| ZHUST| Aatal Höhe| erssurs0 | Kanton Zürich; Tiefbauamt | 8°45'/47°21' | 698612/244769 | 490 |
+
+##### Parameters - meteo 4
+
+| | Unit | Description |
+| -------- | -------- | -------- |
+| erssurs0 | mm | null |
+| merssurs0 | Code | Mutation information on erssurs0 |
+
+#### Dataset description - meteo 4
 
 Observation interval for hourly values, unless otherwise indicated in the parameter description: HH  = (HH-1):41 - HH:40
 Example: 13 = observation period 12:41 to 13:40
 
-#### Correlation matrix
+#### Correlation matrix - meteo 4
+
+| T1 | T2 | T3 | T4 |
+| -------- |  -------- |  -------- |  -------- |
+|1.00 |0.90 |0.82 |-0.12|
+|0.90 |1.00 |0.95 |-0.53|
+|0.82 |0.95 |1.00 |-0.56|
+|-0.12 |-0.53 |-0.56 |1.00|
+
+#### Correlation matrix - meteo 12
 | T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10 | T11 | T12
 | -------- |  -------- |  -------- |  -------- |  -------- |  -------- |  -------- |  -------- |  -------- |  -------- |  -------- | -------- |
 |1.00 | 0.95 | 0.95 | 0.96 | 0.90 | 0.94 | -0.44 | -0.34 | -0.42 | -0.49 | -0.12 | -0.47 |
