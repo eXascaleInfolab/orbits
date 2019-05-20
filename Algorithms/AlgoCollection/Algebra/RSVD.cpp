@@ -2,6 +2,10 @@
 // Created by zakhar on 29/01/19.
 //
 
+//
+// Code taken from: https://github.com/RBigData/rsvd
+//
+
 #include "RSVD.h"
 
 namespace Algebra
@@ -101,7 +105,7 @@ int RSVD::rsvd(const arma::uword k, const bool retu, const bool retv, const arma
         return 10;
     }
     
-    arma::arma_rng::set_seed_random();
+    arma::arma_rng::set_seed(18931);
     Omega.randu();
     
     arma::mat Y = X * Omega;

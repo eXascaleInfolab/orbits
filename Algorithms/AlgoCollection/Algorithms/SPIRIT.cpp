@@ -65,7 +65,7 @@ int64_t SPIRIT::doSpirit(arma::mat &A, uint64_t k0, uint64_t w, double lambda, b
     arma::mat W = arma::eye<arma::mat>(n, n);
     arma::vec d(n);
     d.fill(0.01);
-    //k0 = number of eigencomponents
+    //k0 = number of eigencomponents, passed as a param
     
     arma::vec relErrors(totalTime);
     

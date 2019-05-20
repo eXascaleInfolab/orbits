@@ -16,7 +16,7 @@ void insert_vector_at_column(arma::mat &matrix, uint64_t j, const arma::vec &vec
     
     for (uint64_t i = 0; i < matrix.n_rows; ++i)
     {
-        matrix(i, j) = vector[i];
+        matrix.at(i, j) = vector[i];
     }
 }
 
@@ -26,7 +26,7 @@ void insert_vector_at_row(arma::mat &matrix, uint64_t i, const arma::vec &vector
     
     for (uint64_t j = 0; j < matrix.n_rows; ++j)
     {
-        matrix(i, j) = vector[j];
+        matrix.at(i, j) = vector[j];
     }
 }
 

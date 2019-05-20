@@ -20,13 +20,14 @@ namespace TestingFramework.Algorithms
         public static readonly Algorithm Stmvl = new StmvlAlgorithm();
         public static readonly Algorithm Nnmf = new NnmfAlgorithm();
         public static readonly Algorithm Grouse = new GrouseAlgorithm();
+        public static readonly Algorithm ArImp = new AutoRegressionAlgorithm();
         
         //example:
         //    public static readonly Algorithm Example = new ExampleAlgorithm();
         
-        public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse };
-        public static Algorithm[] ListAlgorithmsMulticolumn = { Stmvl, InCd, Trmf, Nnmf, Grouse };
-        public static Algorithm[] ListAlgorithmsStreaming = { InCd, Tkcm, Spirit };
+        public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse, ArImp };
+        public static Algorithm[] ListAlgorithmsMulticolumn = { Stmvl, InCd, Trmf, Nnmf, Grouse, ArImp };
+        public static Algorithm[] ListAlgorithmsStreaming = { InCd, Tkcm, Spirit, ArImp };
 
         public const int TypicalTruncation = 3;
 
@@ -157,6 +158,14 @@ namespace TestingFramework.Algorithms
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
         public override bool IsPlottable => true;
+    }
+
+    public partial class AutoRegressionAlgorithm
+    {
+        public override string AlgCode => "ar-imp";
+        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
+        protected override string SubFolderDataIn => "in/";
+        protected override string SubFolderDataOut => "out/";
     }
 
     /*///////////////////////////////////////////////////////////*/

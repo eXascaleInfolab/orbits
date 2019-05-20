@@ -7,24 +7,32 @@
 namespace Algorithms
 {
 
-void SVT::doSVT(arma::mat &X, uint64_t rank)
+void SVT::doSVT(arma::mat &X)
 {
     // const parameters
-    constexpr double oversampling = 2;
     constexpr uint64_t incre = 5;
+    constexpr uint64_t rInc = 4;
+    uint64_t r = 3;
     
     // dynamic parameters
     
     uint64_t n1 = X.n_rows;
     uint64_t n2 = X.n_cols;
+    
+    if (n2 > 30)
+    {
+        r = (n2 - 1) / 10;
+        r++;
+    }
+    
     bool SMALLSCALE = n1 * n2 < 100 * 100;
     
-    double df = (double)(rank * (n1 + n2 - rank));
-    double m = std::min(oversampling * df, round(.99 * (double)(n1 * n2)));
+    double df = (double)(r * (n1 + n2 - r));
+    double m = std::min(5 * df, round(.99 * (double)(n1 * n2)));
     double p = m / (double)(n1 * n2);
     
-    double tau = 5 * sqrt((double)(n1 * n2));
-    double delta = 1.2 / p * 0.80;
+    double tau = 2 * sqrt((double)(n1 * n2)); // modified from 5 * sqrt(...)
+    double delta = 1.2 / p;
     
     // initialization of sparse matrix
     
@@ -56,7 +64,7 @@ void SVT::doSVT(arma::mat &X, uint64_t rank)
     
     // rest of parameters & init process
     
-    rank = 0;
+    uint64_t rank = 0;
     double k0 = std::ceil(tau / (delta * arma::norm(Y, 2)));
     double normb = arma::norm(b);
     
@@ -71,7 +79,6 @@ void SVT::doSVT(arma::mat &X, uint64_t rank)
     
     for (uint64_t k = 0; k < max_iter; ++k)
     {
-        uint64_t rInc = 4;
         uint64_t s = std::min(rank + rInc, std::min(n1, n2));
         
         if (SMALLSCALE)

@@ -35,7 +35,7 @@ add_executable(
         Algebra/CentroidDecomposition.cpp Algebra/CentroidDecomposition.h
         Algebra/MissingBlock.hpp
         Stats/Correlation.cpp Stats/Correlation.h
-        Algebra/RSVD.cpp Algebra/RSVD.h)
+        Algebra/RSVD.cpp Algebra/RSVD.h Algorithms/OGDImpute.cpp Algorithms/OGDImpute.h)
 
 target_link_libraries(
         incCD

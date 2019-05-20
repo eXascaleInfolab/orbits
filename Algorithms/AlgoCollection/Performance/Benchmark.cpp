@@ -8,6 +8,7 @@
 
 #include "Benchmark.h"
 #include <cassert>
+#include "../Algebra/Auxiliary.h"
 
 #include "../Algorithms/CDMissingValueRecovery.h"
 #include "../Algorithms/TKCM.h"
@@ -20,6 +21,7 @@
 #include "../Algorithms/ROSL.h"
 #include "../Algorithms/IterativeSVD.h"
 #include "../Algorithms/SoftImpute.h"
+#include "../Algorithms/OGDImpute.h"
 
 using namespace Algorithms;
 
@@ -59,7 +61,7 @@ int64_t Recovery_CD(arma::mat &mat, uint64_t truncation)
     end = std::chrono::steady_clock::now();
     
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (CD): " << result << std::endl;
+    std::cout << "Time (CDRec): " << result << std::endl;
     
     verifyRecovery(mat);
     return result;
@@ -88,23 +90,23 @@ int64_t Recovery_TKCM(arma::mat &mat, uint64_t truncation)
     return result;
 }
 
-int64_t Recovery_ST_MVL(arma::mat &mat, uint64_t truncation, const std::string &latlong)
+int64_t Recovery_ST_MVL(arma::mat &mat, const std::string &latlong, uint64_t truncation)
 {
     // Local
     int64_t result;
     ST_MVL stmvl(mat, latlong, 4.0, 0.85, truncation);
-
+    
     std::chrono::steady_clock::time_point begin;
     std::chrono::steady_clock::time_point end;
-
+    
     // Recovery
-
+    
     begin = std::chrono::steady_clock::now();
     stmvl.Run(true);
     end = std::chrono::steady_clock::now();
-
+    
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (ST-MVL): " << result << std::endl;
+    std::cout << "Time (STMVL): " << result << std::endl;
     
     verifyRecovery(mat);
     return result;
@@ -169,7 +171,7 @@ int64_t Recovery_NNMF(arma::mat &mat, uint64_t truncation)
     end = std::chrono::steady_clock::now();
     
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (TE-NMF): " << result << std::endl;
+    std::cout << "Time (TeNMF): " << result << std::endl;
     
     verifyRecovery(mat);
     return result;
@@ -200,7 +202,7 @@ int64_t Recovery_DynaMMo(arma::mat &mat, uint64_t truncation)
     return result;
 }
 
-int64_t Recovery_SVT(arma::mat &mat, uint64_t truncation)
+int64_t Recovery_SVT(arma::mat &mat)
 {
     // Local
     int64_t result;
@@ -210,7 +212,7 @@ int64_t Recovery_SVT(arma::mat &mat, uint64_t truncation)
     
     // Recovery
     begin = std::chrono::steady_clock::now();
-    SVT::doSVT(mat, truncation);
+    SVT::doSVT(mat);
     end = std::chrono::steady_clock::now();
     
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
@@ -254,7 +256,7 @@ int64_t Recovery_IterativeSVD(arma::mat &mat, uint64_t truncation)
     end = std::chrono::steady_clock::now();
     
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (Iter-SVD): " << result << std::endl;
+    std::cout << "Time (SVDImpute): " << result << std::endl;
     
     verifyRecovery(mat);
     return result;
@@ -275,6 +277,28 @@ int64_t Recovery_SoftImpute(arma::mat &mat, uint64_t truncation)
     
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
     std::cout << "Time (SoftImpute): " << result << std::endl;
+    
+    verifyRecovery(mat);
+    return result;
+}
+
+int64_t Recovery_OGDImpute(arma::mat &mat, uint64_t truncation)
+{
+    // Local
+    int64_t result;
+    
+    std::chrono::steady_clock::time_point begin;
+    std::chrono::steady_clock::time_point end;
+    
+    OGDImpute ogd(mat, truncation);
+    
+    // Recovery
+    begin = std::chrono::steady_clock::now();
+    ogd.ARPredict();
+    end = std::chrono::steady_clock::now();
+    
+    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    std::cout << "Time (OGDImp): " << result << std::endl;
     
     verifyRecovery(mat);
     return result;
@@ -322,7 +346,7 @@ int64_t Recovery_CD_Streaming(arma::mat &mat, uint64_t truncation)
     end = std::chrono::steady_clock::now();
     
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (CD): " << result << std::endl;
+    std::cout << "Time (CDRec,stream): " << result << std::endl;
     
     mat = std::move(before_streaming);
     verifyRecovery(mat);
@@ -340,7 +364,7 @@ int64_t Recovery_TKCM_Streaming(arma::mat &mat, uint64_t truncation)
     // Recovery
     result = tkcm.performRecovery(true);
     
-    std::cout << "Time (TKCM): " << result << std::endl;
+    std::cout << "Time (TKCM,stream): " << result << std::endl;
     
     verifyRecovery(mat);
     return result;
@@ -355,8 +379,49 @@ int64_t Recovery_SPIRIT_Streaming(arma::mat &mat, uint64_t truncation)
     // Recovery
     result = SPIRIT::doSpirit(mat, truncation, 6, 1.0);
     
-    std::cout << "Time (SPIRIT): " << result << std::endl;
+    std::cout << "Time (SPIRIT,stream): " << result << std::endl;
     
+    verifyRecovery(mat);
+    return result;
+}
+
+int64_t Recovery_OGDImpute_Streaming(arma::mat &mat, uint64_t truncation)
+{
+    uint64_t streamStart = 0;
+    
+    for (uint64_t i = 0; i < mat.n_rows; ++i)
+    {
+        if (std::isnan(mat.at(i, 0)))
+        {
+            streamStart = i;
+            break;
+        }
+    }
+    
+    arma::mat before_streaming = mat.submat(arma::span(0, streamStart - 1), arma::span::all);
+    
+    // Local
+    int64_t result;
+    OGDImpute ogd(mat, truncation);
+    std::chrono::steady_clock::time_point begin;
+    std::chrono::steady_clock::time_point end;
+    
+    // Recovery
+    ogd.ARPredict();
+    
+    for (uint64_t i = streamStart; i < mat.n_rows; ++i)
+    {
+        Algebra::Operations::increment_matrix(mat, mat.row(i).t());
+    }
+    
+    begin = std::chrono::steady_clock::now();
+    ogd.ARPredict();
+    end = std::chrono::steady_clock::now();
+    
+    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    std::cout << "Time (OGDImpute,stream): " << result << std::endl;
+    
+    mat = std::move(before_streaming);
     verifyRecovery(mat);
     return result;
 }
@@ -378,6 +443,10 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
         {
             return Recovery_SPIRIT_Streaming(mat, truncation);
         }
+        else if (algorithm == "ogdimpute")
+        {
+            return Recovery_OGDImpute_Streaming(mat, truncation);
+        }
         else
         {
             std::cout << "Algorithm name '" << algorithm << "' does not exist or is not valid option for streaming" << std::endl;
@@ -395,7 +464,7 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
     }
     else if (algorithm == "st-mvl")
     {
-        return Recovery_ST_MVL(mat, truncation, xtra);
+        return Recovery_ST_MVL(mat, xtra, truncation);
     }
     else if (algorithm == "spirit")
     {
@@ -415,7 +484,7 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
     }
     else if (algorithm == "svt")
     {
-        return Recovery_SVT(mat, truncation);
+        return Recovery_SVT(mat);
     }
     else if (algorithm == "rosl")
     {
@@ -428,6 +497,10 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
     else if (algorithm == "softimpute")
     {
         return Recovery_SoftImpute(mat, truncation);
+    }
+    else if (algorithm == "ogdimpute")
+    {
+        return Recovery_OGDImpute(mat, truncation);
     }
     else
     {

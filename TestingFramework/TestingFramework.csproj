@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Algorithms\AlgoPack.cs" />
     <Compile Include="Algorithms\Algorithm.cs" />
+    <Compile Include="Algorithms\AutoRegressionAlgorithm.cs" />
     <Compile Include="Algorithms\CentroidDecompositionAlgorithm.cs" />
     <Compile Include="Algorithms\GrouseAlgorithm.cs" />
     <Compile Include="Algorithms\IncrementalCentroidDecompositionAlgorithm.cs" />
