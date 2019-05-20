@@ -4,20 +4,6 @@ For dependencies and setup look in the README file in root of repository.
 
 # Description of parameters
 
-## CD
-
-Parameters:
-- max_iterations = 100
-- eps = 1E-6
-- k = 2 and k = 3
-- both results are stored and shown in MSE/RMSE, only k=3 is plotted on recovery visual
-
-Convergence of CD:
-- X matrix with missing values. [L,R] = TCD(X, k), Xt = L*R
-- For every missing block MB replace X_MB with Xt_MB.
-- Calculate delta = (X_MB - Xt_MB)^2 / size(MB) for all MBs.
-- If delta < eps stop. If delta >= eps goto beginning.
-
 ## ST-MVL
 
 Parameters:
@@ -52,7 +38,7 @@ Parameters:
 - learning_factors = [0.75, 0.75, 0.75]
 - max_iterations = 100
 
-## NNMF
+## TeNMF
 
 Parameters:
 - n_components = 3
