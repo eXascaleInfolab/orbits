@@ -21,11 +21,12 @@ namespace TestingFramework.Algorithms
         public static readonly Algorithm Nnmf = new NnmfAlgorithm();
         public static readonly Algorithm Grouse = new GrouseAlgorithm();
         public static readonly Algorithm ArImp = new AutoRegressionAlgorithm();
+        public static readonly Algorithm Ssa = new SSAAlgorithm();
         
         //example:
         //    public static readonly Algorithm Example = new ExampleAlgorithm();
         
-        public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse, ArImp };
+        public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse, ArImp, Ssa };
         public static Algorithm[] ListAlgorithmsMulticolumn = { Stmvl, InCd, Trmf, Nnmf, Grouse, ArImp };
         public static Algorithm[] ListAlgorithmsStreaming = { InCd, Tkcm, Spirit, ArImp };
 
@@ -166,6 +167,14 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
+    }
+
+    public partial class SSAAlgorithm
+    {
+        public override string AlgCode => "ssa";
+        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}tslib/";
+        protected override string SubFolderDataIn => "data_in/";
+        protected override string SubFolderDataOut => "data_out/";
     }
 
     /*///////////////////////////////////////////////////////////*/

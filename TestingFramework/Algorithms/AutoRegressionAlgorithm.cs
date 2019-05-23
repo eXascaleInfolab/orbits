@@ -41,12 +41,12 @@ namespace TestingFramework.Algorithms
             Process ogdproc = new Process();
             
             ogdproc.StartInfo.WorkingDirectory = EnvPath;
-            ogdproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/algoCollection";
+            ogdproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
             ogdproc.StartInfo.CreateNoWindow = true;
             ogdproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             ogdproc.StartInfo.UseShellExecute = false;
 
-            ogdproc.StartInfo.Arguments = $"-alg ar-imp -test o -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
+            ogdproc.StartInfo.Arguments = $"-alg ogdimpute -test o -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
                                          $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
                                          $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
 
@@ -58,12 +58,12 @@ namespace TestingFramework.Algorithms
             Process ogdproc = new Process();
             
             ogdproc.StartInfo.WorkingDirectory = EnvPath;
-            ogdproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/algoCollection";
+            ogdproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
             ogdproc.StartInfo.CreateNoWindow = true;
             ogdproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             ogdproc.StartInfo.UseShellExecute = false;
 
-            ogdproc.StartInfo.Arguments = $"-alg ar-imp -test rt -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
+            ogdproc.StartInfo.Arguments = $"-alg ogdimpute -test rt -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
                                              $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
                                              $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
 

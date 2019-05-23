@@ -52,6 +52,7 @@
     <Compile Include="Algorithms\IncrementalCentroidDecompositionAlgorithm.cs" />
     <Compile Include="Algorithms\NnmfAlgorithm.cs" />
     <Compile Include="Algorithms\SpiritAlgorithm.cs" />
+    <Compile Include="Algorithms\SSAAlgorithm.cs" />
     <Compile Include="Algorithms\StmvlAlgorithm.cs" />
     <Compile Include="Algorithms\TkcmAlgorithm.cs" />
     <Compile Include="Algorithms\TrmfAlgorithm.cs" />
