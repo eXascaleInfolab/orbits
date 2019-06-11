@@ -22,12 +22,13 @@ namespace TestingFramework.Algorithms
         public static readonly Algorithm Grouse = new GrouseAlgorithm();
         public static readonly Algorithm ArImp = new AutoRegressionAlgorithm();
         public static readonly Algorithm Ssa = new SSAAlgorithm();
+        public static readonly Algorithm Mrnn = new MRNNAlgorithm();
         
         //example:
         //    public static readonly Algorithm Example = new ExampleAlgorithm();
         
-        public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse, ArImp, Ssa };
-        public static Algorithm[] ListAlgorithmsMulticolumn = { Stmvl, InCd, Trmf, Nnmf, Grouse, ArImp };
+        public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse, ArImp, Ssa, Mrnn };
+        public static Algorithm[] ListAlgorithmsMulticolumn = { Stmvl, InCd, Trmf, Nnmf, Grouse, ArImp, Mrnn };
         public static Algorithm[] ListAlgorithmsStreaming = { InCd, Tkcm, Spirit, ArImp };
 
         public const int TypicalTruncation = 3;
@@ -173,6 +174,14 @@ namespace TestingFramework.Algorithms
     {
         public override string AlgCode => "ssa";
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}tslib/";
+        protected override string SubFolderDataIn => "data_in/";
+        protected override string SubFolderDataOut => "data_out/";
+    }
+
+    public partial class MRNNAlgorithm
+    {
+        public override string AlgCode => "m-rnn";
+        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}M-RNN/";
         protected override string SubFolderDataIn => "data_in/";
         protected override string SubFolderDataOut => "data_out/";
     }
