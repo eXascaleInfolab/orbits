@@ -29,7 +29,7 @@ namespace TestingFramework.Algorithms
         
         public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse, ArImp, Ssa, Mrnn };
         public static Algorithm[] ListAlgorithmsMulticolumn = { Stmvl, InCd, Trmf, Nnmf, Grouse, ArImp, Mrnn };
-        public static Algorithm[] ListAlgorithmsStreaming = { InCd, Tkcm, Spirit, ArImp };
+        public static Algorithm[] ListAlgorithmsStreaming = { InCd, Tkcm, Spirit, ArImp, Grouse };
 
         public const int TypicalTruncation = 3;
 

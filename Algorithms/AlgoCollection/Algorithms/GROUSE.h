@@ -11,8 +11,19 @@ namespace Algorithms
 
 class GROUSE
 {
+  private:
+    arma::mat &input;
+    arma::mat U;
+    arma::mat R;
+    
+    uint64_t maxrank;
+  
   public:
-    static void doGROUSE(arma::mat &input, uint64_t maxrank);
+    explicit GROUSE(arma::mat &_input, uint64_t _maxrank);
+    
+  public:
+    void doGROUSE();
+    void singleRowIncrementSAGE();
   
   private:
     static constexpr uint64_t maxCycles = 5;

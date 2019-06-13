@@ -9,6 +9,13 @@
 namespace Algebra
 {
 
+namespace Predefined
+{
+
+arma::vec canonical_vector(uint64_t n, uint64_t pos);
+
+} // namespace Predefined
+
 namespace Operations
 {
 
@@ -19,6 +26,10 @@ void insert_vector_at_row(arma::mat &matrix, uint64_t column, const arma::vec &v
 void increment_matrix(arma::mat &matrix, const std::vector<double> &vector);
 
 void increment_matrix(arma::mat &matrix, const arma::vec &vector);
+
+void add_matrix_col(arma::mat &matrix, const std::vector<double> &vector);
+
+void add_matrix_col(arma::mat &matrix, const arma::vec &vector);
 
 void increment_vector(arma::vec &vector, double val);
 

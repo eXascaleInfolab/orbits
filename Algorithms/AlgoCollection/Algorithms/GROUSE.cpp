@@ -6,11 +6,16 @@
 #include <iostream>
 
 #include "GROUSE.h"
+#include "../Algebra/Auxiliary.h"
 
 namespace Algorithms
 {
 
-void Algorithms::GROUSE::doGROUSE(arma::mat &input, uint64_t maxrank)
+GROUSE::GROUSE(arma::mat &_input, uint64_t _maxrank)
+    : input(_input), maxrank(_maxrank)
+{ }
+
+void Algorithms::GROUSE::doGROUSE()
 {
     arma::arma_rng::set_seed(1921);
     
@@ -21,7 +26,7 @@ void Algorithms::GROUSE::doGROUSE(arma::mat &input, uint64_t maxrank)
         indices.emplace_back(arma::find_finite(input.col(i)));
     }
     
-    arma::mat U = arma::orth(arma::randn<arma::mat>(input.n_rows, maxrank));
+    U = arma::orth(arma::randn<arma::mat>(input.n_rows, maxrank));
     
     for (uint64_t outiter = 0; outiter < maxCycles; ++outiter)
     {
@@ -133,7 +138,7 @@ void Algorithms::GROUSE::doGROUSE(arma::mat &input, uint64_t maxrank)
     
     // generate R
     
-    arma::mat R(input.n_cols, maxrank);
+    R = arma::mat(input.n_cols, maxrank);
     
     for (uint64_t k = 0; k < input.n_cols; ++k)
     {
@@ -151,6 +156,7 @@ void Algorithms::GROUSE::doGROUSE(arma::mat &input, uint64_t maxrank)
         }
     }
     
+    
     arma::mat recon = U * R.t();
     
     for (uint64_t j = 0; j < input.n_cols; ++j)
@@ -163,6 +169,95 @@ void Algorithms::GROUSE::doGROUSE(arma::mat &input, uint64_t maxrank)
             }
         }
     }
+}
+
+void GROUSE::singleRowIncrementSAGE()
+{
+    // basic input: U, R^T, s.t. X = U*R^T, vector with new values
+    
+    const uint64_t i = input.n_cols - 1; // last idx, single inc only, so no modifications within one call
+    arma::uvec Omega_t = arma::find_finite(input.col(i)); // not int the list like it was in grouse, calculate now
+    arma::vec v_t = input.col(i); // new vector
+    
+    // --- preprocessing ---
+    // compute remaining input for SAGE with typical grouse step, for docs see above
+    
+    arma::vec v_Omega = v_t.elem(Omega_t);
+    arma::mat U_Omega = U.rows(Omega_t);
+    
+    arma::vec weights;
+    bool success = arma::solve(weights, U_Omega, v_Omega);
+    
+    if (!success)
+    {
+        std::cout << "arma::solve has failed, aborting remaining recovery" << std::endl;
+        return;
+    }
+    
+    arma::vec p = U_Omega * weights;
+    arma::vec residual = v_Omega - p;
+    double norm_residual = arma::norm(residual);
+    if (norm_residual < 0.000000001)
+    {
+        norm_residual = 0.000000001;
+    }
+    // END typical grouse step
+    
+    // now we have all input: incoming vector which is now Omega'd, w_t, r_t, ||r_t||
+    
+    if (Omega_t.n_elem != v_t.n_elem)
+    {
+        arma::vec impute = U * weights;
+    
+        for (uint64_t j = 0; j < v_t.n_elem; ++j)
+        {
+            if (std::isnan(input.at(j, i)))
+            {
+                input.at(j, i) = impute[j];
+            }
+        }
+    }
+    
+    // --- SAGE ---
+    
+    // step 1 : construct center_matrix (aka "extended Sigma") and compute its SVD
+    arma::mat center_matrix = arma::eye<arma::mat>(weights.n_elem, weights.n_elem);
+    
+    Algebra::Operations::increment_matrix(center_matrix, arma::zeros<arma::vec>(weights.n_elem));
+    Algebra::Operations::increment_vector(weights, norm_residual);
+    Algebra::Operations::add_matrix_col(center_matrix, weights); // weights are mutated to match
+    
+    arma::mat U_svd, V_svd;
+    arma::vec Sigma_svd;
+    
+    success = arma::svd_econ(U_svd, Sigma_svd, V_svd, center_matrix);
+    if (!success)
+    {
+        std::cout << "arma::svd has failed, aborting remaining recovery" << std::endl;
+        return;
+    }
+    
+    U_svd = U_svd.cols(arma::span(0, maxrank - 1));
+    V_svd = V_svd.cols(arma::span(0, maxrank - 1));
+    arma::mat Sigma_mat = arma::diagmat(Sigma_svd.subvec(arma::span(0, maxrank - 1)));
+    
+    // step 2 : perform update on U
+    residual /= norm_residual;
+    
+    Algebra::Operations::add_matrix_col(U_Omega, residual);
+    U_Omega = U_Omega * U_svd;
+    U.rows(Omega_t) = U_Omega;
+    
+    // step 3 : perform update on R
+    
+    Algebra::Operations::add_matrix_col(R, arma::zeros<arma::mat>(R.n_rows)); // add a column of 0
+    Algebra::Operations::increment_matrix(R, Algebra::Predefined::canonical_vector(R.n_cols, R.n_cols - 1)); // add a row of 0 ... 0 1
+    
+    R = R * V_svd * Sigma_mat;
+    
+    // step 4 : recover missing values in new data
+    
+    arma::vec newdata = U * R.row(i).t();
 }
 
 } // namespace Algorithms

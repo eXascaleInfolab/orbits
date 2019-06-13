@@ -143,9 +143,11 @@ int64_t Recovery_GROUSE(arma::mat &mat, uint64_t truncation)
     // Recovery
 
     mat = mat.t();
+    
+    GROUSE grouse(mat, truncation);
 
     begin = std::chrono::steady_clock::now();
-    GROUSE::doGROUSE(mat, truncation);
+    grouse.doGROUSE();
     end = std::chrono::steady_clock::now();
     
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
@@ -402,7 +404,7 @@ int64_t Recovery_OGDImpute_Streaming(arma::mat &mat, uint64_t truncation)
     
     // Local
     int64_t result;
-    OGDImpute ogd(mat, truncation);
+    OGDImpute ogd(before_streaming, truncation);
     std::chrono::steady_clock::time_point begin;
     std::chrono::steady_clock::time_point end;
     
@@ -411,7 +413,7 @@ int64_t Recovery_OGDImpute_Streaming(arma::mat &mat, uint64_t truncation)
     
     for (uint64_t i = streamStart; i < mat.n_rows; ++i)
     {
-        Algebra::Operations::increment_matrix(mat, mat.row(i).t());
+        Algebra::Operations::increment_matrix(before_streaming, mat.row(i).t());
     }
     
     begin = std::chrono::steady_clock::now();
@@ -423,6 +425,50 @@ int64_t Recovery_OGDImpute_Streaming(arma::mat &mat, uint64_t truncation)
     
     mat = std::move(before_streaming);
     verifyRecovery(mat);
+    return result;
+}
+
+int64_t Recovery_SAGE_Streaming(arma::mat &mat, uint64_t truncation)
+{
+    uint64_t streamStart = 0;
+    
+    for (uint64_t i = 0; i < mat.n_rows; ++i)
+    {
+        if (std::isnan(mat.at(i, 0)))
+        {
+            streamStart = i;
+            break;
+        }
+    }// [!] despite transposing we search for the first index row-wise and later use it as column index
+    
+    mat = mat.t();
+    
+    arma::mat before_streaming = mat.submat(arma::span::all, arma::span(0, streamStart - 1));
+    
+    // Local
+    int64_t result;
+    GROUSE sage(before_streaming, truncation);
+    std::chrono::steady_clock::time_point begin;
+    std::chrono::steady_clock::time_point end;
+    
+    // Recovery
+    sage.doGROUSE();
+    
+    begin = std::chrono::steady_clock::now();
+    for (uint64_t i = streamStart; i < mat.n_cols; ++i)
+    {
+        Algebra::Operations::add_matrix_col(before_streaming, mat.col(i));
+        sage.singleRowIncrementSAGE();
+    }
+    end = std::chrono::steady_clock::now();
+    
+    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    std::cout << "Time (GROUSE/SAGE,stream): " << result << std::endl;
+    
+    mat = std::move(before_streaming);
+    verifyRecovery(mat);
+    mat = mat.t();
+    
     return result;
 }
 
@@ -446,6 +492,10 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
         else if (algorithm == "ogdimpute")
         {
             return Recovery_OGDImpute_Streaming(mat, truncation);
+        }
+        else if (algorithm == "grouse" || algorithm == "sage")
+        {
+            return Recovery_SAGE_Streaming(mat, truncation);
         }
         else
         {

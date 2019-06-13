@@ -53,7 +53,7 @@ namespace TestingFramework.Algorithms
             return grouseproc;
         }
         
-        private Process GetRuntimeGrouseProcess(DataDescription data, int len)
+        private Process GetRuntimeGrouseProcess(DataDescription data, int len, bool stream)
         {
             Process grouseproc = new Process();
             
@@ -65,7 +65,7 @@ namespace TestingFramework.Algorithms
 
             grouseproc.StartInfo.Arguments = $"-alg grouse -test rt -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
                                              $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                             $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
+                                             $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt " + (stream ? "-xtra stream" : "");
 
             return grouseproc;
         }
@@ -88,7 +88,7 @@ namespace TestingFramework.Algorithms
         protected override void RuntimeExperiment(ExperimentType et, ExperimentScenario es, DataDescription data,
             int tcase)
         {
-            RunGrouse(GetRuntimeGrouseProcess(data, tcase));
+            RunGrouse(GetRuntimeGrouseProcess(data, tcase, et == ExperimentType.Streaming));
         }
 
         public override void GenerateData(string sourceFile, string code, int tcase, (int, int, int)[] missingBlocks,
