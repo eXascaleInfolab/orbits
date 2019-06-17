@@ -158,7 +158,7 @@ namespace TestingFramework.Testing
                 writer.WriteLine($"Entering Test Type = {et}");
                 writer.Indent();
                 
-                EnumMethods.AllExperimentScenarios().Where(x => x != ExperimentScenario.MissingMultiColumn)
+                EnumMethods.AllExperimentScenarios().Where(x => x != ExperimentScenario.MultiColumnDisjoint)
                     .Select(EnumMethods.ToLongString).ForEach(es =>
                 {
                     writer.WriteLine($"Entering Test Scenario = {es}");

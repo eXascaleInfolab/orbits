@@ -49,7 +49,7 @@ def Data_Loader_Incomplete(seq_length, filename):
                 anynan = True
 
         if anynan:
-            train_size = i
+            train_size = i - int(i/3.0)
             break
     
     #%% Introduce Missingness (MCAR)

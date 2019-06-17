@@ -83,7 +83,8 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.Missing: return "mis";
                 case ExperimentScenario.Length: return "len";
                 case ExperimentScenario.Columns: return "col";
-                case ExperimentScenario.MissingMultiColumn: return "mmc";
+                case ExperimentScenario.MultiColumnDisjoint: return "mc-dj";
+                case ExperimentScenario.Fullrow: return "frow";
                 default: throw new InvalidDataException();
             }
         }
@@ -95,7 +96,8 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.Missing: return "missingpercentage";
                 case ExperimentScenario.Length: return "length";
                 case ExperimentScenario.Columns: return "columns";
-                case ExperimentScenario.MissingMultiColumn: return "missingmulticolumn";
+                case ExperimentScenario.MultiColumnDisjoint: return "multicolumn-disjoint";
+                case ExperimentScenario.Fullrow: return "blackout";
                 default: throw new InvalidDataException();
             }
         }
@@ -107,7 +109,8 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.Missing: return "number of missing values";
                 case ExperimentScenario.Length: return "number of rows";
                 case ExperimentScenario.Columns: return "number of columns";
-                case ExperimentScenario.MissingMultiColumn: return "number of missing values";
+                case ExperimentScenario.MultiColumnDisjoint: return "number of missing values";
+                case ExperimentScenario.Fullrow: return "number of missing rows";
                 default: throw new InvalidDataException();
             }
         }
@@ -115,9 +118,16 @@ namespace TestingFramework.Testing
         public static IEnumerable<ExperimentScenario> AllExperimentScenarios()
         {
             yield return ExperimentScenario.Missing;
-            if (EnableMulticolumn) yield return ExperimentScenario.MissingMultiColumn;
+            if (EnableMulticolumn) yield return ExperimentScenario.MultiColumnDisjoint;
             yield return ExperimentScenario.Length;
             yield return ExperimentScenario.Columns;
+            yield return ExperimentScenario.Fullrow;
+        }
+        
+        public static bool IsSingleColumn(this ExperimentScenario es)
+        {
+            return es == ExperimentScenario.Missing || es == ExperimentScenario.Length ||
+                   es == ExperimentScenario.Columns;
         }
     }
     public enum Experiment
@@ -132,7 +142,7 @@ namespace TestingFramework.Testing
 
     public enum ExperimentScenario
     {
-        Length, Missing, Columns, MissingMultiColumn
+        Length, Missing, Columns, MultiColumnDisjoint, Fullrow
     }
 
     [ImmutableObject(true)]

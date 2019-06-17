@@ -34,8 +34,11 @@ namespace TestingFramework.Testing
                         case ExperimentScenario.Columns:
                             return (new[] {(0, nlimit - BlockSize, BlockSize)}, Utils.ClosedSequence(4, 12).ToArray());
 
-                        case ExperimentScenario.MissingMultiColumn:
+                        case ExperimentScenario.MultiColumnDisjoint:
                             return (new[] {(0, -1, -1)}, Utils.ClosedSequence(BlockSize, BlockSize * 8, BlockSize).ToArray());
+                        
+                        case ExperimentScenario.Fullrow:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).TakeWhile(x => x + 10 < nlimit).ToArray());
 
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario");
@@ -53,9 +56,12 @@ namespace TestingFramework.Testing
                         case ExperimentScenario.Columns:
                             return (new[] {(0, StartOffset, BlockSize)}, Utils.ClosedSequence(4, 12).ToArray());
 
-                        case ExperimentScenario.MissingMultiColumn:
+                        case ExperimentScenario.MultiColumnDisjoint:
                             return (new[] {(0, StartOffset, -1)}, Utils.ClosedSequence(BlockSize, BlockSize * 8, BlockSize).ToArray());
 
+                        case ExperimentScenario.Fullrow:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).TakeWhile(x => (x + nlimit / 20) < nlimit).ToArray());
+                        
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario");
                     }
@@ -72,7 +78,7 @@ namespace TestingFramework.Testing
                         case ExperimentScenario.Columns:
                             return (new[] {(0, nlimit - BlockSize, BlockSize)}, Utils.ClosedSequence(4, 12).ToArray());
                         
-                        case ExperimentScenario.MissingMultiColumn:
+                        case ExperimentScenario.MultiColumnDisjoint:
                             throw new ArgumentException("Multicolumn is unsupported for streaming test");
                             
                         default:
@@ -104,7 +110,7 @@ namespace TestingFramework.Testing
                         case ExperimentScenario.Columns:
                             break;//nothing
 
-                        case ExperimentScenario.MissingMultiColumn:
+                        case ExperimentScenario.MultiColumnDisjoint:
                             switch (MulticolumnType)
                             {
                                 case "1": // NON-OVERLAPPING; ROTATING COLUMNS; STAIRCASE PLACEMENT;
@@ -161,6 +167,10 @@ namespace TestingFramework.Testing
                             }).ToArray()
                             */
                         
+                        case ExperimentScenario.Fullrow:
+                            missingBlocks = Enumerable.Range(0, columns).Select(x => (x, nlimit - tcase, tcase)).ToArray();
+                            break;
+                        
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario");
                     }
@@ -179,7 +189,7 @@ namespace TestingFramework.Testing
                         case ExperimentScenario.Columns:
                             break;//nothing
                         
-                        case ExperimentScenario.MissingMultiColumn:
+                        case ExperimentScenario.MultiColumnDisjoint:
                             switch (MulticolumnType)
                             {
                                 case "1": // NON-OVERLAPPING; ROTATING COLUMNS; STAIRCASE PLACEMENT;
@@ -235,6 +245,10 @@ namespace TestingFramework.Testing
                                 return (col, start, BlockSize);
                             }).ToArray();
                             */
+
+                        case ExperimentScenario.Fullrow:
+                            missingBlocks = Enumerable.Range(0, columns).Select(col => (col, nlimit / 20, tcase)).ToArray();
+                            break;
                         
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario");
@@ -334,9 +348,14 @@ namespace TestingFramework.Testing
             }
             
             IEnumerable<Algorithm> algorithms =
-                es == ExperimentScenario.MissingMultiColumn
+                !es.IsSingleColumn()
                     ? AlgoPack.ListAlgorithmsMulticolumn
                     : AlgoPack.ListAlgorithms;
+
+            if (es == ExperimentScenario.Fullrow)
+            {
+                algorithms = algorithms.Where(a => a != AlgoPack.Ssa && a != AlgoPack.Grouse);
+            }
             
             // exceptional cases
             if (code == "bball" && nlimit >= 1800)
@@ -614,7 +633,7 @@ namespace TestingFramework.Testing
             ExperimentType et, ExperimentScenario es,
             string code, int nlimit = 1000)
         {
-            if (et == ExperimentType.Streaming && es == ExperimentScenario.MissingMultiColumn)
+            if (et == ExperimentType.Streaming && es == ExperimentScenario.MultiColumnDisjoint)
             {
                 throw new ArgumentException("ExperimentScenario.MissingMultiColumn is unsupported in combination with ExperimentType.Streaming");
             }
@@ -623,10 +642,15 @@ namespace TestingFramework.Testing
                 et == ExperimentType.Streaming
                 ? AlgoPack.ListAlgorithmsStreaming
                 : (
-                        es == ExperimentScenario.MissingMultiColumn
+                    !es.IsSingleColumn()
                         ? AlgoPack.ListAlgorithmsMulticolumn
                         : AlgoPack.ListAlgorithms
                 );
+
+            if (es == ExperimentScenario.Fullrow)
+            {
+                algorithms = algorithms.Where(a => a != AlgoPack.Ssa && a != AlgoPack.Grouse);
+            }
             
             if (!File.Exists($"{DataWorks.FolderData}{code}/{code}_normal.txt"))
             {
@@ -784,7 +808,7 @@ namespace TestingFramework.Testing
                 et == ExperimentType.Streaming
                     ? AlgoPack.ListAlgorithmsStreaming
                     : (
-                        es == ExperimentScenario.MissingMultiColumn
+                        es == ExperimentScenario.MultiColumnDisjoint
                             ? AlgoPack.ListAlgorithmsMulticolumn
                             : AlgoPack.ListAlgorithms
                     );
