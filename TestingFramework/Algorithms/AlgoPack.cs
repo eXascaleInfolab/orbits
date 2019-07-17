@@ -23,12 +23,13 @@ namespace TestingFramework.Algorithms
         public static readonly Algorithm ArImp = new AutoRegressionAlgorithm();
         public static readonly Algorithm Ssa = new SSAAlgorithm();
         public static readonly Algorithm Mrnn = new MRNNAlgorithm();
+        public static readonly Algorithm DynaMMo = new DynaMMoAlgorithm();
         
         //example:
         //    public static readonly Algorithm Example = new ExampleAlgorithm();
         
-        public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse, ArImp, Ssa, Mrnn };
-        public static Algorithm[] ListAlgorithmsMulticolumn = { Stmvl, InCd, Trmf, Nnmf, Grouse, ArImp, Mrnn };
+        public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse, ArImp, Ssa, Mrnn, DynaMMo };
+        public static Algorithm[] ListAlgorithmsMulticolumn = { Stmvl, InCd, Trmf, Nnmf, Grouse, ArImp, Mrnn, DynaMMo };
         public static Algorithm[] ListAlgorithmsStreaming = { InCd, Tkcm, Spirit, ArImp, Grouse };
 
         public const int TypicalTruncation = 3;
@@ -184,6 +185,14 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}M-RNN/";
         protected override string SubFolderDataIn => "data_in/";
         protected override string SubFolderDataOut => "data_out/";
+    }
+
+    public partial class DynaMMoAlgorithm
+    {
+        public override string AlgCode => "dynammo";
+        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
+        protected override string SubFolderDataIn => "in/";
+        protected override string SubFolderDataOut => "out/";
     }
 
     /*///////////////////////////////////////////////////////////*/

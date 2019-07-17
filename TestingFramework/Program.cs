@@ -99,7 +99,7 @@ namespace TestingFramework
             var listStd = new List<Algorithm> {cdVersion};
 
             listStd.AddRange(new[] {AlgoPack.Stmvl, AlgoPack.Tkcm, AlgoPack.Spirit, AlgoPack.Nnmf, AlgoPack.Grouse});
-            listStd.AddRange(new[] {AlgoPack.ArImp, AlgoPack.Ssa, AlgoPack.Mrnn});// very new batch
+            listStd.AddRange(new[] {AlgoPack.ArImp, AlgoPack.Ssa, AlgoPack.Mrnn, AlgoPack.DynaMMo});// very new batch
 
             if (!disableTrmf)
             {
