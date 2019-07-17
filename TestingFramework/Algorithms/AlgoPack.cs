@@ -114,7 +114,7 @@ namespace TestingFramework.Algorithms
 
     public partial class NnmfAlgorithm
     {
-        public override string AlgCode => "nnmf";
+        public override string AlgCode => "te-nmf";
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
@@ -164,7 +164,7 @@ namespace TestingFramework.Algorithms
 
     public partial class AutoRegressionAlgorithm
     {
-        public override string AlgCode => "ar-imp";
+        public override string AlgCode => "ogd-imp";
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
