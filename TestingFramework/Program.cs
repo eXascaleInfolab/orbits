@@ -68,10 +68,6 @@ namespace TestingFramework
                         ignoreList.AddRange(entry.Value.Split(',').Select(x => x.Trim().ToLower()));
                         break;
                     
-                    case "MulticolumnType":
-                        TestRoutines.MulticolumnType = entry.Value.Trim();
-                        break;
-                    
                     default:
                         Utils.DelayedWarnings.Enqueue($"Warning: unknown config entry with the key {entry.Key}");
                         break;
@@ -116,6 +112,7 @@ namespace TestingFramework
 
             listStd.Remove(AlgoPack.Tkcm);
             listStd.Remove(AlgoPack.Spirit);
+            listStd.Remove(AlgoPack.Ssa);
             AlgoPack.ListAlgorithmsMulticolumn = listStd.ToArray();
             
             AlgoPack.CleanUncollectedResults();
@@ -175,7 +172,10 @@ namespace TestingFramework
             void FullMulticolumn()
             {
                 codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.MultiColumnDisjoint, c, 1000));
-                codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Continuous, ExperimentScenario.MultiColumnDisjoint, c, 1000));
+                codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.MultiColumnOverlap, c, 1000));
+                
+                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.MultiColumnDisjoint, c, 1000));
+                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.MultiColumnOverlap, c, 1000));
             }
             
             if (EnumMethods.EnableStreaming) FullStreaming();

@@ -11,8 +11,6 @@ namespace TestingFramework.Testing
     {
         #region Configuration
 
-        public static string MulticolumnType = "2";
-
         private const int TypicalN = 1000;
         private const int BlockSize = TypicalN / 10;
         private const int StartOffset = BlockSize / 2;
@@ -34,9 +32,6 @@ namespace TestingFramework.Testing
                         case ExperimentScenario.Columns:
                             return (new[] {(0, nlimit - BlockSize, BlockSize)}, Utils.ClosedSequence(4, 12).ToArray());
 
-                        case ExperimentScenario.MultiColumnDisjoint:
-                            return (new[] {(0, -1, -1)}, Utils.ClosedSequence(BlockSize, BlockSize * 8, BlockSize).ToArray());
-                        
                         case ExperimentScenario.Fullrow:
                             return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).TakeWhile(x => x + 10 < nlimit).ToArray());
 
@@ -58,6 +53,9 @@ namespace TestingFramework.Testing
 
                         case ExperimentScenario.MultiColumnDisjoint:
                             return (new[] {(0, StartOffset, -1)}, Utils.ClosedSequence(BlockSize, BlockSize * 8, BlockSize).ToArray());
+                        
+                        case ExperimentScenario.MultiColumnOverlap:
+                            return (new[] {(0, StartOffset, -1)}, Utils.ClosedSequence(BlockSize, BlockSize * 8, BlockSize).ToArray());
 
                         case ExperimentScenario.Fullrow:
                             return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).TakeWhile(x => (x + nlimit / 20) < nlimit).ToArray());
@@ -73,11 +71,12 @@ namespace TestingFramework.Testing
                             return (new[] {(0, -1, -1)}, Utils.ClosedSequence(BlockSize, BlockSize * 8, BlockSize).ToArray());
                         
                         case ExperimentScenario.Length:
-                            return (new[] {(0, -1, 1)}, Utils.ClosedSequence(200, nlimit, 200).ToArray());
+                            return (new[] {(0, -1, 100)}, Utils.ClosedSequence(200, nlimit, 200).ToArray());
                         
                         case ExperimentScenario.Columns:
                             return (new[] {(0, nlimit - BlockSize, BlockSize)}, Utils.ClosedSequence(4, 12).ToArray());
                         
+                        case ExperimentScenario.MultiColumnOverlap:
                         case ExperimentScenario.MultiColumnDisjoint:
                             throw new ArgumentException("Multicolumn is unsupported for streaming test");
                             
@@ -110,63 +109,6 @@ namespace TestingFramework.Testing
                         case ExperimentScenario.Columns:
                             break;//nothing
 
-                        case ExperimentScenario.MultiColumnDisjoint:
-                            switch (MulticolumnType)
-                            {
-                                case "1": // NON-OVERLAPPING; ROTATING COLUMNS; STAIRCASE PLACEMENT;
-                                    missingBlocks = Enumerable.Repeat(0, tcase / BlockSize).Select((_, idx) =>
-                                    {
-                                        int col = idx % columns;
-                                        int start = nlimit - (idx + 1) * BlockSize;
-                                        return (col, start, BlockSize);
-                                    }).ToArray();
-                                    break;
-                                
-                                case "2": // OVERLAPPING; ROTATING COLUMNS; HALF-STAIRCASE PLACEMENT;
-                                    missingBlocks = Enumerable.Repeat(0, tcase / BlockSize).Select((_, idx) =>
-                                    {
-                                        int col = idx % columns;
-                                        int start = nlimit - BlockSize - idx * BlockSize / 2;
-                                        return (col, start, BlockSize);
-                                    }).ToArray();
-                                    break;
-                                    
-                                case "3": // NON-OVERLAPPING; FIXED COLUMNS(2); LOOPING STAIRCASE PLACEMENT;
-                                    const int columnsNoCase3 = 2;
-                                    missingBlocks = Enumerable.Repeat(0, tcase / BlockSize * columnsNoCase3).Select((_, idx) =>
-                                    {
-                                        int col = idx % columnsNoCase3;
-                                        int start = nlimit - BlockSize * ((idx + columnsNoCase3) / columnsNoCase3) + (idx % columnsNoCase3) * (BlockSize / columnsNoCase3);
-                                        return (col, start, BlockSize / columnsNoCase3);
-                                    }).ToArray();
-                                    break;
-                                
-                                case "4": // NON-OVERLAPPING; FIXED COLUMNS(3); LOOPING STAIRCASE PLACEMENT;
-                                    const int columnsNoCase4 = 3;
-                                    missingBlocks = Enumerable.Repeat(0, tcase / BlockSize * columnsNoCase4).Select((_, idx) =>
-                                    {
-                                        int col = idx % columnsNoCase4;
-                                        int start = nlimit - BlockSize * ((idx + columnsNoCase4) / columnsNoCase4) + (idx % columnsNoCase4) * (BlockSize / columnsNoCase4);
-                                        return (col, start, BlockSize / columnsNoCase4);
-                                    }).ToArray();
-                                    break;
-                                
-                                default:
-                                    throw new InvalidProgramException("Config file supplied inadmissible parameter for MulticolumnType: "
-                                                                      + MulticolumnType);
-                            }
-                            break;
-                            
-                            /* CASE 1.1 - NON-OVERLAPPING; ROTATING COLUMNS; STAIRCASE PLACEMENT; MOD => BlockSize *= 2; */
-                            /*
-                            missingBlocks = Enumerable.Repeat(0, tcase / BlockSize).Select((_, idx) =>
-                            {
-                                int col = idx % columns;
-                                int start = nlimit - (idx + 1) * BlockSize;
-                                return (col, start, BlockSize);
-                            }).ToArray()
-                            */
-                        
                         case ExperimentScenario.Fullrow:
                             missingBlocks = Enumerable.Range(0, columns).Select(x => (x, nlimit - tcase, tcase)).ToArray();
                             break;
@@ -190,61 +132,22 @@ namespace TestingFramework.Testing
                             break;//nothing
                         
                         case ExperimentScenario.MultiColumnDisjoint:
-                            switch (MulticolumnType)
-                            {
-                                case "1": // NON-OVERLAPPING; ROTATING COLUMNS; STAIRCASE PLACEMENT;
-                                    missingBlocks = Enumerable.Repeat(0, tcase / BlockSize).Select((_, idx) =>
-                                    {
-                                        int col = idx % columns;
-                                        int start = StartOffset + idx * BlockSize;
-                                        return (col, start, BlockSize);
-                                    }).ToArray();
-                                    break;
-                                
-                                case "2": // OVERLAPPING; ROTATING COLUMNS; HALF-STAIRCASE PLACEMENT;
-                                    missingBlocks = Enumerable.Repeat(0, tcase / BlockSize).Select((_, idx) =>
-                                    {
-                                        int col = idx % columns;
-                                        int start = StartOffset + idx * (BlockSize / 2);
-                                        return (col, start, BlockSize);
-                                    }).ToArray();
-                                    break;
-                                    
-                                case "3": // NON-OVERLAPPING; FIXED COLUMNS(2); LOOPING STAIRCASE PLACEMENT;
-                                    const int columnsNoCase3 = 2;
-                                    missingBlocks = Enumerable.Repeat(0, tcase / BlockSize * columnsNoCase3).Select((_, idx) =>
-                                    {
-                                        int col = idx % columnsNoCase3;
-                                        int start = StartOffset + BlockSize * (idx / columnsNoCase3) + (idx % columnsNoCase3) * (BlockSize / columnsNoCase3);
-                                        return (col, start, BlockSize / columnsNoCase3);
-                                    }).ToArray();
-                                    break;
-                                
-                                case "4": // NON-OVERLAPPING; FIXED COLUMNS(3); LOOPING STAIRCASE PLACEMENT;
-                                    const int columnsNoCase4 = 3;
-                                    missingBlocks = Enumerable.Repeat(0, tcase / BlockSize * columnsNoCase4).Select((_, idx) =>
-                                    {
-                                        int col = idx % columnsNoCase4;
-                                        int start = StartOffset + BlockSize * (idx / columnsNoCase4) + (idx % columnsNoCase4) * (BlockSize / columnsNoCase4);
-                                        return (col, start, BlockSize / columnsNoCase4);
-                                    }).ToArray();
-                                    break;
-                                
-                                default:
-                                    throw new InvalidProgramException("Config file supplied inadmissible parameter for MulticolumnType: "
-                                                                      + MulticolumnType);
-                            }
-                            break;
-                            
-                            /* CASE 1.1 - NON-OVERLAPPING; ROTATING COLUMNS; STAIRCASE PLACEMENT; MOD => BlockSize *= 2; */
-                            /*
                             missingBlocks = Enumerable.Repeat(0, tcase / BlockSize).Select((_, idx) =>
                             {
-                                int col = idx % columns;
+                                int col = idx;
                                 int start = StartOffset + idx * BlockSize;
                                 return (col, start, BlockSize);
                             }).ToArray();
-                            */
+                            break;
+                        
+                        case ExperimentScenario.MultiColumnOverlap: // OVERLAPPING; STAIRCASE PLACEMENT; x1.5
+                            missingBlocks = Enumerable.Repeat(0, tcase / BlockSize).Select((_, idx) =>
+                            {
+                                int col = idx;
+                                int start = StartOffset + idx * BlockSize;
+                                return (col, start, (BlockSize * 3) / 2);
+                            }).ToArray();
+                            break;
 
                         case ExperimentScenario.Fullrow:
                             missingBlocks = Enumerable.Range(0, columns).Select(col => (col, nlimit / 20, tcase)).ToArray();
@@ -372,6 +275,13 @@ namespace TestingFramework.Testing
             // forward definitons
             const Experiment ex = Experiment.Precision;
             (ValueTuple<int, int, int>[] missingBlocks, int[] lengths) = GetExperimentSetup(et, es, nlimit);
+            
+            int dataSetColumns = DataWorks.CountMatrixColumns($"{code}/{code}_normal.txt");
+
+            if (es == ExperimentScenario.MultiColumnDisjoint || es == ExperimentScenario.MultiColumnOverlap)
+            {
+                lengths = lengths.Take(dataSetColumns).ToArray();
+            }
 
             //
             // create necessary folder structure
@@ -404,7 +314,6 @@ namespace TestingFramework.Testing
             }
 
             //do it
-            int dataSetColumns = DataWorks.CountMatrixColumns($"{code}/{code}_normal.txt");
             foreach (Algorithm alg in algorithms)
             {
                 foreach (int tcase in lengths)
@@ -673,6 +582,12 @@ namespace TestingFramework.Testing
             const Experiment ex = Experiment.Runtime;
             (ValueTuple<int, int, int>[] missingBlocks, int[] lengths) = GetExperimentSetup(et, es, nlimit);
 
+            int dataSetColumns = DataWorks.CountMatrixColumns($"{code}/{code}_normal.txt");
+
+            if (es == ExperimentScenario.MultiColumnDisjoint || es == ExperimentScenario.MultiColumnOverlap)
+            {
+                lengths = lengths.Take(dataSetColumns).ToArray();
+            }
             //
             // create necessary folder structure
             //
@@ -704,7 +619,6 @@ namespace TestingFramework.Testing
             }
 
             //do it
-            int dataSetColumns = DataWorks.CountMatrixColumns($"{code}/{code}_normal.txt");
             foreach (Algorithm alg in algorithms)
             {
                 foreach (int tcase in lengths)
@@ -808,7 +722,7 @@ namespace TestingFramework.Testing
                 et == ExperimentType.Streaming
                     ? AlgoPack.ListAlgorithmsStreaming
                     : (
-                        es == ExperimentScenario.MultiColumnDisjoint
+                        !es.IsSingleColumn()
                             ? AlgoPack.ListAlgorithmsMulticolumn
                             : AlgoPack.ListAlgorithms
                     );

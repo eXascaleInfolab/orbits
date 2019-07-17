@@ -84,6 +84,7 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.Length: return "len";
                 case ExperimentScenario.Columns: return "col";
                 case ExperimentScenario.MultiColumnDisjoint: return "mc-dj";
+                case ExperimentScenario.MultiColumnOverlap: return "mc-ol";
                 case ExperimentScenario.Fullrow: return "frow";
                 default: throw new InvalidDataException();
             }
@@ -97,6 +98,7 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.Length: return "length";
                 case ExperimentScenario.Columns: return "columns";
                 case ExperimentScenario.MultiColumnDisjoint: return "multicolumn-disjoint";
+                case ExperimentScenario.MultiColumnOverlap: return "multicolumn-overlap";
                 case ExperimentScenario.Fullrow: return "blackout";
                 default: throw new InvalidDataException();
             }
@@ -110,6 +112,7 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.Length: return "number of rows";
                 case ExperimentScenario.Columns: return "number of columns";
                 case ExperimentScenario.MultiColumnDisjoint: return "number of missing values";
+                case ExperimentScenario.MultiColumnOverlap: return "number of missing values";
                 case ExperimentScenario.Fullrow: return "number of missing rows";
                 default: throw new InvalidDataException();
             }
@@ -119,6 +122,7 @@ namespace TestingFramework.Testing
         {
             yield return ExperimentScenario.Missing;
             if (EnableMulticolumn) yield return ExperimentScenario.MultiColumnDisjoint;
+            if (EnableMulticolumn) yield return ExperimentScenario.MultiColumnOverlap;
             yield return ExperimentScenario.Length;
             yield return ExperimentScenario.Columns;
             yield return ExperimentScenario.Fullrow;
@@ -142,7 +146,7 @@ namespace TestingFramework.Testing
 
     public enum ExperimentScenario
     {
-        Length, Missing, Columns, MultiColumnDisjoint, Fullrow
+        Length, Missing, Columns, MultiColumnDisjoint, MultiColumnOverlap, Fullrow
     }
 
     [ImmutableObject(true)]
