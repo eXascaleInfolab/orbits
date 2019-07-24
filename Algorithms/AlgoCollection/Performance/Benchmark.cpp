@@ -22,6 +22,7 @@
 #include "../Algorithms/IterativeSVD.h"
 #include "../Algorithms/SoftImpute.h"
 #include "../Algorithms/OGDImpute.h"
+#include "../Algorithms/MD_ISVDAlgorithm.h"
 
 using namespace Algorithms;
 
@@ -306,6 +307,33 @@ int64_t Recovery_OGDImpute(arma::mat &mat, uint64_t truncation)
     return result;
 }
 
+int64_t Recovery_MDISVD(arma::mat &mat, uint64_t truncation)
+{
+    // Local
+    int64_t result;
+    
+    std::chrono::steady_clock::time_point begin;
+    std::chrono::steady_clock::time_point end;
+    
+    // Recovery
+    
+    mat = mat.t();
+    
+    MD_SVD isvd(mat, truncation);
+    
+    begin = std::chrono::steady_clock::now();
+    isvd.doMDISVD();
+    end = std::chrono::steady_clock::now();
+    
+    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    std::cout << "Time (MD-ISVD): " << result << std::endl;
+    
+    mat = mat.t();
+    
+    verifyRecovery(mat);
+    return result;
+}
+
 // ================ streaming ==
 
 int64_t Recovery_CD_Streaming(arma::mat &mat, uint64_t truncation)
@@ -472,6 +500,50 @@ int64_t Recovery_SAGE_Streaming(arma::mat &mat, uint64_t truncation)
     return result;
 }
 
+int64_t Recovery_MDISVD_Streaming(arma::mat &mat, uint64_t truncation)
+{
+    uint64_t streamStart = 0;
+    
+    for (uint64_t i = 0; i < mat.n_rows; ++i)
+    {
+        if (std::isnan(mat.at(i, 0)))
+        {
+            streamStart = i;
+            break;
+        }
+    }// [!] despite transposing we search for the first index row-wise and later use it as column index
+    
+    mat = mat.t();
+    
+    arma::mat before_streaming = mat.submat(arma::span::all, arma::span(0, streamStart - 1));
+    
+    // Local
+    int64_t result;
+    MD_SVD isvd(before_streaming, truncation);
+    std::chrono::steady_clock::time_point begin;
+    std::chrono::steady_clock::time_point end;
+    
+    // Recovery
+    isvd.doMDISVD();
+    
+    begin = std::chrono::steady_clock::now();
+    for (uint64_t i = streamStart; i < mat.n_cols; ++i)
+    {
+        Algebra::Operations::add_matrix_col(before_streaming, mat.col(i));
+    }
+    isvd.doMDISVD();
+    end = std::chrono::steady_clock::now();
+    
+    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    std::cout << "Time (MD-ISVD,stream): " << result << std::endl;
+    
+    mat = std::move(before_streaming);
+    verifyRecovery(mat);
+    mat = mat.t();
+    
+    return result;
+}
+
 int64_t Recovery(arma::mat &mat, uint64_t truncation,
                  const std::string &algorithm, const std::string &xtra)
 {
@@ -496,6 +568,10 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
         else if (algorithm == "grouse" || algorithm == "sage")
         {
             return Recovery_SAGE_Streaming(mat, truncation);
+        }
+        else if (algorithm == "mdisvd")
+        {
+            return Recovery_MDISVD_Streaming(mat, truncation);
         }
         else
         {
@@ -551,6 +627,10 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
     else if (algorithm == "ogdimpute")
     {
         return Recovery_OGDImpute(mat, truncation);
+    }
+    else if (algorithm == "mdisvd")
+    {
+        return Recovery_MDISVD(mat, truncation);
     }
     else
     {

@@ -20,6 +20,7 @@ add_executable(
 
         Algebra/Auxiliary.cpp Algebra/Auxiliary.h
 
+        Algorithms/CDMissingValueRecovery.cpp Algorithms/CDMissingValueRecovery.h
         Algorithms/TKCM.cpp Algorithms/TKCM.h
         Algorithms/ST_MVL.cpp Algorithms/ST_MVL.h
         Algorithms/SPIRIT.cpp Algorithms/SPIRIT.h
@@ -30,12 +31,13 @@ add_executable(
         Algorithms/ROSL.cpp Algorithms/ROSL.h
         Algorithms/IterativeSVD.cpp Algorithms/IterativeSVD.h
         Algorithms/SoftImpute.cpp Algorithms/SoftImpute.h
+        Algorithms/OGDImpute.cpp Algorithms/OGDImpute.h
+        Algorithms/MD_ISVDAlgorithm.cpp Algorithms/MD_ISVDAlgorithm.h
 
-        Algorithms/CDMissingValueRecovery.cpp Algorithms/CDMissingValueRecovery.h
         Algebra/CentroidDecomposition.cpp Algebra/CentroidDecomposition.h
         Algebra/MissingBlock.hpp
         Stats/Correlation.cpp Stats/Correlation.h
-        Algebra/RSVD.cpp Algebra/RSVD.h Algorithms/OGDImpute.cpp Algorithms/OGDImpute.h)
+        Algebra/RSVD.cpp Algebra/RSVD.h)
 
 target_link_libraries(
         incCD
