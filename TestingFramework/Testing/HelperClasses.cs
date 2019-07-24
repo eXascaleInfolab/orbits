@@ -86,6 +86,7 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.MultiColumnDisjoint: return "mc-dj";
                 case ExperimentScenario.MultiColumnOverlap: return "mc-ol";
                 case ExperimentScenario.Fullrow: return "frow";
+                case ExperimentScenario.BlockSlide: return "bsld";
                 default: throw new InvalidDataException();
             }
         }
@@ -100,6 +101,7 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.MultiColumnDisjoint: return "multicolumn-disjoint";
                 case ExperimentScenario.MultiColumnOverlap: return "multicolumn-overlap";
                 case ExperimentScenario.Fullrow: return "blackout";
+                case ExperimentScenario.BlockSlide: return "blockslide";
                 default: throw new InvalidDataException();
             }
         }
@@ -114,6 +116,7 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.MultiColumnDisjoint: return "number of missing values";
                 case ExperimentScenario.MultiColumnOverlap: return "number of missing values";
                 case ExperimentScenario.Fullrow: return "number of missing rows";
+                case ExperimentScenario.BlockSlide: return "position of the block (% from top)";
                 default: throw new InvalidDataException();
             }
         }
@@ -126,6 +129,7 @@ namespace TestingFramework.Testing
             yield return ExperimentScenario.Length;
             yield return ExperimentScenario.Columns;
             yield return ExperimentScenario.Fullrow;
+            yield return ExperimentScenario.BlockSlide;
         }
         
         public static bool IsSingleColumn(this ExperimentScenario es)
@@ -146,7 +150,7 @@ namespace TestingFramework.Testing
 
     public enum ExperimentScenario
     {
-        Length, Missing, Columns, MultiColumnDisjoint, MultiColumnOverlap, Fullrow
+        Length, Missing, Columns, MultiColumnDisjoint, MultiColumnOverlap, Fullrow, BlockSlide
     }
 
     [ImmutableObject(true)]

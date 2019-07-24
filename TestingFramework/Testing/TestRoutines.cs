@@ -59,7 +59,10 @@ namespace TestingFramework.Testing
 
                         case ExperimentScenario.Fullrow:
                             return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).TakeWhile(x => (x + nlimit / 20) < nlimit).ToArray());
-                        
+
+                        case ExperimentScenario.BlockSlide:
+                            return (new[] {(0, -1, BlockSize * 2)}, Utils.ClosedSequence(5, 80, 5).ToArray());
+
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario");
                     }
@@ -112,7 +115,7 @@ namespace TestingFramework.Testing
                         case ExperimentScenario.Fullrow:
                             missingBlocks = Enumerable.Range(0, columns).Select(x => (x, nlimit - tcase, tcase)).ToArray();
                             break;
-                        
+
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario");
                     }
@@ -151,6 +154,10 @@ namespace TestingFramework.Testing
 
                         case ExperimentScenario.Fullrow:
                             missingBlocks = Enumerable.Range(0, columns).Select(col => (col, nlimit / 20, tcase)).ToArray();
+                            break;
+
+                        case ExperimentScenario.BlockSlide:
+                            missingBlocks[0].Item2 = (nlimit * tcase) / 100;
                             break;
                         
                         default:
