@@ -87,6 +87,8 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.MultiColumnOverlap: return "mc-ol";
                 case ExperimentScenario.Fullrow: return "frow";
                 case ExperimentScenario.BlockSlide: return "bsld";
+                case ExperimentScenario.McarElement: return "mcar-elem";
+                case ExperimentScenario.McarBlock: return "mcar-blck";
                 default: throw new InvalidDataException();
             }
         }
@@ -102,6 +104,8 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.MultiColumnOverlap: return "multicolumn-overlap";
                 case ExperimentScenario.Fullrow: return "blackout";
                 case ExperimentScenario.BlockSlide: return "blockslide";
+                case ExperimentScenario.McarElement: return "mcar-element";
+                case ExperimentScenario.McarBlock: return "mcar-block";
                 default: throw new InvalidDataException();
             }
         }
@@ -117,6 +121,8 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.MultiColumnOverlap: return "number of missing values";
                 case ExperimentScenario.Fullrow: return "number of missing rows";
                 case ExperimentScenario.BlockSlide: return "position of the block (% from top)";
+                case ExperimentScenario.McarElement: return "% of the values missing in all time series";
+                case ExperimentScenario.McarBlock: return "number of columns containing missing blocks";
                 default: throw new InvalidDataException();
             }
         }
@@ -130,12 +136,20 @@ namespace TestingFramework.Testing
             yield return ExperimentScenario.Columns;
             yield return ExperimentScenario.Fullrow;
             yield return ExperimentScenario.BlockSlide;
+            yield return ExperimentScenario.McarElement;
+            yield return ExperimentScenario.McarBlock;
         }
         
         public static bool IsSingleColumn(this ExperimentScenario es)
         {
             return es == ExperimentScenario.Missing || es == ExperimentScenario.Length ||
-                   es == ExperimentScenario.Columns;
+                   es == ExperimentScenario.Columns || es == ExperimentScenario.BlockSlide;
+        }
+        
+        public static bool HasBlackouts(this ExperimentScenario es)
+        {
+            return es == ExperimentScenario.Fullrow || es == ExperimentScenario.McarElement ||
+                   es == ExperimentScenario.McarBlock;
         }
     }
     public enum Experiment
@@ -150,7 +164,8 @@ namespace TestingFramework.Testing
 
     public enum ExperimentScenario
     {
-        Length, Missing, Columns, MultiColumnDisjoint, MultiColumnOverlap, Fullrow, BlockSlide
+        Length, Missing, Columns, MultiColumnDisjoint, MultiColumnOverlap,
+        Fullrow, BlockSlide, McarElement, McarBlock
     }
 
     [ImmutableObject(true)]

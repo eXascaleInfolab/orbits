@@ -14,6 +14,8 @@ namespace TestingFramework.Testing
         private const int TypicalN = 1000;
         private const int BlockSize = TypicalN / 10;
         private const int StartOffset = BlockSize / 2;
+
+        private const int RandomSeed = 58975;
         
         private static (ValueTuple<int, int, int>[], int[]) GetExperimentSetup(ExperimentType et, ExperimentScenario es,
             int nlimit)
@@ -62,6 +64,12 @@ namespace TestingFramework.Testing
 
                         case ExperimentScenario.BlockSlide:
                             return (new[] {(0, -1, BlockSize * 2)}, Utils.ClosedSequence(5, 80, 5).ToArray());
+                        
+                        case ExperimentScenario.McarElement:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 80, 10).ToArray());
+                        
+                        case ExperimentScenario.McarBlock:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(1, 12, 1).ToArray());
 
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario");
@@ -158,6 +166,163 @@ namespace TestingFramework.Testing
 
                         case ExperimentScenario.BlockSlide:
                             missingBlocks[0].Item2 = (nlimit * tcase) / 100;
+                            break;
+                        
+                        case ExperimentScenario.McarElement:
+                            List<(int, int, int)> missing2 = new List<(int, int, int)>();
+                            Random r = new Random(RandomSeed);
+
+                            List<(int, int)> missing = new List<(int, int)>();
+                            
+                            Dictionary<int, List<int>> columnIdx = new Dictionary<int, List<int>>();
+
+                            for (int i = 0; i < columns; i++)
+                            {
+                                columnIdx.Add(i, Enumerable.Range(0, nlimit).ToList());
+                            }
+                            
+                            for (int i = 0; i < (nlimit * columns * tcase) / 100; i++)
+                            {
+                                int col = r.Next(0, columnIdx.Count);
+                                col = columnIdx.Keys.ElementAt(col);
+                                int row = r.Next(0, columnIdx[col].Count);
+                                row = columnIdx[col][row];
+                                
+                                missing.Add((col, row));
+
+                                columnIdx[col].Remove(row);
+
+                                if (columnIdx[col].Count == 1) columnIdx.Remove(col);
+                            }
+
+                            missing = missing.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
+                            
+                            int currentCol = -1;
+                            int blockStart = -1;
+                            int lastIdx = -1;
+                            
+                            for (int i = 0; i < missing.Count; i++)
+                            {
+                                (int col, int row) = missing[i];
+                                
+                                if (currentCol == col) //same col
+                                {
+                                    if (lastIdx == -1) // start of new block
+                                    {
+                                        lastIdx = row;
+                                        blockStart = row;
+                                    }
+                                    else if (lastIdx != row - 1) // jump to the next block
+                                    {
+                                        missing2.Add((col, blockStart, lastIdx - blockStart + 1));
+
+                                        blockStart = lastIdx = row;
+                                    }
+                                    else
+                                    {
+                                        lastIdx = row;
+                                    }
+                                }
+                                else
+                                {
+                                    if (blockStart >= 0)
+                                    {
+                                        missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                                    }
+
+                                    blockStart = lastIdx = row;
+                                    currentCol = col;
+                                }
+                            }
+                            
+                            if (blockStart >= 0)
+                            {
+                                missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                            }
+
+                            missingBlocks = missing2.ToArray();
+                            break;
+                        
+                        case ExperimentScenario.McarBlock:
+                            const int mcar_block = 10;
+                            const int mcar_percentage = 10;
+                            List<(int, int, int)> missing2b = new List<(int, int, int)>();
+                            Random r2 = new Random(RandomSeed);
+
+                            int activeColumns = tcase; // 1..4 or 1..12
+
+                            List<(int, int)> missingb = new List<(int, int)>();
+                            
+                            Dictionary<int, List<int>> columnIdxb = new Dictionary<int, List<int>>();
+
+                            for (int i = 0; i < activeColumns; i++)
+                            {
+                                columnIdxb.Add(i, Enumerable.Range(0, nlimit / mcar_block).ToList());
+                            }
+                            
+                            for (int i = 0; i < (nlimit * activeColumns * mcar_percentage) / (100 * mcar_block); i++) // 100 for percentage adj
+                            {
+                                int col = r2.Next(0, columnIdxb.Count);
+                                col = columnIdxb.Keys.ElementAt(col);
+                                int row = r2.Next(0, columnIdxb[col].Count);
+                                row = columnIdxb[col][row];
+                                
+                                for (int j = 0; j < 10; j++)
+                                {
+                                    missingb.Add((col, 10 * row + j));
+                                }
+
+                                columnIdxb[col].Remove(row);
+
+                                if (columnIdxb[col].Count == 1) columnIdxb.Remove(col);
+                            }
+
+                            missingb = missingb.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
+                            
+                            int currentColb = -1;
+                            int blockStartb = -1;
+                            int lastIdxb = -1;
+                            
+                            for (int i = 0; i < missingb.Count; i++)
+                            {
+                                (int col, int row) = missingb[i];
+                                
+                                if (currentColb == col) //same col
+                                {
+                                    if (lastIdxb == -1) // start of new block
+                                    {
+                                        lastIdxb = row;
+                                        blockStartb = row;
+                                    }
+                                    else if (lastIdxb != row - 1) // jump to the next block
+                                    {
+                                        missing2b.Add((col, blockStartb, lastIdxb - blockStartb + 1));
+
+                                        blockStartb = lastIdxb = row;
+                                    }
+                                    else
+                                    {
+                                        lastIdxb = row;
+                                    }
+                                }
+                                else
+                                {
+                                    if (blockStartb >= 0)
+                                    {
+                                        missing2b.Add((currentColb, blockStartb, lastIdxb - blockStartb + 1));
+                                    }
+
+                                    blockStartb = lastIdxb = row;
+                                    currentColb = col;
+                                }
+                            }
+                            
+                            if (blockStartb >= 0)
+                            {
+                                missing2b.Add((currentColb, blockStartb, lastIdxb - blockStartb + 1));
+                            }
+
+                            missingBlocks = missing2b.ToArray();
                             break;
                         
                         default:
@@ -262,9 +427,14 @@ namespace TestingFramework.Testing
                     ? AlgoPack.ListAlgorithmsMulticolumn
                     : AlgoPack.ListAlgorithms;
 
-            if (es == ExperimentScenario.Fullrow)
+            if (es.HasBlackouts())
             {
-                algorithms = algorithms.Where(a => a != AlgoPack.Ssa && a != AlgoPack.Grouse);
+                algorithms = algorithms.Where(a => a != AlgoPack.Ssa && a != AlgoPack.Grouse && a != AlgoPack.MdIsvd);
+            }
+
+            if (es.HasBlackouts() && es != ExperimentScenario.Fullrow) //only mcars
+            {
+                algorithms = algorithms.Where(a => a != AlgoPack.Mrnn);
             }
             
             // exceptional cases
@@ -285,7 +455,7 @@ namespace TestingFramework.Testing
             
             int dataSetColumns = DataWorks.CountMatrixColumns($"{code}/{code}_normal.txt");
 
-            if (es == ExperimentScenario.MultiColumnDisjoint || es == ExperimentScenario.MultiColumnOverlap)
+            if (es == ExperimentScenario.MultiColumnDisjoint || es == ExperimentScenario.MultiColumnOverlap || es == ExperimentScenario.McarBlock)
             {
                 lengths = lengths.Take(dataSetColumns).ToArray();
             }
@@ -563,9 +733,14 @@ namespace TestingFramework.Testing
                         : AlgoPack.ListAlgorithms
                 );
 
-            if (es == ExperimentScenario.Fullrow)
+            if (es.HasBlackouts())
             {
-                algorithms = algorithms.Where(a => a != AlgoPack.Ssa && a != AlgoPack.Grouse);
+                algorithms = algorithms.Where(a => a != AlgoPack.Ssa && a != AlgoPack.Grouse && a != AlgoPack.MdIsvd);
+            }
+
+            if (es.HasBlackouts() && es != ExperimentScenario.Fullrow) //only mcars
+            {
+                algorithms = algorithms.Where(a => a != AlgoPack.Mrnn);
             }
             
             if (!File.Exists($"{DataWorks.FolderData}{code}/{code}_normal.txt"))

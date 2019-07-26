@@ -99,7 +99,7 @@ namespace TestingFramework
             var listStd = new List<Algorithm> {cdVersion};
 
             listStd.AddRange(new[] {AlgoPack.Stmvl, AlgoPack.Tkcm, AlgoPack.Spirit, AlgoPack.Nnmf, AlgoPack.Grouse});
-            listStd.AddRange(new[] {AlgoPack.ArImp, AlgoPack.Ssa, AlgoPack.Mrnn, AlgoPack.DynaMMo, AlgoPack.MdIsvd});// very new batch
+            listStd.AddRange(new[] {AlgoPack.ArImp, AlgoPack.Ssa, AlgoPack.Mrnn, AlgoPack.DynaMMo, AlgoPack.MdIsvd, AlgoPack.SvdImp});// very new batch
 
             if (!disableTrmf)
             {
@@ -133,6 +133,8 @@ namespace TestingFramework
                 codesLimited.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.Columns, c, 1000));
                 codesLimited.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.Fullrow, c, 1000));
                 codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.BlockSlide, c, 1000));
+                codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.McarElement, c, 1000));
+                codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.McarBlock, c, 1000));
             }
             void FullRuntime()
             {
@@ -149,6 +151,8 @@ namespace TestingFramework
                 codesLimited.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.Columns, c, 1000));
                 codesLimited.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.Fullrow, c, 1000));
                 codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.BlockSlide, c, 1000));
+                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.McarElement, c, 1000));
+                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.McarBlock, c, 1000));
             }
             void FullRuntimeReplot() //service method
             {

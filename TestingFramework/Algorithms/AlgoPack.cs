@@ -25,12 +25,13 @@ namespace TestingFramework.Algorithms
         public static readonly Algorithm Mrnn = new MRNNAlgorithm();
         public static readonly Algorithm DynaMMo = new DynaMMoAlgorithm();
         public static readonly Algorithm MdIsvd = new MDISVDAlgorithm();
+        public static readonly Algorithm SvdImp = new SVDImputeAlgorithm();
         
         //example:
         //    public static readonly Algorithm Example = new ExampleAlgorithm();
         
-        public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse, ArImp, Ssa, Mrnn, DynaMMo, MdIsvd };
-        public static Algorithm[] ListAlgorithmsMulticolumn = { Stmvl, InCd, Trmf, Nnmf, Grouse, ArImp, Mrnn, DynaMMo, MdIsvd };
+        public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse, ArImp, Ssa, Mrnn, DynaMMo, MdIsvd, SvdImp };
+        public static Algorithm[] ListAlgorithmsMulticolumn = { Stmvl, InCd, Trmf, Nnmf, Grouse, ArImp, Mrnn, DynaMMo, MdIsvd, SvdImp };
         public static Algorithm[] ListAlgorithmsStreaming = { InCd, Tkcm, Spirit, ArImp, Grouse, MdIsvd };
 
         public const int TypicalTruncation = 3;
@@ -199,6 +200,15 @@ namespace TestingFramework.Algorithms
     public partial class MDISVDAlgorithm
     {
         public override string AlgCode => "md-isvd";
+        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
+        protected override string SubFolderDataIn => "in/";
+        protected override string SubFolderDataOut => "out/";
+        public override bool IsPlottable => true;
+    }
+    
+    public partial class SVDImputeAlgorithm
+    {
+        public override string AlgCode => "svdimp";
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
