@@ -54,10 +54,10 @@ namespace TestingFramework.Testing
                             return (new[] {(0, StartOffset, BlockSize)}, Utils.ClosedSequence(4, 12).ToArray());
 
                         case ExperimentScenario.MultiColumnDisjoint:
-                            return (new[] {(0, StartOffset, -1)}, Utils.ClosedSequence(BlockSize, BlockSize * 8, BlockSize).ToArray());
+                            return (new[] {(0, StartOffset, -1)}, Utils.ClosedSequence(1, 4, 1).ToArray());
                         
                         case ExperimentScenario.MultiColumnOverlap:
-                            return (new[] {(0, StartOffset, -1)}, Utils.ClosedSequence(BlockSize, BlockSize * 8, BlockSize).ToArray());
+                            return (new[] {(0, StartOffset, -1)}, Utils.ClosedSequence(1, 4, 1).ToArray());
 
                         case ExperimentScenario.Fullrow:
                             return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).TakeWhile(x => (x + nlimit / 20) < nlimit).ToArray());
@@ -143,20 +143,20 @@ namespace TestingFramework.Testing
                             break;//nothing
                         
                         case ExperimentScenario.MultiColumnDisjoint:
-                            missingBlocks = Enumerable.Repeat(0, tcase / BlockSize).Select((_, idx) =>
+                            missingBlocks = Enumerable.Repeat(0, tcase).Select((_, idx) =>
                             {
                                 int col = idx;
-                                int start = StartOffset + idx * BlockSize;
-                                return (col, start, BlockSize);
+                                int start = BlockSize + idx * BlockSize * 2;
+                                return (col, start, BlockSize * 2);
                             }).ToArray();
                             break;
                         
                         case ExperimentScenario.MultiColumnOverlap: // OVERLAPPING; STAIRCASE PLACEMENT; x1.5
-                            missingBlocks = Enumerable.Repeat(0, tcase / BlockSize).Select((_, idx) =>
+                            missingBlocks = Enumerable.Repeat(0, tcase).Select((_, idx) =>
                             {
                                 int col = idx;
-                                int start = StartOffset + idx * BlockSize;
-                                return (col, start, (BlockSize * 3) / 2);
+                                int start = BlockSize + idx * BlockSize * 2;
+                                return (col, start, BlockSize * 3);
                             }).ToArray();
                             break;
 
