@@ -1,90 +1,34 @@
 # InCD_benchmark
 
 #### Repository structure
-- Algorithms - missing value recovery algorithms: CD, InCD, ST-MVL, TRMF, TKCM, SPIRIT, TeNMF, GROUSE.
+- Algorithms - missing value recovery algorithms: CD, InCD, ST-MVL, TRMF, TKCM, SPIRIT, TeNMF, GROUSE (SAGE as an online variant), OGDImpute, SSA, M-RNN, DynaMMo, MD_ISVD.
 - Datasets - different datasets and time series from different sources.
 - Testing Framework - a program to run automated suite of tests on the datasets with the algorithms mentioned above.
 
-Each directory contains its own README file with the descriptions of details.
+### Prerequisites and dependencies (Linux)
 
-#### List of dependencies
-
-- Ubuntu 14 and higher (or Ubuntu derivatives like Xubuntu, preferably 16 or higher)
-
-or
-- Supported version of macOS (10.11+)
-- Sudo rights on the user.
-- Download the repository as zip and extract.
-
-or
-- Open terminal in a folder you want to put the project to:
+- Ubuntu 16 and higher (or Ubuntu derivatives like Xubuntu)
+- Sudo rights on the user
+- Clone the repository
 ```bash
-    $ git init
     $ git clone https://github.com/eXascaleInfolab/InCD_bench-19.git
 ```
-- macOS only: if at `git init` step or any time later a prompt about developer tools appears, choose "install", then repeat the last command you tried.
-
-
-##### Dependencies for GNU/Linux
-
-- C/C++ compilers:
+- C/C++ compilers and linear algebra libraries:
 ```bash
-    $ sudo apt-get install build-essential
+    $ sudo apt-get install build-essential cmake libopenmpi-dev libopenblas-dev liblapack-dev libarmadillo-dev libmlpack-dev
 ```
-- C/C++ linear algebra libraries:
+- GNU Octave with C++ interop libraries, R to enable calculation of errors (MSE/RMSE, correlation), Gnuplot to enable recovery visualization and MSE plots:
 ```bash
-    $ sudo apt-get install cmake
-    $ sudo apt-get install libopenblas-dev
-    $ sudo apt-get install liblapack-dev
-    $ sudo apt-get install libarmadillo-dev
-    $ sudo apt-get install libmlpack-dev
+    $ sudo apt-get install octave-pkg-dev r-base gnuplot
 ```
-- Mono Runtime and Compiler: install `mono-devel` from the installation guide in https://www.mono-project.com/download/stable/ for your Ubuntu version and afterwards do:
-
+- Mono Runtime and Compiler: follow step 1 from the installation guide in https://www.mono-project.com/download/stable/ for your Ubuntu version and afterwards do:
 ```bash
     $ sudo apt-get install mono-devel
-    $ sudo apt-get update
-    $ sudo apt-get upgrade
-```
-- GNU Octave with C++ interop libraries:
-```bash
-    $ sudo apt-get install octave-pkg-dev
-```
-- R to enable calculation of errors (MSE/RMSE, correlation):
-```bash
-    $ sudo apt-get install r-base
-```
-- Gnuplot to enable recovery visualization (doesn't require R) and MSE plots (requires R as well):
-```bash
-    $ sudo apt-get install gnuplot
-```
-
-##### Dependencies for macOS
-
-- Homebrew ( https://brew.sh/ ), paste the following command into the terminal and follow the instructions:
-```bash
-    $ /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 - Python and python libraries:
 ```bash
-    $ brew install python2
-    $ pip2 install numpy
-    $ pip2 install scipy
-    $ pip2 install pandas
-    $ pip2 install sklearn
-```
-- Mono Runtime and Compiler. Open https://www.mono-project.com/download/stable/ and install the Visual Studio channel.
-- GNU Octave
-```bash
-    $ brew install octave
-```
-- R to enable calculation of errors (MSE/RMSE, correlation):
-```bash
-    $ brew install r
-```
-- Gnuplot to enable recovery visualization (doesn't require R) and MSE plots (requires R as well):
-```bash
-    $ brew install gnuplot
+    $ sudo apt install python-dev
+    $ pip2 install numpy scipy pandas sklearn tensorflow
 ```
 
 #### Build & tests
@@ -111,3 +55,46 @@ To add a dataset to the benchmark
 - - Requirements: >= 4 columns, >= 2'000 rows, column separator - empty space, row separator - newline
 - add `{name}` to the list of datasets in `TestingFramework/config.cfg`
 - `mono TestingFramework.exe`
+
+
+### Prerequisites and dependencies (macOS) -- Experimental
+
+- It's highly recommended to run the benchmark on linux, GUI is not necessary, everuthing is CLI-only. Output files with plots can be just copied afterwards to be viewed on any machine. If you don't have a possibility to run the benchmark on Linux, it's possible to make it work on macOS with a few caveats:
+- - TRMF algorithm doesn't work with octave on macOS, so it will be disabled.
+- - The installation can take a really long time. The longest processes are installation of LLVM with brew and compilation of mlpack since brew doesn't contain this one.
+- macOS 10.13 or higher, homebrew
+- Sudo rights on the user
+- Clone the repository
+```bash
+    $ xcode-select --install
+    $ git clone https://github.com/eXascaleInfolab/bench-vldb19.git
+```
+- C/C++ compilers and linear algebra libraries:
+```bash
+    $ brew update
+    $ brew install --force-bottle llvm
+    $ brew install cmake openblas lapack armadillo boost
+```
+- If you're running macOS 10.14 you also have to install C/C++ headers by typing the command below and going through the installation screen:
+```bash
+    $ open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
+```
+- MLPACK. After all of the above packages are installed, open terminal in the repository folder and build mlpack from source.
+```bash
+    $ chmod u+x mac_install_mlpack.sh
+    $ ./mac_install_mlpack.sh
+```
+- R to enable calculation of errors (MSE/RMSE, correlation), Gnuplot to enable recovery visualization and MSE plots:
+```bash
+    $ brew install R gnuplot
+```
+- Mono Runtime and Compiler: Install the package provided by Mono in https://www.mono-project.com/download/stable/
+- Python and python libraries:
+```bash
+    $ brew install python2
+    $ pip2 install numpy scipy pandas sklearn tensorflow
+```
+- Then building the project should be done with a different script
+```bash
+    $ python mac_build.py
+```
