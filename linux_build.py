@@ -11,7 +11,7 @@ def launchProcess(executable, args, workingDir):
 
 def execExists(executable):
     val = distutils.spawn.find_executable(executable);
-    return (val != None or val != '');
+    return (val != None);
 
 
 ### check for necessary dependencies
@@ -19,10 +19,12 @@ def execExists(executable):
 if not (execExists("gcc") and execExists("g++")):
     print "error: gcc or g++ are not detected in the system";
     print "aborting build";
+    exit();
 
 
 if not (execExists("msbuild") and execExists("mono")):
     print "error: mono and/or msbuild are not detected in the system";
+    print "if you're sure mono is installed, restart the terminal window"
     print "aborting build";
     exit();
 
