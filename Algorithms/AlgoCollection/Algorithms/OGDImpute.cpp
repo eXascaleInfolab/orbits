@@ -13,7 +13,7 @@ OGDImpute::OGDImpute(arma::mat &_X, uint64_t _p)
           ballK(std::vector<double>(p)),
           lastIdx(0)
 {
-    constexpr double inverseroot2 = 1 / sqrt(2.0);
+    const double inverseroot2 = 1 / sqrt(2.0);
     
     std::cout << "K = { ";
     for (uint64_t i = 0; i < p; ++i)
