@@ -79,11 +79,6 @@ To add a dataset to the benchmark
 ```bash
     $ open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
 ```
-- MLPACK. After all of the above packages are installed, open terminal in the repository folder and build mlpack from source.
-```bash
-    $ chmod u+x mac_install_mlpack.sh
-    $ ./mac_install_mlpack.sh
-```
 - R to enable calculation of errors (MSE/RMSE, correlation), Gnuplot to enable recovery visualization and MSE plots:
 ```bash
     $ brew install R gnuplot
