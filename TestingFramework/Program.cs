@@ -93,8 +93,8 @@ namespace TestingFramework
             Algorithm cdVersion = useBatchCd ? AlgoPack.Cd : AlgoPack.InCd;
 
             ignoreList = useBatchCd
-                ? ignoreList.Select(x => x == "incd" ? "cd" : x).ToList()
-                : ignoreList.Select(x => x == "cd" ? "incd" : x).ToList();
+                ? ignoreList.Select(x => x == "cdrec" ? "cd" : x).ToList()
+                : ignoreList.Select(x => x == "cd" ? "cdrec" : x).ToList();
 
             var listStd = new List<Algorithm> {cdVersion};
 
@@ -114,6 +114,8 @@ namespace TestingFramework
             listStd.Remove(AlgoPack.Spirit);
             listStd.Remove(AlgoPack.Ssa);
             AlgoPack.ListAlgorithmsMulticolumn = listStd.ToArray();
+
+            AlgoPack.ListAlgorithmsStreaming = AlgoPack.ListAlgorithmsStreaming.Where(x => !ignoreList.Contains(x.AlgCode.ToLower())).ToArray();
             
             AlgoPack.CleanUncollectedResults();
             AlgoPack.EnsureFolderStructure();
