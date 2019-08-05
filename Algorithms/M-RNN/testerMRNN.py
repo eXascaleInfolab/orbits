@@ -55,7 +55,7 @@ def mrnn_recov(matrix_in, matrix_out, runtime):
     #x = x[::-1]
 
     if runtime > 0:
-        np.savetxt(matrix_out, np.array([timev * 1000]))  # to ms
+        np.savetxt(matrix_out, np.array([timev * 1000 *1000]))  # to microsec
     else:
         np.savetxt(matrix_out, x)
 
