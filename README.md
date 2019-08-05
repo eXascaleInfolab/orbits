@@ -35,27 +35,31 @@
 #### Build & tests
 
 - Restart the terminal window after all the dependencies are installed. Open it in the root folder of the repository.
-- Build all the algorithms and Testing Framework using a script depending on your platform (the building takes ~1min):
+- Build all the algorithms and Testing Framework using a script in the root folder (takes around 1 minute):
 ```bash
-    (macOS)
-    $ python mac_build.py
-    (Linux)
     $ python linux_build.py
 ```
-- Open the command line in this folder and launch the tests from it:
+- Run the benchmark:
 ```bash
-    (from the root folder of the repository)
     $ cd TestingFramework/bin/Debug/
     $ mono TestingFramework.exe
 ```
+- Test suite will go over datasets one by one and executes all the scenarios for them with both precision test and runtime test. Plots folder in the root of the repository will be populated with the results.
+- Remark: full test suite with the default setup will take a sizeable amount of time to run (around 1 day depending on the hardware) and will produce up to 3GB of output files with all recovered data and plots unless stopped early.
 
-#### Custom datasets
+#### Customize datasets
 
 To add a dataset to the benchmark
 - import the file to `TestingFramework/bin/Debug/data/{name}/{name}_normal.txt`
-- - Requirements: >= 4 columns, >= 2'000 rows, column separator - empty space, row separator - newline
+- - Requirements: >= 10 columns, >= 1'000 rows, column separator - empty space, row separator - newline
 - add `{name}` to the list of datasets in `TestingFramework/config.cfg`
-- `mono TestingFramework.exe`
+
+#### Customize algorithms
+
+To exclude an algorithm from the benchmark
+- open the file `TestingFramework/config.cfg`
+- add an entry `IgnoreAlgorithms =` and specify the list of algorithm codes to exclude them
+- the line starting with `#IgnoreAlgorithms =` provides codes for all the algorithms in the benchmark
 
 
 ### Prerequisites and dependencies (macOS) -- Experimental
@@ -90,7 +94,20 @@ To add a dataset to the benchmark
     $ brew install python2
     $ pip2 install numpy scipy pandas sklearn tensorflow
 ```
-- Then building the project should be done with a different script
+
+#### Build & tests
+
+- Restart the terminal window after all the dependencies are installed. Open it in the root folder of the repository.
+- Build all the algorithms and Testing Framework using a script in the root folder (takes around 1 minute):
 ```bash
     $ python mac_build.py
 ```
+- Run the benchmark:
+```bash
+    $ cd TestingFramework/bin/Debug/
+    $ mono TestingFramework.exe
+```
+
+#### Customize datasets and algorithms
+
+The process is identical to Linux.
