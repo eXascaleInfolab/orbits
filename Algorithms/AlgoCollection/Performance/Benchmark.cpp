@@ -491,7 +491,7 @@ int64_t Recovery_SAGE_Streaming(arma::mat &mat, uint64_t truncation)
     end = std::chrono::steady_clock::now();
     
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (GROUSE/SAGE,stream): " << result << std::endl;
+    std::cout << "Time (SAGE,stream): " << result << std::endl;
     
     mat = std::move(before_streaming);
     verifyRecovery(mat);

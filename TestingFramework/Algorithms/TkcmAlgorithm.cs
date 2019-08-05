@@ -13,7 +13,7 @@ namespace TestingFramework.Algorithms
         public TkcmAlgorithm() : base(ref _init)
         { }
         
-        private static string Style => "linespoints lt 8 dt 4 lw 3 pt 4 lc rgbcolor \"green\" pointsize 2";
+        private static string Style => "linespoints lt 8 dt 1 lw 2 pt 5 lc rgbcolor \"dark-violet\" pointsize 1.2";
         
         public override IEnumerable<SubAlgorithm> EnumerateSubAlgorithms()
         {
