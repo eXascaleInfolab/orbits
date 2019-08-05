@@ -564,7 +564,7 @@ namespace TestingFramework.Testing
                 UpdateMissingBlocks(et, es, nlimit, tcase, ref missingBlocks, dataSetColumns);
 
                 int offset = (et == ExperimentType.Continuous && es == ExperimentScenario.Length) ? nlimit - tcase : 0;
-                DataWorks.GeneratePrecisionGnuPlot(algorithms, code, nlimit, tcase, missingBlocks, offset);
+                DataWorks.GeneratePrecisionGnuPlot(algorithms, code, nlimit, tcase, missingBlocks, et, offset);
             }
 
             string referenceData = $"{DataWorks.FolderResults}{code}_normal.txt";
@@ -632,7 +632,7 @@ namespace TestingFramework.Testing
             int start = lengths.First(), end = lengths.Last(), tick = lengths.Skip(1).First() - start;
             
             // mse
-            DataWorks.GenerateMseGnuPlot(algorithms, code, start, end, tick, es);
+            DataWorks.GenerateMseGnuPlot(algorithms, code, start, end, tick, es, et);
 
             string mseFile = rootDir + $"error/results/{code}_mse.plt";
             if (File.Exists(mseFile)) File.Delete(mseFile);

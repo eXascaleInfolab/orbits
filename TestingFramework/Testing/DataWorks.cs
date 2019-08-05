@@ -301,14 +301,14 @@ namespace TestingFramework.Testing
             }
         }
         
-        public static void GeneratePrecisionGnuPlot(IEnumerable<Algorithm> algorithms, string code, int nlimit, int tcase, (int, int, int)[] missingBlocks, int offset = 0)
+        public static void GeneratePrecisionGnuPlot(IEnumerable<Algorithm> algorithms, string code, int nlimit, int tcase, (int, int, int)[] missingBlocks, ExperimentType et, int offset = 0)
         {
             const string lineTemplate =
                 "'data/{len}/{algo_file}.txt' index 0 using 1:2 title '{algo_code}' with {algo_style}, \\";
 
             var allAlgos = new List<string>();
 
-            foreach (Algorithm alg in algorithms.Where(a => a.IsPlottable))
+            foreach (Algorithm alg in algorithms.Where(a => a.IsPlottable || et == ExperimentType.Streaming))
             {
                 foreach (var subAlgorithm in alg.EnumerateSubAlgorithms(tcase).Take(1)) // Take(1)
                 {
@@ -334,14 +334,14 @@ namespace TestingFramework.Testing
                 ("{allplots}", result));
         }
 
-        public static void GenerateMseGnuPlot(IEnumerable<Algorithm> algorithms, string code, int caseStart, int caseEnd, int caseTick, ExperimentScenario es)
+        public static void GenerateMseGnuPlot(IEnumerable<Algorithm> algorithms, string code, int caseStart, int caseEnd, int caseTick, ExperimentScenario es, ExperimentType et)
         {
             const string lineTemplate =
                 "'error/results/values/rmse/RMSE_{algo_file}.dat' index 0 using 1:2 title '{algo_code}' with {algo_style}, \\";
 
             var allAlgos = new List<string>();
 
-            foreach (Algorithm alg in algorithms.Where(a => a.IsPlottable))
+            foreach (Algorithm alg in algorithms.Where(a => a.IsPlottable || et == ExperimentType.Streaming))
             {
                 foreach (var subAlgorithm in alg.EnumerateSubAlgorithms())
                 {

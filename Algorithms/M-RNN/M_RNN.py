@@ -256,9 +256,6 @@ def M_RNN (trainZ, trainM, trainT, testZ, testM, testT):
             _, step_loss = sess.run([train, loss], feed_dict={M: np.transpose(np.dstack(trainM[:,:,f]),[1, 2, 0]), 
                                     Y: np.transpose(np.dstack(trainZ[:,:,f]),[1, 2, 0]),
                                     rnn._inputs: Input, rnn._inputs_rev: Input_Rev})
-            
-            if i % 100 == 0:
-                print("[step: {}] loss: {}".format(i, step_loss))
 
         #%% Fill in the missing values 
         #Train prediction
@@ -380,9 +377,6 @@ def M_RNN (trainZ, trainM, trainT, testZ, testM, testT):
     # Training step
     for i in range(iterations):
         _, step_loss = sess.run([train, loss], feed_dict={Y: col_trainZ, Z: col_rec_trainZ, M: col_trainM, keep_prob: 1.0})
-        
-        if i % 100 == 0:
-            print("[step: {}] loss: {}".format(i, step_loss))
 
         # Test step
     train_predict = sess.run(outputs, feed_dict={Y: col_trainZ, Z: col_rec_trainZ, M: col_trainM, keep_prob: 1.0})

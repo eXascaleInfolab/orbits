@@ -376,7 +376,7 @@ int64_t Recovery_CD_Streaming(arma::mat &mat, uint64_t truncation)
     end = std::chrono::steady_clock::now();
     
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (CDRec,stream): " << result << std::endl;
+    std::cout << "Time (InCD,stream): " << result << std::endl;
     
     mat = std::move(before_streaming);
     verifyRecovery(mat);

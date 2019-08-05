@@ -121,7 +121,6 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
-        public override bool IsPlottable => true;
     }
 
     public partial class SpiritAlgorithm
@@ -130,6 +129,7 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
+        public override bool IsPlottable => false;
     }
 
     public partial class StmvlAlgorithm
@@ -171,6 +171,7 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
+        public override bool IsPlottable => false;
     }
 
     public partial class SSAAlgorithm
@@ -195,6 +196,7 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
+        public override bool IsPlottable => false;
     }
     
     public partial class MDISVDAlgorithm
@@ -203,7 +205,7 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
-        public override bool IsPlottable => true;
+        public override bool IsPlottable => false;
     }
     
     public partial class SVDImputeAlgorithm
@@ -212,7 +214,7 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
-        public override bool IsPlottable => true;
+        public override bool IsPlottable => false;
     }
 
     /*///////////////////////////////////////////////////////////*/

@@ -101,6 +101,8 @@ def rmv_mydata(filename, matrix_in, matrix_out, runtime, k):
     for i in range(idx_train_end, idx_test_end, 1):
         mat[i] = predictions[i - idx_train_end]
 
+    print "Time (SSA):", (timev * 1000 * 1000)
+
     if runtime > 0:
         np.savetxt(matrix_out, np.array([timev * 1000 * 1000]))  # to microsec
     else:
