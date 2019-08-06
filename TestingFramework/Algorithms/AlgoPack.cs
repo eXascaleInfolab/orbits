@@ -178,7 +178,7 @@ namespace TestingFramework.Algorithms
     public partial class SSAAlgorithm
     {
         public override string AlgCode => "ssa";
-        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}tslib/";
+        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}ssa/tslib/";
         protected override string SubFolderDataIn => "data_in/";
         protected override string SubFolderDataOut => "data_out/";
     }
