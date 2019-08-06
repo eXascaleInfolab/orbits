@@ -45,7 +45,7 @@ mcar-element/{dataset}:
 
 mcar-block/{dataset}:
 - fixed data length (size=1000) and column count (size=max)
-- varying the percentage [10% to 100%, step 10%] of columns that will contain missing blocks; missing block have a static size=10 are introduced into involved time series at random until a total of 10% of all values from them are removed; removal is uniform except it ensures at least one element in each time series is left; PRNG seed is fixed so between runs the same elements are removed
+- varying the amount [1 to max, step 1] of columns that will contain missing blocks; missing block have a static size=10 are introduced into involved time series at random until a total of 10% of all values from them are removed; removal is uniform except it ensures at least one element in each time series is left; PRNG seed is fixed so between runs the same elements are removed
 
 ### Continuous
 
