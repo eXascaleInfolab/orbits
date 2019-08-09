@@ -28,8 +28,8 @@
 - Python and python libraries:
 ```bash
     $ sudo apt install python-dev python-pip
-    $ pip2 install numpy scipy pandas sklearn
-    $ pip2 install tensorflow
+    $ sudo pip2 install numpy scipy pandas sklearn
+    $ sudo pip2 install tensorflow
 ```
 
 #### Build & tests
