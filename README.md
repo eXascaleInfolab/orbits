@@ -65,7 +65,7 @@ To exclude an algorithm from the benchmark
 ### Prerequisites and dependencies (macOS) -- Experimental
 
 - The benchmark runs on macOS with a few caveats:
-- - TRMF algorithm is disabled  (Octave does not run on macOS).
+- - TRMF algorithm is disabled (it doesn't work under octave on macOS).
 - - The installation takes longer than Linux.
 - macOS 10.13 or higher, homebrew
 - Sudo rights on the user
