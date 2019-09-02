@@ -13,31 +13,18 @@
 ```bash
     $ git clone https://github.com/eXascaleInfolab/InCD_bench-19.git
 ```
-- C/C++ compilers and linear algebra libraries:
-```bash
-    $ sudo apt-get install build-essential cmake libopenmpi-dev libopenblas-dev liblapack-dev libarmadillo-dev libmlpack-dev
-```
-- GNU Octave with C++ interop libraries, R to enable calculation of errors (MSE/RMSE, correlation), Gnuplot to enable recovery visualization and MSE plots:
-```bash
-    $ sudo apt-get install octave-pkg-dev r-base gnuplot
-```
 - Mono Runtime and Compiler: follow step 1 from the installation guide in https://www.mono-project.com/download/stable/ for your Ubuntu version and afterwards do:
 ```bash
     $ sudo apt-get install mono-devel
 ```
-- Python and python libraries:
-```bash
-    $ sudo apt install python-dev python-pip
-    $ sudo pip2 install numpy scipy pandas sklearn
-    $ sudo pip2 install tensorflow
-```
+- All other prerequisites will be installed using a build script.
 
 #### Build & tests
 
 - Restart the terminal window after all the dependencies are installed. Open it in the root folder of the repository.
-- Build all the algorithms and Testing Framework using a script in the root folder (takes around 1 minute):
+- Build all the algorithms and Testing Framework using a script in the root folder (takes up to 5 minutes depending which prerequisites are already installed in the system):
 ```bash
-    $ python linux_build.py
+    $ sh install_linux.sh
 ```
 - Run the benchmark:
 ```bash
@@ -74,33 +61,19 @@ To exclude an algorithm from the benchmark
     $ xcode-select --install
     $ git clone https://github.com/eXascaleInfolab/bench-vldb19.git
 ```
-- C/C++ compilers and linear algebra libraries:
-```bash
-    $ brew update
-    $ brew install --force-bottle llvm
-    $ brew install cmake openblas lapack armadillo boost
-```
 - If you're running macOS 10.14 you also have to install C/C++ headers by typing the command below and going through the installation screen:
 ```bash
     $ open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
 ```
-- R to enable calculation of errors (MSE/RMSE, correlation), Gnuplot to enable recovery visualization and MSE plots:
-```bash
-    $ brew install R gnuplot
-```
 - Mono Runtime and Compiler: Install the package provided by Mono in https://www.mono-project.com/download/stable/
-- Python and python libraries:
-```bash
-    $ brew install python2
-    $ pip2 install numpy scipy pandas sklearn tensorflow
-```
+- All other prerequisites will be installed using a build script.
 
 #### Build & tests
 
 - Restart the terminal window after all the dependencies are installed. Open it in the root folder of the repository.
-- Build all the algorithms and Testing Framework using a script in the root folder (takes around 1 minute):
+- Build all the algorithms and Testing Framework using a script in the root folder (takes up to 10-12 minutes depending which prerequisites are already installed in the system):
 ```bash
-    $ python mac_build.py
+    $ sh install_mac.sh
 ```
 - Run the benchmark:
 ```bash
