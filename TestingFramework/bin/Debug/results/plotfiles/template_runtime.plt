@@ -9,7 +9,7 @@ set key above width -2 vertical maxrows 3
 set tmargin 4.0
 
 set xlabel "{descr}"
-set ylabel "running time (ms)" offset 1.5 
+set ylabel "running time (microseconds)" offset 1.5 
 
 plot\
 	{rt}

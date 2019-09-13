@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using TestingFramework.Algorithms;
 using TestingFramework.Testing;
 
@@ -11,6 +12,9 @@ namespace TestingFramework
     {
         private static void Main(string[] args)
         {
+            // technical
+            Console.CancelKeyPress += InterruptHandler;
+            
             string[] codes = null;
             string[] codesLimited = null;
 
@@ -22,7 +26,9 @@ namespace TestingFramework
                     : Utils.ReadConfigFile(args[0]);
 
             bool disableTrmf = false;
-            bool useBatchCd = false;
+
+            bool runPrecision = true;
+            bool runRuntime = true;
 
             foreach (KeyValuePair<string,string> entry in config)
             {
@@ -52,20 +58,20 @@ namespace TestingFramework
                         EnumMethods.EnableContinuous = Convert.ToBoolean(entry.Value);
                         break;
                     
-                    case "EnableMulticolumn":
-                        EnumMethods.EnableMulticolumn = Convert.ToBoolean(entry.Value);
-                        break;
-                    
                     case "DisableTrmf":
                         disableTrmf = Convert.ToBoolean(entry.Value);
-                        break;
-                        
-                    case "UseBatchCd":
-                        useBatchCd = Convert.ToBoolean(entry.Value);
                         break;
 
                     case "IgnoreAlgorithms":
                         ignoreList.AddRange(entry.Value.Split(',').Select(x => x.Trim().ToLower()));
+                        break;
+                    
+                    case "DisablePrecision":
+                        runPrecision = !Convert.ToBoolean(entry.Value);
+                        break;
+                    
+                    case "DisableRuntime":
+                        runRuntime = !Convert.ToBoolean(entry.Value);
                         break;
                     
                     default:
@@ -74,7 +80,7 @@ namespace TestingFramework
                 }
             }
             
-            // verificaiton that all necessary entries are provided
+            // verification that all necessary entries are provided
             if (DataWorks.FolderPlotsRemoteBase == null)
             {
                 throw new InvalidProgramException("Invalid config file: plots folder has to be supplied (PlotsFolder=)");
@@ -89,117 +95,66 @@ namespace TestingFramework
             {
                 throw new InvalidProgramException("Invalid config file: datasets are not supplied (Datasets=) or the list is empty");
             }
-
-            Algorithm cdVersion = useBatchCd ? AlgoPack.Cd : AlgoPack.InCd;
-
-            ignoreList = useBatchCd
-                ? ignoreList.Select(x => x == "cdrec" ? "cd" : x).ToList()
-                : ignoreList.Select(x => x == "cd" ? "cdrec" : x).ToList();
-
-            var listStd = new List<Algorithm> {cdVersion};
-
-            listStd.AddRange(new[] {AlgoPack.Stmvl, AlgoPack.Tkcm, AlgoPack.Spirit, AlgoPack.Nnmf, AlgoPack.Grouse});
-            listStd.AddRange(new[] {AlgoPack.ArImp, AlgoPack.Ssa, AlgoPack.Mrnn, AlgoPack.DynaMMo, AlgoPack.MdIsvd, AlgoPack.SvdImp});// very new batch
-
-            if (!disableTrmf)
+            
+            if (disableTrmf)
             {
-                listStd.Add(AlgoPack.Trmf);
+                ignoreList.Add(AlgoPack.Trmf.AlgCode.ToLower()); // possible duplicate, but it doesn't matter
             }
 
-            listStd = listStd.Where(x => !ignoreList.Contains(x.AlgCode.ToLower())).ToList();
-            
-            AlgoPack.ListAlgorithms = listStd.ToArray();
-
-            listStd.Remove(AlgoPack.Tkcm);
-            listStd.Remove(AlgoPack.Spirit);
-            listStd.Remove(AlgoPack.Ssa);
-            AlgoPack.ListAlgorithmsMulticolumn = listStd.ToArray();
-
-            AlgoPack.ListAlgorithmsStreaming = AlgoPack.ListAlgorithmsStreaming.Where(x => !ignoreList.Contains(x.AlgCode.ToLower())).ToArray();
+            AlgoPack.ListAlgorithms = AlgoPack.ListAlgorithms.Where(x => !ignoreList.Contains(x.AlgCode.ToLower())).ToArray();
+            AlgoPack.ListAlgorithmsStreaming = AlgoPack.ListAlgorithms.Where(x => x.IsStreaming).ToArray();
+            AlgoPack.ListAlgorithmsMulticolumn = AlgoPack.ListAlgorithms.Where(x => x.IsMulticolumn).ToArray();
             
             AlgoPack.CleanUncollectedResults();
             AlgoPack.EnsureFolderStructure();
             
-            void FullPrecision()
+            void FullRun(bool enablePrecision, bool enableRuntime)
             {
-                if (EnumMethods.EnableContinuous)
+                foreach (string code in codes)
                 {
-                    codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Continuous, ExperimentScenario.Missing, c, 1000));
-                    codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Continuous, ExperimentScenario.Length, c, 2000));
-                    codesLimited.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Continuous, ExperimentScenario.Columns, c, 1000));
-                    codesLimited.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Continuous, ExperimentScenario.Fullrow, c, 1000));
-                }
+                    if (EnumMethods.EnableContinuous)
+                    {
+                        foreach (ExperimentScenario es in EnumMethods.AllExperimentScenarios().Where(EnumMethods.IsContinuous))
+                        {
+                            if (es.IsLimited() && !codesLimited.Contains(code)) continue;
+                            if (enablePrecision) TestRoutines.PrecisionTest(ExperimentType.Continuous, es, code);
+                            if (enableRuntime) TestRoutines.RuntimeTest(ExperimentType.Continuous, es, code);
+                        }
+                    }
+                    
+                    foreach (ExperimentScenario es in EnumMethods.AllExperimentScenarios().Where(EnumMethods.IsBatchMid))
+                    {
+                        if (es.IsLimited() && !codesLimited.Contains(code)) continue;
+                        if (enablePrecision) TestRoutines.PrecisionTest(ExperimentType.Recovery, es, code);
+                        if (enableRuntime) TestRoutines.RuntimeTest(ExperimentType.Recovery, es, code);
+                    }
 
-                codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.Missing, c, 1000));
-                codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.Length, c, 2000));
-                codesLimited.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.Columns, c, 1000));
-                codesLimited.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.Fullrow, c, 1000));
-                codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.BlockSlide, c, 1000));
-                codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.McarElement, c, 1000));
-                codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.McarBlock, c, 1000));
-            }
-            void FullRuntime()
-            {
-                if (EnumMethods.EnableContinuous)
-                {
-                    codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Continuous, ExperimentScenario.Missing, c, 1000));
-                    codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Continuous, ExperimentScenario.Length, c, 2000));
-                    codesLimited.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Continuous, ExperimentScenario.Columns, c, 1000));
-                    codesLimited.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Continuous, ExperimentScenario.Fullrow, c, 1000));
+                    if (EnumMethods.EnableStreaming)
+                    {
+                        foreach (ExperimentScenario es in EnumMethods.AllExperimentScenarios().Where(EnumMethods.IsStreaming))
+                        {
+                            if (es.IsLimited() && !codesLimited.Contains(code)) continue;
+                            if (enablePrecision) TestRoutines.PrecisionTest(ExperimentType.Streaming, es, code);
+                            if (enableRuntime) TestRoutines.RuntimeTest(ExperimentType.Streaming, es, code);
+                        }
+                    }
                 }
-
-                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.Missing, c, 1000));
-                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.Length, c, 2000));
-                codesLimited.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.Columns, c, 1000));
-                codesLimited.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.Fullrow, c, 1000));
-                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.BlockSlide, c, 1000));
-                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.McarElement, c, 1000));
-                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.McarBlock, c, 1000));
             }
             void FullRuntimeReplot() //service method
             {
                 if (EnumMethods.EnableContinuous)
                 {
-                    codes.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Continuous, ExperimentScenario.Missing, c, 1000));
-                    codes.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Continuous, ExperimentScenario.Length, c, 2000));
-                    codesLimited.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Continuous, ExperimentScenario.Columns, c, 1000));
-                    codesLimited.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Continuous, ExperimentScenario.Fullrow, c, 1000));
+                    codes.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Continuous, ExperimentScenario.Missing, c));
+                    codes.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Continuous, ExperimentScenario.Length, c));
+                    codesLimited.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Continuous, ExperimentScenario.Columns, c));
                 }
 
-                codes.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Recovery, ExperimentScenario.Missing, c, 1000));
-                codes.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Recovery, ExperimentScenario.Length, c, 2000));
-                codesLimited.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Recovery, ExperimentScenario.Columns, c, 1000));
-                codesLimited.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Recovery, ExperimentScenario.Fullrow, c, 1000));
-                codes.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Recovery, ExperimentScenario.BlockSlide, c, 1000));
-            }
-            void FullStreaming()
-            {
-                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Streaming, ExperimentScenario.Missing, c, 1000));
-                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Streaming, ExperimentScenario.Length, c, 2000));
-                codesLimited.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Streaming, ExperimentScenario.Columns, c, 1000));
-            }
-            void FullMulticolumn()
-            {
-                codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.MultiColumnDisjoint, c, 1000));
-                codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.MultiColumnOverlap, c, 1000));
-                
-                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.MultiColumnDisjoint, c, 1000));
-                codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.MultiColumnOverlap, c, 1000));
+                codes.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Recovery, ExperimentScenario.Missing, c));
+                codes.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Recovery, ExperimentScenario.Length, c));
+                codesLimited.ForEach(c => TestRoutines.RuntimeTestReplot(ExperimentType.Recovery, ExperimentScenario.Columns, c));
             }
             
-            if (EnumMethods.EnableStreaming) FullStreaming();
-            
-            FullPrecision();
-            
-            FullRuntime();
-            
-            if (EnumMethods.EnableMulticolumn) FullMulticolumn();
-            
-            //codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Recovery, ExperimentScenario.MissingMultiColumn, c, 1000));
-            //codes.ForEach(c => TestRoutines.RuntimeTest(ExperimentType.Continuous, ExperimentScenario.MissingMultiColumn, c, 2000));
-            
-            //codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Recovery, ExperimentScenario.MissingMultiColumn, c, 1000));
-            //codes.ForEach(c => TestRoutines.PrecisionTest(ExperimentType.Continuous, ExperimentScenario.MissingMultiColumn, c, 1000));
+            FullRun(runPrecision, runRuntime);
             
             //
             // multi-run for 1...N runtime tests and averaging the results from them
@@ -207,7 +162,7 @@ namespace TestingFramework
 
             #if false
             {
-                for (int i = 1; i <= 5; i++)
+                for (int i = 1; i <= 3; i++)
                 {
                     DataWorks.FolderPlotsRemote = DataWorks.FolderPlotsRemoteBase + i + "/";
                     if (!Directory.Exists(DataWorks.FolderPlotsRemote))
@@ -224,10 +179,7 @@ namespace TestingFramework
     
             //SingularExperiments.AverageRTRuns(codes, codesLimited, 5);
             #endif
-
-            //SingularExperiments.MsePerformanceReport(codes, codesLimited);
-            //SingularExperiments.RMSE("~/MVR/CD-RMV/incCD/_data/out/cdmvr200_k3.txt", "~/Downloads/bafu_int.csv", (0, 50, 100));
-
+            
             #if false
             {
                 string cmptype = "meaninit_vert";
@@ -248,8 +200,8 @@ namespace TestingFramework
             
             #if false
             {
-                //var data = DataWorks.TimeSeries("BAFU", "*.asc", 3, Utils.Specific.ParseWasserstand, new DateTime(2005, 1, 1), true);
-                //DataWorks.TimeSeriesMerge(data, "BAFU_total.txt");
+                var data = DataWorks.TimeSeries("BAFU", "*.asc", 3, Utils.Specific.ParseWasserstand, new DateTime(2005, 1, 1), true);
+                DataWorks.TimeSeriesMerge(data, "BAFU_total.txt");
             }
             #endif
 
@@ -262,7 +214,7 @@ namespace TestingFramework
             {
                 var writer = new Utils.ContinuousWriter();
 
-                writer.WriteLine($"====={Environment.NewLine}The following delayed warnings were recorded:" +
+                writer.WriteLine($"====={Environment.NewLine}The following delayed warnings were recorded by Testing Framework:" +
                                  $"{Environment.NewLine}===={Environment.NewLine}");
 
                 writer.Indent();
@@ -274,5 +226,12 @@ namespace TestingFramework
             }
             Console.WriteLine("--- END ---");
         }
+
+        private static void InterruptHandler(object sender, ConsoleCancelEventArgs args)
+        {
+            Console.WriteLine("--- Ctrl+C received ---");
+            FinalSequence();
+        }
+
     }
 }

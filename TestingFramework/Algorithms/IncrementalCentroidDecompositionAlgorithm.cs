@@ -10,7 +10,7 @@ namespace TestingFramework.Algorithms
 {
     public partial class IncrementalCentroidDecompositionAlgorithm : Algorithm
     {
-        public List<int> KList = new List<int>(new[] { 3, 2, 1 });
+        public List<int> KList = new List<int>(new[] { 3, 2 });
 
         private static bool _init = false;
         public IncrementalCentroidDecompositionAlgorithm() : base(ref _init)
@@ -22,7 +22,7 @@ namespace TestingFramework.Algorithms
         }
 
         private static string StyleOf(int k) =>
-            "linespoints lt 8 dt " + (k == 3 ? 1 : (k == 2 ? 2 : 4)) + " lw 2 pt 7 lc rgbcolor \"blue\" pointsize 1.2";
+            "linespoints lt 8 lw 3 pt 7 lc rgbcolor \"" + (k == 2 ? "blue" : "cyan") + $"\" pointsize 1.2";
 
         public override IEnumerable<SubAlgorithm> EnumerateSubAlgorithms()
         {
@@ -37,39 +37,13 @@ namespace TestingFramework.Algorithms
         protected override void PrecisionExperiment(ExperimentType et, ExperimentScenario es,
             DataDescription data, int tcase)
         {
-            KList.ForEach(k => RunCd(GetCdProcess(data.N, data.M, data, tcase, k)));
-        }
-
-        private Process GetCdProcess(int n, int m, DataDescription data, int len, int k)
-        {
-            Process cdproc = new Process();
-
-            cdproc.StartInfo.WorkingDirectory = EnvPath;
-            cdproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            cdproc.StartInfo.CreateNoWindow = true;
-            cdproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            cdproc.StartInfo.UseShellExecute = false;
-
-            cdproc.StartInfo.Arguments = $"-alg cd -test o -n {n} -m {m} -k {k} " +
-                                         $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                         $"-out ./{SubFolderDataOut}{AlgCode}{len}_k{k}.txt";
-
-            return cdproc;
-        }
-
-        private void RunCd(Process cdproc)
-        {
-            cdproc.Start();
-            cdproc.WaitForExit();
-            
-            if (cdproc.ExitCode != 0)
+            if (et == ExperimentType.Streaming)
             {
-                string errText =
-                    $"[WARNING] CD returned code {cdproc.ExitCode} on exit.{Environment.NewLine}" +
-                    $"CLI args: {cdproc.StartInfo.Arguments}";
-                
-                Console.WriteLine(errText);
-                Utils.DelayedWarnings.Enqueue(errText);
+                KList.ForEach(k => Run(GetOnlineProcess(data, tcase, k, Experiment.Precision)));
+            }
+            else
+            {
+                KList.ForEach(k => Run(GetOfflineProcess(data, tcase, k, Experiment.Precision)));
             }
         }
 
@@ -78,12 +52,38 @@ namespace TestingFramework.Algorithms
         {
             if (et == ExperimentType.Streaming)
             {
-                KList.ForEach(k => RunCd(GetStreamingCdProcess(data.N, data.M, data, tcase, k)));
+                KList.ForEach(k => Run(GetOnlineProcess(data, tcase, k, Experiment.Runtime)));
             }
             else
             {
-                KList.ForEach(k => RunCd(GetRuntimeCdProcess(data.N, data.M, data, tcase, k)));
+                KList.ForEach(k => Run(GetOfflineProcess(data, tcase, k, Experiment.Runtime)));
             }
+        }
+
+        private Process GetOfflineProcess(DataDescription data, int len, int k, Experiment ex)
+        {
+            string test = ex == Experiment.Precision ? "o" : "rt";
+            Process proc = TemplateProcess();
+            proc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
+            
+            proc.StartInfo.Arguments = $"-alg cd -test {test} -n {data.N} -m {data.M} -k {k} " +
+                                         $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
+                                         $"-out ./{SubFolderDataOut}{AlgCode}{len}_k{k}.txt";
+
+            return proc;
+        }
+
+        private Process GetOnlineProcess(DataDescription data, int len, int k, Experiment ex)
+        {
+            string test = ex == Experiment.Precision ? "o" : "rt";
+            Process proc = TemplateProcess();
+            proc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
+
+            proc.StartInfo.Arguments = $"-alg cd -test {test} -n {data.N} -m {data.M} -k {k} " +
+                                         $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
+                                         $"-out ./{SubFolderDataOut}{AlgCode}{len}_k{k}.txt" + " -xtra stream";
+
+            return proc;
         }
 
         public override void GenerateData(string sourceFile, string code, int tcase, (int, int, int)[] missingBlocks,
@@ -123,40 +123,6 @@ namespace TestingFramework.Algorithms
             
             if (File.Exists(destination)) File.Delete(destination);
             File.AppendAllText(destination, data.ToString());
-        }
-
-        private Process GetRuntimeCdProcess(int n, int m, DataDescription data, int len, int k)
-        {
-            Process cdproc = new Process();
-
-            cdproc.StartInfo.WorkingDirectory = EnvPath;
-            cdproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            cdproc.StartInfo.CreateNoWindow = true;
-            cdproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            cdproc.StartInfo.UseShellExecute = false;
-
-            cdproc.StartInfo.Arguments = $"-alg cd -test rt -n {n} -m {m} -k {k} " +
-                                         $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                         $"-out ./{SubFolderDataOut}{AlgCode}{len}_k{k}.txt";
-
-            return cdproc;
-        }
-        
-        private Process GetStreamingCdProcess(int n, int m, DataDescription data, int len, int k)
-        {
-            Process cdproc = new Process();
-
-            cdproc.StartInfo.WorkingDirectory = EnvPath;
-            cdproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            cdproc.StartInfo.CreateNoWindow = true;
-            cdproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            cdproc.StartInfo.UseShellExecute = false;
-
-            cdproc.StartInfo.Arguments = $"-alg cd -test rt -n {n} -m {m} -k {k} " +
-                                         $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                         $"-out ./{SubFolderDataOut}{AlgCode}{len}_k{k}.txt" + " -xtra stream";
-
-            return cdproc;
         }
     }
 }

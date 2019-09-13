@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using TestingFramework.Algorithms;
@@ -11,86 +10,113 @@ namespace TestingFramework.Testing
     {
         #region Configuration
 
-        private const int TypicalN = 1000;
-        private const int BlockSize = TypicalN / 10;
-        private const int StartOffset = BlockSize / 2;
-
         private const int RandomSeed = 58975;
         
         private static (ValueTuple<int, int, int>[], int[]) GetExperimentSetup(ExperimentType et, ExperimentScenario es,
-            int nlimit)
+            int rows, int columns)
         {
+            int blockSize;
+            int startOffset;
+            int stepSize;
+            
             switch (et)
             {
+                case ExperimentType.Streaming:
+                    switch (es)
+                    {
+                        case ExperimentScenario.McarTsBlock:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
+                        
+                        case ExperimentScenario.McarTsMultiBlock:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
+                    }
+                    goto case ExperimentType.Continuous;
+                    
                 case ExperimentType.Continuous:
                     switch (es)
                     {
+                        // single-column
                         case ExperimentScenario.Missing:
-                            return (new[] {(0, -1, -1)}, Utils.ClosedSequence(BlockSize, BlockSize * 8, BlockSize).ToArray());
+                            blockSize = rows / 10;
+                            return (new[] {(0, -1, -1)}, Utils.ClosedSequence(blockSize, blockSize * 8, blockSize).ToArray());
                         
                         case ExperimentScenario.Length:
-                            return (new[] {(0, -1, BlockSize)}, Utils.ClosedSequence(200, nlimit, 200).ToArray());
+                            blockSize = rows / 10;
+                            stepSize = rows / 10;
+                            return (new[] {(0, -1, blockSize)}, Utils.ClosedSequence(2 * stepSize, rows, stepSize).ToArray());
                         
                         case ExperimentScenario.Columns:
-                            return (new[] {(0, nlimit - BlockSize, BlockSize)}, Utils.ClosedSequence(4, 12).ToArray());
-
-                        case ExperimentScenario.Fullrow:
-                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).TakeWhile(x => x + 10 < nlimit).ToArray());
+                            blockSize = rows / 10;
+                            stepSize = columns / 10;
+                            return (new[] {(0, rows - blockSize, blockSize)}, Utils.ClosedSequence(
+                                stepSize >= AlgoPack.TypicalTruncation + 1 ? stepSize : AlgoPack.TypicalTruncation + 1, columns, stepSize
+                            ).ToArray());
+                        
+                        // full
+                        case ExperimentScenario.Blackout:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).TakeWhile(x => x + 10 < rows).ToArray());
+                        
+                        case ExperimentScenario.IncreasingBlockCount:
+                            blockSize = rows / 10;
+                            stepSize = columns / 10;
+                            return (new[] {(0, rows - blockSize, blockSize)}, Utils.ClosedSequence(stepSize, columns, stepSize).ToArray());
 
                         default:
-                            throw new ArgumentException("Unrecognized experiment scenario");
+                            throw new ArgumentException("Unrecognized experiment scenario or an incompatible combination with experiment type");
                     }
                     
                 case ExperimentType.Recovery:
                     switch (es)
                     {
+                        // single-column
                         case ExperimentScenario.Missing:
-                            return (new[] {(0, StartOffset, -1)}, Utils.ClosedSequence(BlockSize, BlockSize * 8, BlockSize).ToArray());
-                        
-                        case ExperimentScenario.Length:
-                            return (new[] {(0, StartOffset, BlockSize)}, Utils.ClosedSequence(200, nlimit, 200).ToArray());
-                        
-                        case ExperimentScenario.Columns:
-                            return (new[] {(0, StartOffset, BlockSize)}, Utils.ClosedSequence(4, 12).ToArray());
-
-                        case ExperimentScenario.MultiColumnDisjoint:
-                            return (new[] {(0, StartOffset, -1)}, Utils.ClosedSequence(1, 4, 1).ToArray());
-                        
-                        case ExperimentScenario.MultiColumnOverlap:
-                            return (new[] {(0, StartOffset, -1)}, Utils.ClosedSequence(1, 4, 1).ToArray());
-
-                        case ExperimentScenario.Fullrow:
-                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).TakeWhile(x => (x + nlimit / 20) < nlimit).ToArray());
-
-                        case ExperimentScenario.BlockSlide:
-                            return (new[] {(0, -1, BlockSize * 2)}, Utils.ClosedSequence(5, 80, 5).ToArray());
-                        
-                        case ExperimentScenario.McarElement:
-                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 80, 10).ToArray());
-                        
-                        case ExperimentScenario.McarBlock:
-                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(1, 12, 1).ToArray());
-
-                        default:
-                            throw new ArgumentException("Unrecognized experiment scenario");
-                    }
-                
-                case ExperimentType.Streaming:
-                    switch (es)
-                    {
-                        case ExperimentScenario.Missing:
-                            return (new[] {(0, -1, -1)}, Utils.ClosedSequence(BlockSize, BlockSize * 8, BlockSize).ToArray());
-                        
-                        case ExperimentScenario.Length:
-                            return (new[] {(0, -1, 100)}, Utils.ClosedSequence(200, nlimit, 200).ToArray());
-                        
-                        case ExperimentScenario.Columns:
-                            return (new[] {(0, nlimit - BlockSize, BlockSize)}, Utils.ClosedSequence(4, 12).ToArray());
-                        
-                        case ExperimentScenario.MultiColumnOverlap:
-                        case ExperimentScenario.MultiColumnDisjoint:
-                            throw new ArgumentException("Multicolumn is unsupported for streaming test");
+                            blockSize = rows / 10;
+                            startOffset = rows / 20;
+                            return (new[] {(0, startOffset, -1)}, Utils.ClosedSequence(blockSize, blockSize * 8, blockSize).ToArray());
                             
+                        case ExperimentScenario.Length:
+                            blockSize = rows / 10;
+                            stepSize = rows / 10;
+                            startOffset = rows / 20;
+                            return (new[] {(0, startOffset, blockSize)}, Utils.ClosedSequence(2 * stepSize, rows, stepSize).ToArray());
+                            
+                        case ExperimentScenario.Columns:
+                            blockSize = rows / 10;
+                            stepSize = columns / 10;
+                            startOffset = rows / 20;
+                            return (new[] {(0, startOffset, blockSize)}, Utils.ClosedSequence(stepSize >= 4 ? stepSize : 4, columns, stepSize).ToArray());
+                        
+                        case ExperimentScenario.BlockSlide:
+                            blockSize = rows / 5;
+                            return (new[] {(0, -1, blockSize)}, Utils.ClosedSequence(5, 80, 5).ToArray());
+                            
+                        
+                        // full
+                        case ExperimentScenario.Blackout:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).TakeWhile(x => (x + rows / 20) < rows).ToArray());
+                        
+                        // multi-column
+                        case ExperimentScenario.MulticolDisjoint:
+                            stepSize = columns / 10;
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(stepSize, stepSize * 10, stepSize).Skip(1).ToArray());
+                            
+                        case ExperimentScenario.MulticolOverlap:
+                            stepSize = columns / 10;
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(stepSize, stepSize * 10, stepSize).ToArray());
+                        
+                        // random
+                        case ExperimentScenario.McarMatrixBlock:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 50, 10).ToArray());
+
+                        case ExperimentScenario.McarTsBlock:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
+
+                        case ExperimentScenario.McarTsMultiBlock:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
+
+                        case ExperimentScenario.McarTsElement:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
+
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario");
                     }
@@ -100,111 +126,82 @@ namespace TestingFramework.Testing
             }
         }
 
-        private static void UpdateMissingBlocks(ExperimentType et, ExperimentScenario es, int nlimit,
+        private static void UpdateMissingBlocks(ExperimentType et, ExperimentScenario es, int rows,
             int tcase, ref ValueTuple<int, int, int>[] missingBlocks, int columns)
         {
+            int MulticolBlockSize = rows / columns;
+            
             switch (et)
             {
-                case ExperimentType.Continuous:
+                case ExperimentType.Streaming:
                     switch (es)
                     {
-                        case ExperimentScenario.Missing:
-                            missingBlocks[0].Item3 = tcase;
-                            missingBlocks[0].Item2 = nlimit - tcase;
-                            break;
-                        
-                        case ExperimentScenario.Length:
-                            missingBlocks[0].Item2 = tcase - missingBlocks[0].Item3;
-                            break;
+                        case ExperimentScenario.McarTsBlock:
+                        {
+                            Random r = new Random(RandomSeed);
+                            
+                            int start_lock = rows - rows / 10;
+                            const int mcar_percentage = 1; // 1% of total data
+                            int mcar_block = (rows * mcar_percentage) / 100; // matches init
 
-                        case ExperimentScenario.Columns:
-                            break;//nothing
-
-                        case ExperimentScenario.Fullrow:
-                            missingBlocks = Enumerable.Range(0, columns).Select(x => (x, nlimit - tcase, tcase)).ToArray();
-                            break;
-
-                        default:
-                            throw new ArgumentException("Unrecognized experiment scenario");
-                    }
-                    break;
-                    
-                case ExperimentType.Recovery:
-                    switch (es)
-                    {
-                        case ExperimentScenario.Missing:
-                            missingBlocks[0].Item3 = tcase;
-                            break;
-                        
-                        case ExperimentScenario.Length:
-                            break;//nothing
-
-                        case ExperimentScenario.Columns:
-                            break;//nothing
-                        
-                        case ExperimentScenario.MultiColumnDisjoint:
-                            missingBlocks = Enumerable.Repeat(0, tcase).Select((_, idx) =>
+                            missingBlocks = Enumerable.Range(0, columns * tcase / 100).Select(x =>
                             {
-                                int col = idx;
-                                int start = BlockSize + idx * BlockSize * 2;
-                                return (col, start, BlockSize * 2);
+                                int start = r.Next(start_lock, rows - mcar_block);
+                                return (x, start, mcar_block);
                             }).ToArray();
-                            break;
+                            
+                            return;
+                        }
                         
-                        case ExperimentScenario.MultiColumnOverlap: // OVERLAPPING; STAIRCASE PLACEMENT; x1.5
-                            missingBlocks = Enumerable.Repeat(0, tcase).Select((_, idx) =>
-                            {
-                                int col = idx;
-                                int start = BlockSize + idx * BlockSize * 2;
-                                return (col, start, BlockSize * 3);
-                            }).ToArray();
-                            break;
-
-                        case ExperimentScenario.Fullrow:
-                            missingBlocks = Enumerable.Range(0, columns).Select(col => (col, nlimit / 20, tcase)).ToArray();
-                            break;
-
-                        case ExperimentScenario.BlockSlide:
-                            missingBlocks[0].Item2 = (nlimit * tcase) / 100;
-                            break;
-                        
-                        case ExperimentScenario.McarElement:
+                        case ExperimentScenario.McarTsMultiBlock:
+                        {
+                            int start_lock =  rows - rows / 10;
+                            
+                            const int mcar_percentage = 1; // 1% of total data
+                            int mcar_block = (rows * mcar_percentage) / 1000;
+                            
+                            List<(int, int)> missing = new List<(int, int)>();
                             List<(int, int, int)> missing2 = new List<(int, int, int)>();
+                            
                             Random r = new Random(RandomSeed);
 
-                            List<(int, int)> missing = new List<(int, int)>();
+                            int activeColumns = (columns * tcase) / 100; // 10% to 100%
                             
                             Dictionary<int, List<int>> columnIdx = new Dictionary<int, List<int>>();
 
-                            for (int i = 0; i < columns; i++)
+                            for (int i = 0; i < activeColumns; i++)
                             {
-                                columnIdx.Add(i, Enumerable.Range(0, nlimit).ToList());
+                                int start = start_lock / mcar_block;
+                                if (start == 0) start = 1;
+                                columnIdx.Add(i, Enumerable.Range(start, (rows - start_lock) / mcar_block).ToList());
+                            }
+
+                            for (int i = 0; i < activeColumns; i++)
+                            {
+                                for (int k = 0; k < (rows * mcar_percentage / mcar_block) / 100; k++) // upper bound for k is guaranteed 1 by construction of mcar_block
+                                {
+                                    int row = r.Next(0, columnIdx[i].Count);
+                                    row = columnIdx[i][row];
+                                    
+                                    for (int j = 0; j < mcar_block; j++)
+                                    {
+                                        missing.Add((i, mcar_block * row + j));
+                                    }
+                                    
+                                    columnIdx[i].Remove(row);
+                                }
                             }
                             
-                            for (int i = 0; i < (nlimit * columns * tcase) / 100; i++)
-                            {
-                                int col = r.Next(0, columnIdx.Count);
-                                col = columnIdx.Keys.ElementAt(col);
-                                int row = r.Next(0, columnIdx[col].Count);
-                                row = columnIdx[col][row];
-                                
-                                missing.Add((col, row));
-
-                                columnIdx[col].Remove(row);
-
-                                if (columnIdx[col].Count == 1) columnIdx.Remove(col);
-                            }
-
                             missing = missing.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
-                            
+
                             int currentCol = -1;
                             int blockStart = -1;
                             int lastIdx = -1;
-                            
+
                             for (int i = 0; i < missing.Count; i++)
                             {
                                 (int col, int row) = missing[i];
-                                
+
                                 if (currentCol == col) //same col
                                 {
                                     if (lastIdx == -1) // start of new block
@@ -234,108 +231,26 @@ namespace TestingFramework.Testing
                                     currentCol = col;
                                 }
                             }
-                            
+
                             if (blockStart >= 0)
                             {
                                 missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
                             }
 
                             missingBlocks = missing2.ToArray();
-                            break;
-                        
-                        case ExperimentScenario.McarBlock:
-                            const int mcar_block = 10;
-                            const int mcar_percentage = 10;
-                            List<(int, int, int)> missing2b = new List<(int, int, int)>();
-                            Random r2 = new Random(RandomSeed);
 
-                            int activeColumns = tcase; // 1..4 or 1..12
-
-                            List<(int, int)> missingb = new List<(int, int)>();
-                            
-                            Dictionary<int, List<int>> columnIdxb = new Dictionary<int, List<int>>();
-
-                            for (int i = 0; i < activeColumns; i++)
-                            {
-                                columnIdxb.Add(i, Enumerable.Range(0, nlimit / mcar_block).ToList());
-                            }
-                            
-                            for (int i = 0; i < (nlimit * activeColumns * mcar_percentage) / (100 * mcar_block); i++) // 100 for percentage adj
-                            {
-                                int col = r2.Next(0, columnIdxb.Count);
-                                col = columnIdxb.Keys.ElementAt(col);
-                                int row = r2.Next(0, columnIdxb[col].Count);
-                                row = columnIdxb[col][row];
-                                
-                                for (int j = 0; j < 10; j++)
-                                {
-                                    missingb.Add((col, 10 * row + j));
-                                }
-
-                                columnIdxb[col].Remove(row);
-
-                                if (columnIdxb[col].Count == 1) columnIdxb.Remove(col);
-                            }
-
-                            missingb = missingb.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
-                            
-                            int currentColb = -1;
-                            int blockStartb = -1;
-                            int lastIdxb = -1;
-                            
-                            for (int i = 0; i < missingb.Count; i++)
-                            {
-                                (int col, int row) = missingb[i];
-                                
-                                if (currentColb == col) //same col
-                                {
-                                    if (lastIdxb == -1) // start of new block
-                                    {
-                                        lastIdxb = row;
-                                        blockStartb = row;
-                                    }
-                                    else if (lastIdxb != row - 1) // jump to the next block
-                                    {
-                                        missing2b.Add((col, blockStartb, lastIdxb - blockStartb + 1));
-
-                                        blockStartb = lastIdxb = row;
-                                    }
-                                    else
-                                    {
-                                        lastIdxb = row;
-                                    }
-                                }
-                                else
-                                {
-                                    if (blockStartb >= 0)
-                                    {
-                                        missing2b.Add((currentColb, blockStartb, lastIdxb - blockStartb + 1));
-                                    }
-
-                                    blockStartb = lastIdxb = row;
-                                    currentColb = col;
-                                }
-                            }
-                            
-                            if (blockStartb >= 0)
-                            {
-                                missing2b.Add((currentColb, blockStartb, lastIdxb - blockStartb + 1));
-                            }
-
-                            missingBlocks = missing2b.ToArray();
-                            break;
-                        
-                        default:
-                            throw new ArgumentException("Unrecognized experiment scenario");
+                            return;
+                        }
                     }
-                    break;
-                
-                case ExperimentType.Streaming:
+                    goto case ExperimentType.Continuous;
+                    
+                case ExperimentType.Continuous:
                     switch (es)
                     {
+                        // single-column
                         case ExperimentScenario.Missing:
                             missingBlocks[0].Item3 = tcase;
-                            missingBlocks[0].Item2 = nlimit - tcase;
+                            missingBlocks[0].Item2 = rows - tcase;
                             break;
                         
                         case ExperimentScenario.Length:
@@ -344,6 +259,259 @@ namespace TestingFramework.Testing
 
                         case ExperimentScenario.Columns:
                             break;//nothing
+                        
+                        // full
+                        case ExperimentScenario.Blackout:
+                            missingBlocks = Enumerable.Range(0, columns).Select(x => (x, rows - tcase, tcase)).ToArray();
+                            break;
+                        
+                        case ExperimentScenario.IncreasingBlockCount:
+                            missingBlocks = Enumerable.Repeat(missingBlocks[0], tcase).Select((x, i) => (i, x.Item2, x.Item3)).ToArray();
+                            break;
+                        
+                        default:
+                            throw new ArgumentException("Unrecognized experiment scenario or an incompatible combination with experiment type");
+                    }
+                    break;
+                    
+                case ExperimentType.Recovery:
+                    switch (es)
+                    {
+                        // single-column
+                        case ExperimentScenario.Missing:
+                            missingBlocks[0].Item3 = tcase;
+                            break;
+
+                        case ExperimentScenario.Length:
+                            break; //nothing
+
+                        case ExperimentScenario.Columns:
+                            break; //nothing
+
+                        case ExperimentScenario.BlockSlide:
+                            missingBlocks[0].Item2 = (rows * tcase) / 100;
+                            break;
+
+                        // full
+                        case ExperimentScenario.Blackout:
+                            missingBlocks = Enumerable.Range(0, columns).Select(col => (col, rows / 20, tcase))
+                                .ToArray();
+                            break;
+
+                        // multi-column
+                        case ExperimentScenario.MulticolDisjoint:
+                            missingBlocks = Enumerable.Range(0, columns)
+                                .Select(col => (col, col * MulticolBlockSize, MulticolBlockSize)).Take(tcase).Skip(1).ToArray();
+                            break;
+
+                        case ExperimentScenario.MulticolOverlap:
+                            missingBlocks = Enumerable.Range(0, columns).Select(col => (col, col * MulticolBlockSize,
+                                col == columns - 1 ? MulticolBlockSize : MulticolBlockSize * 2)).Take(tcase).ToArray();
+                            missingBlocks[0].Item2 = MulticolBlockSize;
+                            missingBlocks[0].Item3 = MulticolBlockSize;
+                            break;
+
+                        // random
+                        
+                        case ExperimentScenario.McarMatrixBlock:
+                        {
+                            int start_lock = rows / 20; // disallow missing values before this index
+                            
+                            int mcar_block = rows / 100;
+                            const int mcar_percentage = 10;
+                            List<(int, int)> missing = new List<(int, int)>();
+                            List<(int, int, int)> missing2 = new List<(int, int, int)>();
+                            
+                            Random r = new Random(RandomSeed);
+
+                            int activeColumns = columns; // set to 100%
+
+                            Dictionary<int, List<int>> columnIdx = new Dictionary<int, List<int>>();
+
+                            for (int i = 0; i < activeColumns; i++)
+                            {
+                                columnIdx.Add(i, Enumerable.Range(start_lock / mcar_block, (rows - start_lock) / mcar_block).ToList());
+                            }
+
+                            for (int i = 0;
+                                i < (rows * activeColumns * mcar_percentage) / (100 * mcar_block);
+                                i++) // 100 for percentage adj
+                            {
+                                int col = r.Next(0, columnIdx.Count);
+                                col = columnIdx.Keys.ElementAt(col);
+                                int row = r.Next(0, columnIdx[col].Count);
+                                row = columnIdx[col][row];
+
+                                for (int j = 0; j < mcar_block; j++)
+                                {
+                                    missing.Add((col, mcar_block * row + j));
+                                }
+
+                                columnIdx[col].Remove(row);
+
+                                if (columnIdx[col].Count == 1) columnIdx.Remove(col);
+                            }
+
+                            missing = missing.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
+
+                            int currentCol = -1;
+                            int blockStart = -1;
+                            int lastIdx = -1;
+
+                            for (int i = 0; i < missing.Count; i++)
+                            {
+                                (int col, int row) = missing[i];
+
+                                if (currentCol == col) //same col
+                                {
+                                    if (lastIdx == -1) // start of new block
+                                    {
+                                        lastIdx = row;
+                                        blockStart = row;
+                                    }
+                                    else if (lastIdx != row - 1) // jump to the next block
+                                    {
+                                        missing2.Add((col, blockStart, lastIdx - blockStart + 1));
+
+                                        blockStart = lastIdx = row;
+                                    }
+                                    else
+                                    {
+                                        lastIdx = row;
+                                    }
+                                }
+                                else
+                                {
+                                    if (blockStart >= 0)
+                                    {
+                                        missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                                    }
+
+                                    blockStart = lastIdx = row;
+                                    currentCol = col;
+                                }
+                            }
+
+                            if (blockStart >= 0)
+                            {
+                                missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                            }
+
+                            missingBlocks = missing2.ToArray();
+                            break;
+                        }
+
+                        case ExperimentScenario.McarTsBlock:
+                        {
+                            Random r = new Random(RandomSeed);
+                            
+                            int start_lock = rows / 20;
+                            const int mcar_percentage = 10;
+                            int mcar_block = (rows * mcar_percentage) / 100;
+
+                            missingBlocks = Enumerable.Range(0, columns * tcase / 100).Select(x =>
+                            {
+                                int start = r.Next(start_lock, rows - mcar_block);
+                                return (x, start, mcar_block);
+                            }).ToArray();
+                            
+                            break;
+                        }
+                        
+                        case ExperimentScenario.McarTsMultiBlock:
+                        case ExperimentScenario.McarTsElement:
+                        {
+                            int start_lock = rows / 20; // disallow missing values before this index
+                            
+                            const int mcar_percentage = 10;
+                            int mcar_block =
+                                es == ExperimentScenario.McarTsElement
+                                ? 1
+                                : es == ExperimentScenario.McarTsBlock
+                                    ? (rows * mcar_percentage) / 100
+                                    : rows / 100; // fallback is McarTsMultiBlock => fracture by 1%
+                            
+                            List<(int, int)> missing = new List<(int, int)>();
+                            List<(int, int, int)> missing2 = new List<(int, int, int)>();
+                            
+                            Random r = new Random(RandomSeed);
+
+                            int activeColumns = (columns * tcase) / 100; // 10% to 100%
+                            
+                            Dictionary<int, List<int>> columnIdx = new Dictionary<int, List<int>>();
+
+                            for (int i = 0; i < activeColumns; i++)
+                            {
+                                int start = start_lock / mcar_block;
+                                if (start == 0) start = 1;
+                                columnIdx.Add(i, Enumerable.Range(start, (rows - start_lock) / mcar_block).ToList());
+                            }
+
+                            for (int i = 0; i < activeColumns; i++)
+                            {
+                                for (int k = 0; k < (rows * mcar_percentage / mcar_block) / 100; k++) // upper bound for k is guaranteed 1 by construction of mcar_block
+                                {
+                                    int row = r.Next(0, columnIdx[i].Count);
+                                    row = columnIdx[i][row];
+                                    
+                                    for (int j = 0; j < mcar_block; j++)
+                                    {
+                                        missing.Add((i, mcar_block * row + j));
+                                    }
+                                    
+                                    columnIdx[i].Remove(row);
+                                }
+                            }
+                            
+                            missing = missing.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
+
+                            int currentCol = -1;
+                            int blockStart = -1;
+                            int lastIdx = -1;
+
+                            for (int i = 0; i < missing.Count; i++)
+                            {
+                                (int col, int row) = missing[i];
+
+                                if (currentCol == col) //same col
+                                {
+                                    if (lastIdx == -1) // start of new block
+                                    {
+                                        lastIdx = row;
+                                        blockStart = row;
+                                    }
+                                    else if (lastIdx != row - 1) // jump to the next block
+                                    {
+                                        missing2.Add((col, blockStart, lastIdx - blockStart + 1));
+
+                                        blockStart = lastIdx = row;
+                                    }
+                                    else
+                                    {
+                                        lastIdx = row;
+                                    }
+                                }
+                                else
+                                {
+                                    if (blockStart >= 0)
+                                    {
+                                        missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                                    }
+
+                                    blockStart = lastIdx = row;
+                                    currentCol = col;
+                                }
+                            }
+
+                            if (blockStart >= 0)
+                            {
+                                missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                            }
+
+                            missingBlocks = missing2.ToArray();
+
+                            break;
+                        }
                         
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario");
@@ -364,11 +532,11 @@ namespace TestingFramework.Testing
         }
 
         private static DataDescription PrepareDataDescription(ExperimentType et, ExperimentScenario es,
-            string code, int nlimit, int cols, int tcase, (int, int, int)[] missingBlocks)
+            string code, int rows, int cols, int tcase, (int, int, int)[] missingBlocks)
         {
             int n = es == ExperimentScenario.Length
                 ? tcase
-                : nlimit;
+                : rows;
             
             int m = es == ExperimentScenario.Columns
                 ? tcase
@@ -409,38 +577,36 @@ namespace TestingFramework.Testing
         /// <param name="code">Dataset codename</param>
         /// <param name="nlimit">Maximum length from the dataset</param>
         /// <exception cref="ArgumentException">Throws an exception if incompatible type/scenario are provided or a code isn't found.</exception>
-        public static void PrecisionTest(
-            ExperimentType et, ExperimentScenario es,
-            string code, int nlimit = 1000)
+        public static void PrecisionTest(ExperimentType et, ExperimentScenario es,  string code)
         {
-            if (et == ExperimentType.Streaming)
-            {
-                throw new ArgumentException("ExperimentType.Streaming is unsupported for precision test runs");
-            }
             if (!File.Exists($"{DataWorks.FolderData}{code}/{code}_normal.txt"))
             {
                 throw new ArgumentException("Invalid code is supplied, file not found in a expected location: " + $"{code}/{code}_normal.txt");
             }
             
-            IEnumerable<Algorithm> algorithms =
-                !es.IsSingleColumn()
-                    ? AlgoPack.ListAlgorithmsMulticolumn
-                    : AlgoPack.ListAlgorithms;
+            int nlimit = DataWorks.CountMatrixRows($"{code}/{code}_normal.txt");
+            int dataSetColumns = DataWorks.CountMatrixColumns($"{code}/{code}_normal.txt");
 
-            if (es.HasBlackouts())
-            {
-                algorithms = algorithms.Where(a => a != AlgoPack.Ssa && a != AlgoPack.Grouse && a != AlgoPack.MdIsvd);
-            }
+            IEnumerable<Algorithm> algorithms = AlgoPack.ListAlgorithms;
 
-            if (es.HasBlackouts() && es != ExperimentScenario.Fullrow) //only mcars
+            if (et == ExperimentType.Streaming)
             {
-                algorithms = algorithms.Where(a => a != AlgoPack.Mrnn);
+                algorithms = algorithms.Intersect(AlgoPack.ListAlgorithmsStreaming);
             }
             
-            // exceptional cases
-            if (code == "bball" && nlimit >= 1800)
+            if (!es.IsSingleColumn())
             {
-                nlimit = 1800;
+                algorithms = algorithms.Intersect(AlgoPack.ListAlgorithmsMulticolumn);
+            }
+
+            if (es.IsBlackout())
+            {
+                algorithms = algorithms.Where(x => x.IsBlackout);
+            }
+
+            if (nlimit < 1000)
+            {
+                algorithms = algorithms.Where(alg => alg.AlgCode != "tkcm" && alg.AlgCode != "spirit").ToArray();
             }
             
             //varlen only
@@ -451,14 +617,7 @@ namespace TestingFramework.Testing
             
             // forward definitons
             const Experiment ex = Experiment.Precision;
-            (ValueTuple<int, int, int>[] missingBlocks, int[] lengths) = GetExperimentSetup(et, es, nlimit);
-            
-            int dataSetColumns = DataWorks.CountMatrixColumns($"{code}/{code}_normal.txt");
-
-            if (es == ExperimentScenario.MultiColumnDisjoint || es == ExperimentScenario.MultiColumnOverlap || es == ExperimentScenario.McarBlock)
-            {
-                lengths = lengths.Take(dataSetColumns).ToArray();
-            }
+            (ValueTuple<int, int, int>[] missingBlocks, int[] lengths) = GetExperimentSetup(et, es, nlimit, dataSetColumns);
 
             //
             // create necessary folder structure
@@ -477,7 +636,7 @@ namespace TestingFramework.Testing
             // test phase
             //
 
-            if (et == ExperimentType.Continuous && es == ExperimentScenario.Length)
+            if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && es == ExperimentScenario.Length)
             {
                 string dataSource = $"{code}/{code}_normal.txt";
                 
@@ -593,6 +752,7 @@ namespace TestingFramework.Testing
                 Directory.CreateDirectory(rootDir + "error/results/values/");
                 Directory.CreateDirectory(rootDir + "error/results/values/mse/");
                 Directory.CreateDirectory(rootDir + "error/results/values/rmse/");
+                Directory.CreateDirectory(rootDir + "error/results/values/mae/");
                 Directory.CreateDirectory(rootDir + "error/results/recovered_matrices/");
                 
                 Directory.CreateDirectory(rootDir + "recovery/figs/");
@@ -715,43 +875,36 @@ namespace TestingFramework.Testing
         /// <param name="code">Dataset codename</param>
         /// <param name="nlimit">Maximum length from the dataset</param>
         /// <exception cref="ArgumentException">Throws an exception if incompatible type/scenario are provided or a code isn't found.</exception>
-        public static void RuntimeTest(
-            ExperimentType et, ExperimentScenario es,
-            string code, int nlimit = 1000)
+        public static void RuntimeTest(ExperimentType et, ExperimentScenario es, string code)
         {
-            if (et == ExperimentType.Streaming && es == ExperimentScenario.MultiColumnDisjoint)
-            {
-                throw new ArgumentException("ExperimentScenario.MissingMultiColumn is unsupported in combination with ExperimentType.Streaming");
-            }
-            
-            IEnumerable<Algorithm> algorithms =
-                et == ExperimentType.Streaming
-                ? AlgoPack.ListAlgorithmsStreaming
-                : (
-                    !es.IsSingleColumn()
-                        ? AlgoPack.ListAlgorithmsMulticolumn
-                        : AlgoPack.ListAlgorithms
-                );
-
-            if (es.HasBlackouts())
-            {
-                algorithms = algorithms.Where(a => a != AlgoPack.Ssa && a != AlgoPack.Grouse && a != AlgoPack.MdIsvd);
-            }
-
-            if (es.HasBlackouts() && es != ExperimentScenario.Fullrow) //only mcars
-            {
-                algorithms = algorithms.Where(a => a != AlgoPack.Mrnn);
-            }
-            
             if (!File.Exists($"{DataWorks.FolderData}{code}/{code}_normal.txt"))
             {
                 throw new ArgumentException("Invalid code is supplied, file not found in a expected location: " + $"{code}/{code}_normal.txt");
             }
             
-            // exceptions
-            if (code == "bball" && nlimit >= 1800)
+            int nlimit = DataWorks.CountMatrixRows($"{code}/{code}_normal.txt");
+            int dataSetColumns = DataWorks.CountMatrixColumns($"{code}/{code}_normal.txt");
+            
+            IEnumerable<Algorithm> algorithms = AlgoPack.ListAlgorithms;
+
+            if (et == ExperimentType.Streaming)
             {
-                nlimit = 1800;
+                algorithms = algorithms.Intersect(AlgoPack.ListAlgorithmsStreaming);
+            }
+            
+            if (!es.IsSingleColumn())
+            {
+                algorithms = algorithms.Intersect(AlgoPack.ListAlgorithmsMulticolumn);
+            }
+
+            if (es.IsBlackout())
+            {
+                algorithms = algorithms.Where(x => x.IsBlackout);
+            }
+
+            if (nlimit < 1000)
+            {
+                algorithms = algorithms.Where(alg => alg.AlgCode != "tkcm" && alg.AlgCode != "spirit").ToArray();
             }
             
             //varlen only
@@ -762,14 +915,8 @@ namespace TestingFramework.Testing
             
             // forward definitons
             const Experiment ex = Experiment.Runtime;
-            (ValueTuple<int, int, int>[] missingBlocks, int[] lengths) = GetExperimentSetup(et, es, nlimit);
+            (ValueTuple<int, int, int>[] missingBlocks, int[] lengths) = GetExperimentSetup(et, es, nlimit, dataSetColumns);
 
-            int dataSetColumns = DataWorks.CountMatrixColumns($"{code}/{code}_normal.txt");
-
-            if (es == ExperimentScenario.MultiColumnDisjoint || es == ExperimentScenario.MultiColumnOverlap)
-            {
-                lengths = lengths.Take(dataSetColumns).ToArray();
-            }
             //
             // create necessary folder structure
             //
@@ -787,7 +934,7 @@ namespace TestingFramework.Testing
             // test phase
             //
 
-            if (et == ExperimentType.Continuous && es == ExperimentScenario.Length)
+            if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && es == ExperimentScenario.Length)
             {
                 string dataSource = $"{code}/{code}_normal.txt";
                 
@@ -891,9 +1038,7 @@ namespace TestingFramework.Testing
         /// <param name="nlimit">Maximum length from the dataset</param>
         /// <exception cref="ArgumentException">Throws an exception if incompatible type/scenario are provided or a code isn't found.</exception>
         /// <exception cref="InvalidOperationException">Throws an exception if the folder for this specific experiment set up doesn't exist.</exception>
-        public static void RuntimeTestReplot(
-            ExperimentType et, ExperimentScenario es,
-            string code, int nlimit = 1000)
+        public static void RuntimeTestReplot(ExperimentType et, ExperimentScenario es, string code)
         {
             if (!File.Exists($"{DataWorks.FolderData}{code}/{code}_normal.txt"))
             {
@@ -904,20 +1049,17 @@ namespace TestingFramework.Testing
                 et == ExperimentType.Streaming
                     ? AlgoPack.ListAlgorithmsStreaming
                     : (
-                        !es.IsSingleColumn()
+                        es == ExperimentScenario.MulticolDisjoint
                             ? AlgoPack.ListAlgorithmsMulticolumn
                             : AlgoPack.ListAlgorithms
                     );
             
-            // exceptions
-            if (code == "bball" && nlimit >= 1800)
-            {
-                nlimit = 1800;
-            }
+            int nlimit = DataWorks.CountMatrixRows($"{code}/{code}_normal.txt");
+            int dataSetColumns = DataWorks.CountMatrixColumns($"{code}/{code}_normal.txt");
             
             // forward definitons
             const Experiment ex = Experiment.Runtime;
-            (_, int[] lengths) = GetExperimentSetup(et, es, nlimit);
+            (_, int[] lengths) = GetExperimentSetup(et, es, nlimit, dataSetColumns);
 
             //
             // create outputs

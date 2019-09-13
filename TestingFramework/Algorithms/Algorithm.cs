@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using TestingFramework.Testing;
@@ -46,6 +47,9 @@ namespace TestingFramework.Algorithms
         protected abstract string SubFolderDataOut { get; }
         
         public virtual bool IsPlottable => true;
+        public virtual bool IsMulticolumn => true;
+        public virtual bool IsStreaming => false;
+        public virtual bool IsBlackout => true;
 
         // virtual functions
         public virtual string[] EnumerateInputFiles(string dataCode, int tcase)
@@ -146,6 +150,36 @@ namespace TestingFramework.Algorithms
                 
                 default:
                     throw new ArgumentException("Provided arguments don't make for a valid experiment");
+            }
+        }
+
+        protected Process TemplateProcess()
+        {
+            return new Process
+            {
+                StartInfo =
+                {
+                    WorkingDirectory = EnvPath,
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    UseShellExecute = false
+                }
+            };
+        }
+
+        protected void Run(Process proc)
+        {
+            proc.Start();
+            proc.WaitForExit();
+            
+            if (proc.ExitCode != 0)
+            {
+                string errText =
+                    $"[WARNING] {AlgCode} returned code {proc.ExitCode} on exit.{Environment.NewLine}" +
+                    $"CLI args: {proc.StartInfo.Arguments}";
+                
+                Console.WriteLine(errText);
+                Utils.DelayedWarnings.Enqueue(errText);
             }
         }
     }

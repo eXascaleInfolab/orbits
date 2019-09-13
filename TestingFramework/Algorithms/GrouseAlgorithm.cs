@@ -18,7 +18,7 @@ namespace TestingFramework.Algorithms
             return new[] { $"{dataCode}_m{tcase}.txt" };
         }
         
-        private static string Style => "linespoints lt 8 dt 1 lw 2 pt 9 lc rgbcolor \"orange\" pointsize 1.2";
+        private static string Style => "linespoints lt 8 dt 3 lw 3 pt 5 lc rgbcolor \"cyan\" pointsize 2";
 
         public override IEnumerable<SubAlgorithm> EnumerateSubAlgorithms()
         {
@@ -33,62 +33,43 @@ namespace TestingFramework.Algorithms
         protected override void PrecisionExperiment(ExperimentType et, ExperimentScenario es,
             DataDescription data, int tcase)
         {
-            RunGrouse(GetGrouseProcess(data, tcase));
-        }
-        
-        private Process GetGrouseProcess(DataDescription data, int len)
-        {
-            Process grouseproc = new Process();
-            
-            grouseproc.StartInfo.WorkingDirectory = EnvPath;
-            grouseproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            grouseproc.StartInfo.CreateNoWindow = true;
-            grouseproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            grouseproc.StartInfo.UseShellExecute = false;
-
-            grouseproc.StartInfo.Arguments = $"-alg grouse -test o -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
-                                         $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                         $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
-
-            return grouseproc;
-        }
-        
-        private Process GetRuntimeGrouseProcess(DataDescription data, int len, bool stream)
-        {
-            Process grouseproc = new Process();
-            
-            grouseproc.StartInfo.WorkingDirectory = EnvPath;
-            grouseproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            grouseproc.StartInfo.CreateNoWindow = true;
-            grouseproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            grouseproc.StartInfo.UseShellExecute = false;
-
-            grouseproc.StartInfo.Arguments = $"-alg grouse -test rt -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
-                                             $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                             $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt " + (stream ? "-xtra stream" : "");
-
-            return grouseproc;
-        }
-        private void RunGrouse(Process grouseproc)
-        {
-            grouseproc.Start();
-            grouseproc.WaitForExit();
-                
-            if (grouseproc.ExitCode != 0)
-            {
-                string errText =
-                    $"[WARNING] GROUSE returned code {grouseproc.ExitCode} on exit.{Environment.NewLine}" +
-                    $"CLI args: {grouseproc.StartInfo.Arguments}";
-                
-                Console.WriteLine(errText);
-                Utils.DelayedWarnings.Enqueue(errText);
-            }
+            Run(et == ExperimentType.Streaming
+                ? GetOnlineProcess(data, tcase, Experiment.Precision)
+                : GetOfflineProcess(data, tcase, Experiment.Precision));
         }
 
         protected override void RuntimeExperiment(ExperimentType et, ExperimentScenario es, DataDescription data,
             int tcase)
         {
-            RunGrouse(GetRuntimeGrouseProcess(data, tcase, et == ExperimentType.Streaming));
+            Run(et == ExperimentType.Streaming
+                ? GetOnlineProcess(data, tcase, Experiment.Runtime)
+                : GetOfflineProcess(data, tcase, Experiment.Runtime));
+        }
+
+        private Process GetOfflineProcess(DataDescription data, int len, Experiment ex)
+        {
+            string test = ex == Experiment.Precision ? "o" : "rt";
+            Process proc = TemplateProcess();
+            proc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
+            
+            proc.StartInfo.Arguments = $"-alg grouse -test {test} -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
+                                       $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
+                                       $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
+
+            return proc;
+        }
+
+        private Process GetOnlineProcess(DataDescription data, int len, Experiment ex)
+        {
+            string test = ex == Experiment.Precision ? "o" : "rt";
+            Process proc = TemplateProcess();
+            proc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
+
+            proc.StartInfo.Arguments = $"-alg grouse -test {test} -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
+                                       $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
+                                       $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt" + " -xtra stream";
+
+            return proc;
         }
 
         public override void GenerateData(string sourceFile, string code, int tcase, (int, int, int)[] missingBlocks,

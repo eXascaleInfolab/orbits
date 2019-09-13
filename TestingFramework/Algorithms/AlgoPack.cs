@@ -12,7 +12,6 @@ namespace TestingFramework.Algorithms
         public static string GlobalAlgorithmsLocation = null;
         
         // static
-        public static readonly Algorithm Cd = new CentroidDecompositionAlgorithm(); // a slower version of Recovery CD
         public static readonly Algorithm InCd = new IncrementalCentroidDecompositionAlgorithm();
         public static readonly Algorithm Tkcm = new TkcmAlgorithm();
         public static readonly Algorithm Trmf = new TrmfAlgorithm();
@@ -30,9 +29,9 @@ namespace TestingFramework.Algorithms
         //example:
         //    public static readonly Algorithm Example = new ExampleAlgorithm();
         
-        public static Algorithm[] ListAlgorithms = { Stmvl, InCd, Tkcm, Spirit, Trmf, Nnmf, Grouse, ArImp, Ssa, Mrnn, DynaMMo, MdIsvd, SvdImp };
-        public static Algorithm[] ListAlgorithmsMulticolumn = { Stmvl, InCd, Trmf, Nnmf, Grouse, ArImp, Mrnn, DynaMMo, MdIsvd, SvdImp };
-        public static Algorithm[] ListAlgorithmsStreaming = { InCd, Tkcm, Spirit, ArImp, Grouse, MdIsvd };
+        public static Algorithm[] ListAlgorithms = { InCd, Tkcm, Trmf, Spirit, Stmvl, Nnmf, Grouse, ArImp, Ssa, Mrnn, DynaMMo, MdIsvd, SvdImp }; //initial full list of all algos
+        public static Algorithm[] ListAlgorithmsMulticolumn = null;
+        public static Algorithm[] ListAlgorithmsStreaming = null;
 
         public const int TypicalTruncation = 3;
 
@@ -73,16 +72,13 @@ namespace TestingFramework.Algorithms
 
                 foreach (var et in EnumMethods.AllExperimentTypes())
                 {
-                    // exception
-                    if (ex == Experiment.Precision && et == ExperimentType.Streaming) continue;
-                    
                     string etDir = $"{exDir}{et.ToLongString()}/";
                     if (!Directory.Exists(etDir))
                     {
                         Directory.CreateDirectory(etDir);
                     }
 
-                    foreach (var es in EnumMethods.AllExperimentScenarios())
+                    foreach (var es in EnumMethods.AllExperimentScenarios().Where(x => et.IsMatch(x)))
                     {
                         string esDir = $"{etDir}{es.ToLongString()}/";
                         if (!Directory.Exists(esDir))
@@ -99,20 +95,13 @@ namespace TestingFramework.Algorithms
     /*                         P A T H S                         */
     /*///////////////////////////////////////////////////////////*/
     
-    public partial class CentroidDecompositionAlgorithm
-    {
-        public override string AlgCode => "cd";
-        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
-        protected override string SubFolderDataIn => "in/";
-        protected override string SubFolderDataOut => "out/";
-    }
-    
     public partial class IncrementalCentroidDecompositionAlgorithm
     {
         public override string AlgCode => "cdrec";
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
+        public override bool IsStreaming => true;
     }
 
     public partial class NnmfAlgorithm
@@ -130,6 +119,8 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
+        public override bool IsStreaming => true;
+        public override bool IsMulticolumn => false;
         public override bool IsPlottable => false;
     }
 
@@ -147,6 +138,8 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
+        public override bool IsStreaming => true;
+        public override bool IsMulticolumn => false;
     }
 
     public partial class TrmfAlgorithm
@@ -163,7 +156,9 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
+        public override bool IsStreaming => true;
         public override bool IsPlottable => false;
+        public override bool IsBlackout => false;
     }
 
     public partial class AutoRegressionAlgorithm
@@ -172,6 +167,7 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
+        public override bool IsStreaming => true;
         public override bool IsPlottable => false;
     }
 
@@ -181,6 +177,7 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}ssa/tslib/";
         protected override string SubFolderDataIn => "data_in/";
         protected override string SubFolderDataOut => "data_out/";
+        public override bool IsMulticolumn => false;
     }
 
     public partial class MRNNAlgorithm
@@ -206,6 +203,7 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
+        public override bool IsStreaming => true;
         public override bool IsPlottable => false;
     }
     
@@ -234,6 +232,9 @@ namespace TestingFramework.Algorithms
         //protected override string _EnvPath => "~/TBA/"; // can be replaced by an absolute path
         protected override string SubFolderDataIn => "todo/in/";
         protected override string SubFolderDataOut => "todo/out/";
+        public override bool IsStreaming => true; // whether algorithm supports incremental recovery without recomputing everything from scratch
+        public override bool IsMulticolumn => true; // whether algorithm can recover values outside of the first TS
+        public override bool IsBlackout => false; // whether algorithm can recover lines that are completely missing
         
         // optional override of a getter
         public override bool IsPlottable => false;

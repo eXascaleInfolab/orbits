@@ -13,7 +13,7 @@ namespace TestingFramework.Algorithms
         public SVDImputeAlgorithm() : base(ref _init)
         { }
 
-        private static string Style => "linespoints lt 8 dt 2 lw 3 pt 4 lc rgbcolor \"dark-red\" pointsize 1.2";
+        private static string Style => "linespoints lt 8 dt 2 lw 3 pt 1 lc rgbcolor \"black\" pointsize 1.2";
         
         public override IEnumerable<SubAlgorithm> EnumerateSubAlgorithms()
         {

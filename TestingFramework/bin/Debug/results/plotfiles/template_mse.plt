@@ -21,3 +21,8 @@ set ylabel "root mean squared error" offset 1.5
 plot\
 	{rmse}
 
+set output "error/figs/{code}_mae.eps"
+set ylabel "mean absolute error" offset 1.5 
+
+plot\
+	{mae}

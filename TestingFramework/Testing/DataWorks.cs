@@ -42,11 +42,22 @@ namespace TestingFramework.Testing
                     .Where(x => !String.IsNullOrEmpty(x))
                     .Take(1)
                     .Select(
-                        x => x.Split(' ').Select(Double.Parse).ToArray()
+                        x => x.Split(' ').Select(Utils.ParseDouble).ToArray()
                     )
                     .ToArray();
 
             return res[0].Length;
+        }
+        
+        /// <summary>
+        /// A hack #2
+        /// </summary>
+        /// <param name="fileInput">count 'em here</param>
+        public static int CountMatrixRows(string fileInput)
+        {
+            fileInput = FolderData + fileInput;
+
+            return File.ReadAllLines(fileInput).Count(x => !String.IsNullOrEmpty(x));
         }
         
         /// <summary>
@@ -72,7 +83,7 @@ namespace TestingFramework.Testing
                     line = sr.ReadLine();
                 }
 
-                double[] row = line.Split(' ').Take(colLimit).Select(Double.Parse).ToArray();
+                double[] row = line.Split(' ').Take(colLimit).Select(Utils.ParseDouble).ToArray();
 
                 rows.Add(row);
             }
@@ -103,7 +114,7 @@ namespace TestingFramework.Testing
                 File.ReadAllLines(fileInput)
                 .Where(x => !String.IsNullOrEmpty(x))
                 .Select(
-                        x => x.Split(' ').Select(Double.Parse).ToArray()
+                        x => x.Split(' ').Select(Utils.ParseDouble).ToArray()
                     ).ToArray();
 
             if (startRow >= res.Length) throw new Exception("invalid starting row");
@@ -193,7 +204,7 @@ namespace TestingFramework.Testing
                 File.ReadAllLines(referenceTs)
                 .Where(x => !String.IsNullOrEmpty(x))
                 .Select(
-                        x => x.Split(' ').Select(Double.Parse).ToArray()
+                        x => x.Split(' ').Select(Utils.ParseDouble).ToArray()
                     ).ToArray();
 
             // try to do correlation test
@@ -228,7 +239,7 @@ namespace TestingFramework.Testing
                     File.ReadAllLines(FolderResults + file)
                     .Where(x => !String.IsNullOrEmpty(x))
                     .Select(
-                            x => x.Trim().Split(x.Contains(',') ? ',' : ' ').Select(Double.Parse).ToArray()
+                            x => x.Trim().Split(x.Contains(',') ? ',' : ' ').Select(Utils.ParseDouble).ToArray()
                         ).ToArray();
 
                 total = 0;
@@ -280,7 +291,7 @@ namespace TestingFramework.Testing
                     {
                         string file = alg.EnumerateSubAlgorithms(tcase).First(x => x.Code == subAlgorithm.Code).CaseCode;
                         string runtimeValueStr = File.ReadAllText(FolderResults + file + ".txt");
-                        double runtimeValue = Double.Parse(runtimeValueStr);
+                        double runtimeValue = Utils.ParseDouble(runtimeValueStr);
 
                         algCase.Add((tcase, runtimeValue));
                     }
@@ -356,6 +367,7 @@ namespace TestingFramework.Testing
 
             string rmse = allAlgos.StringJoin(Environment.NewLine + "\t");
             string mse = rmse.Replace("RMSE", "MSE").Replace("rmse", "mse"); //strip R
+            string mae = rmse.Replace("RMSE", "MAE").Replace("rmse", "mae"); //place mae
             
             Utils.FileFindAndReplace(FolderResults + "plotfiles/template_mse.plt",
                 $"{FolderResults}plotfiles/out/{code}_mse.plt",
@@ -365,7 +377,8 @@ namespace TestingFramework.Testing
                 ("{caseEnd}", caseEnd.ToString()),
                 ("{caseTick}", caseTick.ToString()),
                 ("{rmse}", rmse),
-                ("{mse}", mse));
+                ("{mse}", mse),
+                ("{mae}", mae));
         }
         
         public static void GenerateRuntimeGnuPlot(IEnumerable<Algorithm> algorithms, string code, int caseStart, int caseEnd, int caseTick, ExperimentType et, ExperimentScenario es)
@@ -375,7 +388,7 @@ namespace TestingFramework.Testing
 
             var allAlgos = new List<string>();
             
-            foreach (Algorithm alg in algorithms)
+            foreach (Algorithm alg in algorithms.Where(a => a.IsPlottable))
             {
                 foreach (var subAlgorithm in alg.EnumerateSubAlgorithms())
                 {

@@ -33,62 +33,43 @@ namespace TestingFramework.Algorithms
         protected override void PrecisionExperiment(ExperimentType et, ExperimentScenario es,
             DataDescription data, int tcase)
         {
-            RunGrouse(GetMDISVDProcess(data, tcase));
-        }
-        
-        private Process GetMDISVDProcess(DataDescription data, int len)
-        {
-            Process isvdproc = new Process();
-            
-            isvdproc.StartInfo.WorkingDirectory = EnvPath;
-            isvdproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            isvdproc.StartInfo.CreateNoWindow = true;
-            isvdproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            isvdproc.StartInfo.UseShellExecute = false;
-
-            isvdproc.StartInfo.Arguments = $"-alg mdisvd -test o -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
-                                         $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                         $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
-
-            return isvdproc;
-        }
-        
-        private Process GetRuntimeMDISVDProcess(DataDescription data, int len, bool stream)
-        {
-            Process isvdproc = new Process();
-            
-            isvdproc.StartInfo.WorkingDirectory = EnvPath;
-            isvdproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            isvdproc.StartInfo.CreateNoWindow = true;
-            isvdproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            isvdproc.StartInfo.UseShellExecute = false;
-
-            isvdproc.StartInfo.Arguments = $"-alg mdisvd -test rt -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
-                                             $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                             $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt " + (stream ? "-xtra stream" : "");
-
-            return isvdproc;
-        }
-        private void RunGrouse(Process isvdproc)
-        {
-            isvdproc.Start();
-            isvdproc.WaitForExit();
-                
-            if (isvdproc.ExitCode != 0)
-            {
-                string errText =
-                    $"[WARNING] GROUSE returned code {isvdproc.ExitCode} on exit.{Environment.NewLine}" +
-                    $"CLI args: {isvdproc.StartInfo.Arguments}";
-                
-                Console.WriteLine(errText);
-                Utils.DelayedWarnings.Enqueue(errText);
-            }
+            Run(et == ExperimentType.Streaming
+                ? GetOnlineProcess(data, tcase, Experiment.Precision)
+                : GetOfflineProcess(data, tcase, Experiment.Precision));
         }
 
         protected override void RuntimeExperiment(ExperimentType et, ExperimentScenario es, DataDescription data,
             int tcase)
         {
-            RunGrouse(GetRuntimeMDISVDProcess(data, tcase, et == ExperimentType.Streaming));
+            Run(et == ExperimentType.Streaming
+                ? GetOnlineProcess(data, tcase, Experiment.Runtime)
+                : GetOfflineProcess(data, tcase, Experiment.Runtime));
+        }
+
+        private Process GetOfflineProcess(DataDescription data, int len, Experiment ex)
+        {
+            string test = ex == Experiment.Precision ? "o" : "rt";
+            Process proc = TemplateProcess();
+            proc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
+            
+            proc.StartInfo.Arguments = $"-alg mdisvd -test {test} -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
+                                       $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
+                                       $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
+
+            return proc;
+        }
+
+        private Process GetOnlineProcess(DataDescription data, int len, Experiment ex)
+        {
+            string test = ex == Experiment.Precision ? "o" : "rt";
+            Process proc = TemplateProcess();
+            proc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
+
+            proc.StartInfo.Arguments = $"-alg mdisvd -test {test} -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
+                                       $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
+                                       $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt" + " -xtra stream";
+
+            return proc;
         }
 
         public override void GenerateData(string sourceFile, string code, int tcase, (int, int, int)[] missingBlocks,

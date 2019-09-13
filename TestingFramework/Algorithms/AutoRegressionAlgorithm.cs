@@ -33,62 +33,43 @@ namespace TestingFramework.Algorithms
         protected override void PrecisionExperiment(ExperimentType et, ExperimentScenario es,
             DataDescription data, int tcase)
         {
-            RunOGD(GetOGDProcess(data, tcase));
-        }
-        
-        private Process GetOGDProcess(DataDescription data, int len)
-        {
-            Process ogdproc = new Process();
-            
-            ogdproc.StartInfo.WorkingDirectory = EnvPath;
-            ogdproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            ogdproc.StartInfo.CreateNoWindow = true;
-            ogdproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            ogdproc.StartInfo.UseShellExecute = false;
-
-            ogdproc.StartInfo.Arguments = $"-alg ogdimpute -test o -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
-                                         $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                         $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
-
-            return ogdproc;
-        }
-        
-        private Process GetRuntimeOGDProcess(DataDescription data, int len)
-        {
-            Process ogdproc = new Process();
-            
-            ogdproc.StartInfo.WorkingDirectory = EnvPath;
-            ogdproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            ogdproc.StartInfo.CreateNoWindow = true;
-            ogdproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            ogdproc.StartInfo.UseShellExecute = false;
-
-            ogdproc.StartInfo.Arguments = $"-alg ogdimpute -test rt -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
-                                             $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                             $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
-
-            return ogdproc;
-        }
-        private void RunOGD(Process ogdproc)
-        {
-            ogdproc.Start();
-            ogdproc.WaitForExit();
-                
-            if (ogdproc.ExitCode != 0)
-            {
-                string errText =
-                    $"[WARNING] ARImpute returned code {ogdproc.ExitCode} on exit.{Environment.NewLine}" +
-                    $"CLI args: {ogdproc.StartInfo.Arguments}";
-                
-                Console.WriteLine(errText);
-                Utils.DelayedWarnings.Enqueue(errText);
-            }
+            Run(et == ExperimentType.Streaming
+                ? GetOnlineProcess(data, tcase, Experiment.Precision)
+                : GetOfflineProcess(data, tcase, Experiment.Precision));
         }
 
         protected override void RuntimeExperiment(ExperimentType et, ExperimentScenario es, DataDescription data,
             int tcase)
         {
-            RunOGD(GetRuntimeOGDProcess(data, tcase));
+            Run(et == ExperimentType.Streaming
+                ? GetOnlineProcess(data, tcase, Experiment.Runtime)
+                : GetOfflineProcess(data, tcase, Experiment.Runtime));
+        }
+
+        private Process GetOfflineProcess(DataDescription data, int len, Experiment ex)
+        {
+            string test = ex == Experiment.Precision ? "o" : "rt";
+            Process proc = TemplateProcess();
+            proc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
+            
+            proc.StartInfo.Arguments = $"-alg ogdimpute -test {test} -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
+                                       $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
+                                       $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
+
+            return proc;
+        }
+
+        private Process GetOnlineProcess(DataDescription data, int len, Experiment ex)
+        {
+            string test = ex == Experiment.Precision ? "o" : "rt";
+            Process proc = TemplateProcess();
+            proc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
+
+            proc.StartInfo.Arguments = $"-alg ogdimpute -test {test} -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
+                                       $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
+                                       $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt" + " -xtra stream";
+
+            return proc;
         }
 
         public override void GenerateData(string sourceFile, string code, int tcase, (int, int, int)[] missingBlocks,

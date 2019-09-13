@@ -13,7 +13,7 @@ namespace TestingFramework.Algorithms
         public TkcmAlgorithm() : base(ref _init)
         { }
         
-        private static string Style => "linespoints lt 8 dt 1 lw 2 pt 5 lc rgbcolor \"dark-violet\" pointsize 1.2";
+        private static string Style => "linespoints lt 8 dt 4 lw 3 pt 4 lc rgbcolor \"green\" pointsize 1";
         
         public override IEnumerable<SubAlgorithm> EnumerateSubAlgorithms()
         {
@@ -24,24 +24,47 @@ namespace TestingFramework.Algorithms
         {
             return new[] { new SubAlgorithm($"{AlgCode}", $"{AlgCode}{tcase}", Style) };
         }
-
+        
         protected override void PrecisionExperiment(ExperimentType et, ExperimentScenario es,
             DataDescription data, int tcase)
         {
-             RunTkcm(GetTkcmProcess(data, tcase, es));
+            Run(et == ExperimentType.Streaming
+                ? GetOnlineProcess(data, tcase, Experiment.Precision)
+                : GetOfflineProcess(data, tcase, Experiment.Precision));
         }
-        
+
         protected override void RuntimeExperiment(ExperimentType et, ExperimentScenario es, DataDescription data,
             int tcase)
         {
-            if (et == ExperimentType.Streaming)
-            {
-                RunTkcm(GetStreamingTkcmProcess(data, tcase, es));
-            }
-            else
-            {
-                RunTkcm(GetRuntimeTkcmProcess(data, tcase, es));
-            }
+            Run(et == ExperimentType.Streaming
+                ? GetOnlineProcess(data, tcase, Experiment.Runtime)
+                : GetOfflineProcess(data, tcase, Experiment.Runtime));
+        }
+
+        private Process GetOfflineProcess(DataDescription data, int len, Experiment ex)
+        {
+            string test = ex == Experiment.Precision ? "o" : "rt";
+            Process proc = TemplateProcess();
+            proc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
+            
+            proc.StartInfo.Arguments = $"-alg tkcm -test {test} -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
+                                       $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
+                                       $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
+
+            return proc;
+        }
+
+        private Process GetOnlineProcess(DataDescription data, int len, Experiment ex)
+        {
+            string test = ex == Experiment.Precision ? "o" : "rt";
+            Process proc = TemplateProcess();
+            proc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
+
+            proc.StartInfo.Arguments = $"-alg tkcm -test {test} -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
+                                       $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
+                                       $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt" + " -xtra stream";
+
+            return proc;
         }
 
         public override void GenerateData(string sourceFile, string code, int tcase, (int, int, int)[] missingBlocks,
@@ -81,73 +104,6 @@ namespace TestingFramework.Algorithms
             
             if (File.Exists(destination)) File.Delete(destination);
             File.AppendAllText(destination, data.ToString());
-        }
-
-        private Process GetTkcmProcess(DataDescription data, int len, ExperimentScenario es)
-        {
-            Process tkcmproc = new Process();
-            
-            tkcmproc.StartInfo.WorkingDirectory = EnvPath;
-            tkcmproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            tkcmproc.StartInfo.CreateNoWindow = true;
-            tkcmproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            tkcmproc.StartInfo.UseShellExecute = false;
-            
-            tkcmproc.StartInfo.Arguments = $"-alg tkcm -test o -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
-                                           $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                           $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
-
-            return tkcmproc;
-        }
-        
-        private Process GetRuntimeTkcmProcess(DataDescription data, int len, ExperimentScenario es)
-        {
-            Process tkcmproc = new Process();
-            
-            tkcmproc.StartInfo.WorkingDirectory = EnvPath;
-            tkcmproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            tkcmproc.StartInfo.CreateNoWindow = true;
-            tkcmproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            tkcmproc.StartInfo.UseShellExecute = false;
-            
-            tkcmproc.StartInfo.Arguments = $"-alg tkcm -test rt -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
-                                           $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                           $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt";
-
-            return tkcmproc;
-        }
-        
-        private Process GetStreamingTkcmProcess(DataDescription data, int len, ExperimentScenario es)
-        {
-            Process tkcmproc = new Process();
-            
-            tkcmproc.StartInfo.WorkingDirectory = EnvPath;
-            tkcmproc.StartInfo.FileName = EnvPath + "../cmake-build-debug/incCD";
-            tkcmproc.StartInfo.CreateNoWindow = true;
-            tkcmproc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            tkcmproc.StartInfo.UseShellExecute = false;
-            
-            tkcmproc.StartInfo.Arguments = $"-alg tkcm -test rt -n {data.N} -m {data.M} -k {AlgoPack.TypicalTruncation} " +
-                                           $"-in ./{SubFolderDataIn}{data.Code}_m{len}.txt " +
-                                           $"-out ./{SubFolderDataOut}{AlgCode}{len}.txt" + " -xtra stream";
-
-            return tkcmproc;
-        }
-        
-        private void RunTkcm(Process tkcmproc)
-        {
-            tkcmproc.Start();
-            tkcmproc.WaitForExit();
-
-            if (tkcmproc.ExitCode != 0)
-            {
-                string errText =
-                    $"[WARNING] TKCM returned code {tkcmproc.ExitCode} on exit.{Environment.NewLine}" +
-                    $"CLI args: {tkcmproc.StartInfo.Arguments}";
-                
-                Console.WriteLine(errText);
-                Utils.DelayedWarnings.Enqueue(errText);
-            }
         }
     }
 }
