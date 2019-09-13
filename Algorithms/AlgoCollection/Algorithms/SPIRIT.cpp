@@ -37,6 +37,10 @@ int64_t SPIRIT::doSpirit(arma::mat &A, uint64_t k0, uint64_t w, double lambda, b
             break;
         }
     }
+    
+    uint64_t cutoff10 = A.n_rows - (A.n_rows / 10);
+    blockStart = std::min(blockStart, cutoff10);
+
     for (uint64_t i = blockStart; i < A.n_rows; ++i)
     {
         if (std::isnan(A.at(i,0)))

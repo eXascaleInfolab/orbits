@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
     else
     {
         matrix = reader.getFullMatrix();
-        m = matrix.n_rows;
+        m = matrix.n_cols;
     }
     
     // parameters that depend on n, m

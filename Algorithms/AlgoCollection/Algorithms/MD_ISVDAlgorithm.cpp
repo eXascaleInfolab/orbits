@@ -81,7 +81,7 @@ void Algorithms::MD_SVD::doMDISVD()
         U = U * U_svd;
         
         U = U.submat(arma::span::all, arma::span(0, maxrank - 1));
-        S = S.subvec(arma::span(0, maxrank - 1));
+        S = Sigma_svd.subvec(arma::span(0, maxrank - 1));
     }
     
     // generate R

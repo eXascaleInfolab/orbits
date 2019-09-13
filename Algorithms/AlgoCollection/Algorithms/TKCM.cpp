@@ -111,6 +111,9 @@ int64_t TKCM::performRecovery(bool stream)
         }
     }
     
+    uint64_t cutoff10 = matrix.n_rows - (matrix.n_rows / 10);
+    L = std::min(L, cutoff10);
+    
     if (L < 51)
     {
         l = 20;

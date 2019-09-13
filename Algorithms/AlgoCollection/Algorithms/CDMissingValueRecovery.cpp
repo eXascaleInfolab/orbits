@@ -28,10 +28,10 @@ uint64_t CDMissingValueRecovery::getReduction()
     return k;
 }
 
-void CDMissingValueRecovery::setReduction(uint64_t k)
+void CDMissingValueRecovery::setReduction(uint64_t _k)
 {
-    this->k = k;
-    cd.truncation = k;
+    this->k = _k;
+    cd.truncation = _k;
 }
 
 void CDMissingValueRecovery::passSignVectorStrategy(CDSignVectorStrategy_2 strategy)
@@ -290,7 +290,7 @@ uint64_t CDMissingValueRecovery::performRecovery(bool determineReduction /*= fal
         const arma::mat &L = cd.getLoad();
         const arma::mat &R = cd.getRel();
         
-        arma::mat recover = L * R.t();
+        arma::mat recover = L.submat(arma::span::all, arma::span(0, cd.truncation - 1)) * R.submat(arma::span::all, arma::span(0, cd.truncation - 1)).t();
         
         delta = 0.0;
         

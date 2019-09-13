@@ -349,6 +349,9 @@ int64_t Recovery_CD_Streaming(arma::mat &mat, uint64_t truncation)
         }
     }
     
+    uint64_t cutoff10 = mat.n_rows - (mat.n_rows / 10);
+    streamStart = std::min(streamStart, cutoff10);
+    
     arma::mat before_streaming = mat.submat(arma::span(0, streamStart - 1), arma::span::all);
     
     // Local
@@ -428,6 +431,9 @@ int64_t Recovery_OGDImpute_Streaming(arma::mat &mat, uint64_t truncation)
         }
     }
     
+    uint64_t cutoff10 = mat.n_rows - (mat.n_rows / 10);
+    streamStart = std::min(streamStart, cutoff10);
+    
     arma::mat before_streaming = mat.submat(arma::span(0, streamStart - 1), arma::span::all);
     
     // Local
@@ -468,6 +474,9 @@ int64_t Recovery_SAGE_Streaming(arma::mat &mat, uint64_t truncation)
             break;
         }
     }// [!] despite transposing we search for the first index row-wise and later use it as column index
+    
+    uint64_t cutoff10 = mat.n_rows - (mat.n_rows / 10);
+    streamStart = std::min(streamStart, cutoff10);
     
     mat = mat.t();
     
@@ -512,6 +521,9 @@ int64_t Recovery_MDISVD_Streaming(arma::mat &mat, uint64_t truncation)
             break;
         }
     }// [!] despite transposing we search for the first index row-wise and later use it as column index
+    
+    uint64_t cutoff10 = mat.n_rows - (mat.n_rows / 10);
+    streamStart = std::min(streamStart, cutoff10);
     
     mat = mat.t();
     
