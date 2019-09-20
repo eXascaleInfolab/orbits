@@ -23,6 +23,7 @@
 #include "../Algorithms/SoftImpute.h"
 #include "../Algorithms/OGDImpute.h"
 #include "../Algorithms/MD_ISVDAlgorithm.h"
+#include "../Algorithms/PCA_MME.h"
 
 using namespace Algorithms;
 
@@ -334,6 +335,33 @@ int64_t Recovery_MDISVD(arma::mat &mat, uint64_t truncation)
     return result;
 }
 
+int64_t Recovery_PCA_MME(arma::mat &mat, uint64_t truncation)
+{
+    // Local
+    int64_t result;
+    
+    std::chrono::steady_clock::time_point begin;
+    std::chrono::steady_clock::time_point end;
+    
+    // Recovery
+    
+    mat = mat.t();
+    
+    PCA_MME pca(mat, truncation, true);
+    
+    begin = std::chrono::steady_clock::now();
+    pca.doPCA_MME();
+    end = std::chrono::steady_clock::now();
+    
+    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    std::cout << "Time (PCA-MME): " << result << std::endl;
+    
+    mat = mat.t();
+    
+    verifyRecovery(mat);
+    return result;
+}
+
 // ================ streaming ==
 
 int64_t Recovery_CD_Streaming(arma::mat &mat, uint64_t truncation)
@@ -556,6 +584,53 @@ int64_t Recovery_MDISVD_Streaming(arma::mat &mat, uint64_t truncation)
     return result;
 }
 
+int64_t Recovery_PCA_MME_Streaming(arma::mat &mat, uint64_t truncation)
+{
+    uint64_t streamStart = 0;
+    
+    for (uint64_t i = 0; i < mat.n_rows; ++i)
+    {
+        if (std::isnan(mat.at(i, 0)))
+        {
+            streamStart = i;
+            break;
+        }
+    }// [!] despite transposing we search for the first index row-wise and later use it as column index
+    
+    uint64_t cutoff10 = mat.n_rows - (mat.n_rows / 10);
+    streamStart = std::min(streamStart, cutoff10);
+    
+    mat = mat.t();
+    
+    arma::mat before_streaming = mat.submat(arma::span::all, arma::span(0, streamStart - 1));
+    
+    // Local
+    int64_t result;
+    PCA_MME pcamme(before_streaming, truncation, true);
+    std::chrono::steady_clock::time_point begin;
+    std::chrono::steady_clock::time_point end;
+    
+    // Recovery
+    pcamme.doPCA_MME();
+    
+    begin = std::chrono::steady_clock::now();
+    for (uint64_t i = streamStart; i < mat.n_cols; ++i)
+    {
+        Algebra::Operations::add_matrix_col(before_streaming, mat.col(i));
+    }
+    pcamme.streamPCA_MME();
+    end = std::chrono::steady_clock::now();
+    
+    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
+    std::cout << "Time (PCA-MME,stream): " << result << std::endl;
+    
+    mat = std::move(before_streaming);
+    verifyRecovery(mat);
+    mat = mat.t();
+    
+    return result;
+}
+
 int64_t Recovery(arma::mat &mat, uint64_t truncation,
                  const std::string &algorithm, const std::string &xtra)
 {
@@ -584,6 +659,10 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
         else if (algorithm == "mdisvd")
         {
             return Recovery_MDISVD_Streaming(mat, truncation);
+        }
+        else if (algorithm == "pca-mme")
+        {
+            return Recovery_PCA_MME_Streaming(mat, truncation);
         }
         else
         {
@@ -643,6 +722,10 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
     else if (algorithm == "mdisvd")
     {
         return Recovery_MDISVD(mat, truncation);
+    }
+    else if (algorithm == "pca-mme")
+    {
+        return Recovery_PCA_MME(mat, truncation);
     }
     else
     {
