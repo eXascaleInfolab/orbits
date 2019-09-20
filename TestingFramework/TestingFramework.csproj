@@ -53,6 +53,7 @@
     <Compile Include="Algorithms\MDISVDAlgorithm.cs" />
     <Compile Include="Algorithms\MRNNAlgorithm.cs" />
     <Compile Include="Algorithms\NnmfAlgorithm.cs" />
+    <Compile Include="Algorithms\PCAMMEAlgorithm.cs" />
     <Compile Include="Algorithms\SpiritAlgorithm.cs" />
     <Compile Include="Algorithms\SSAAlgorithm.cs" />
     <Compile Include="Algorithms\StmvlAlgorithm.cs" />

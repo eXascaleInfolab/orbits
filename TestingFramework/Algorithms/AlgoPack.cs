@@ -25,11 +25,12 @@ namespace TestingFramework.Algorithms
         public static readonly Algorithm DynaMMo = new DynaMMoAlgorithm();
         public static readonly Algorithm MdIsvd = new MDISVDAlgorithm();
         public static readonly Algorithm SvdImp = new SVDImputeAlgorithm();
+        public static readonly Algorithm PcaMme = new PCAMMEAlgorithm();
         
         //example:
         //    public static readonly Algorithm Example = new ExampleAlgorithm();
         
-        public static Algorithm[] ListAlgorithms = { InCd, Tkcm, Trmf, Spirit, Stmvl, Nnmf, Grouse, ArImp, Ssa, Mrnn, DynaMMo, MdIsvd, SvdImp }; //initial full list of all algos
+        public static Algorithm[] ListAlgorithms = { InCd, Tkcm, Trmf, Spirit, Stmvl, Nnmf, Grouse, ArImp, Ssa, Mrnn, DynaMMo, MdIsvd, SvdImp, PcaMme }; //initial full list of all algos
         public static Algorithm[] ListAlgorithmsMulticolumn = null;
         public static Algorithm[] ListAlgorithmsStreaming = null;
 
@@ -214,6 +215,16 @@ namespace TestingFramework.Algorithms
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
         public override bool IsPlottable => false;
+    }
+    
+    public partial class PCAMMEAlgorithm
+    {
+        public override string AlgCode => "pca-mme";
+        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
+        protected override string SubFolderDataIn => "in/";
+        protected override string SubFolderDataOut => "out/";
+        public override bool IsStreaming => true;
+        public override bool IsPlottable => true;
     }
 
     /*///////////////////////////////////////////////////////////*/
