@@ -187,6 +187,7 @@ namespace TestingFramework.Algorithms
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}M-RNN/";
         protected override string SubFolderDataIn => "data_in/";
         protected override string SubFolderDataOut => "data_out/";
+        public override bool IsStreaming => true;
     }
 
     public partial class DynaMMoAlgorithm
