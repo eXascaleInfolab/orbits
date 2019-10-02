@@ -351,19 +351,10 @@ void CDMissingValueRecovery::interpolate()
         
         double step;
         
-        // fallback case - no 2nd value for interpolation
-        if (std::isnan(val1) && std::isnan(val2))
+        // fallback case - no 2nd value for interpolation or block is too big to interpolate it
+        if (std::isnan(val1) || std::isnan(val2) || mblock.blockSize * 2 >= matrix.n_rows)
         {
             val1 = 0.0;
-            step = 0;
-        }
-        else if (std::isnan(val1)) // start block is missing
-        {
-            val1 = val2;
-            step = 0;
-        }
-        else if (std::isnan(val2)) // end block is missing
-        {
             step = 0;
         }
         else
