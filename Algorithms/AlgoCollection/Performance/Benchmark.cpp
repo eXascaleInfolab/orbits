@@ -438,7 +438,7 @@ int64_t Recovery_SPIRIT_Streaming(arma::mat &mat, uint64_t truncation)
     int64_t result;
     
     // Recovery
-    result = SPIRIT::doSpirit(mat, truncation, 6, 1.0);
+    result = SPIRIT::doSpirit(mat, truncation, 6, 1.0, true);
     
     std::cout << "Time (SPIRIT,stream): " << result << std::endl;
     
