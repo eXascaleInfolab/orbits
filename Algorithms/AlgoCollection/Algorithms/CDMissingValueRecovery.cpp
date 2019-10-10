@@ -14,8 +14,8 @@ CDMissingValueRecovery::CDMissingValueRecovery(arma::mat &src,
                                                uint64_t maxIterations,
                                                double eps)
         : matrix(src),
-          cd(src, src.n_cols - 1),
-          k(src.n_cols - 1),
+          cd(src, 1),
+          k(1),
           cm(src),
           maxIterations(maxIterations), //defaults are hardcoded in CDMVR.h
           epsPrecision(eps),
@@ -31,7 +31,7 @@ uint64_t CDMissingValueRecovery::getReduction()
 void CDMissingValueRecovery::setReduction(uint64_t _k)
 {
     this->k = _k;
-    cd.truncation = _k;
+    cd.changeTruncation(_k);
 }
 
 void CDMissingValueRecovery::passSignVectorStrategy(CDSignVectorStrategy_2 strategy)
@@ -290,7 +290,7 @@ uint64_t CDMissingValueRecovery::performRecovery(bool determineReduction /*= fal
         const arma::mat &L = cd.getLoad();
         const arma::mat &R = cd.getRel();
         
-        arma::mat recover = L.submat(arma::span::all, arma::span(0, cd.truncation - 1)) * R.submat(arma::span::all, arma::span(0, cd.truncation - 1)).t();
+        arma::mat recover = L * R.t();
         
         delta = 0.0;
         
@@ -481,7 +481,7 @@ void CDMissingValueRecovery::determineReduction()
     
     std::vector<double> centroidValues = std::vector<double>();
     centroidValues.reserve(matrix.n_cols);
-    cd.truncation = matrix.n_cols;
+    cd.changeTruncation(matrix.n_cols);
     cd.performDecomposition(&centroidValues, true);
     
     uint64_t rank = centroidValues.size();

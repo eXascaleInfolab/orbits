@@ -33,6 +33,7 @@ class CentroidDecomposition
   
   public:
     std::vector<arma::vec> signVectors;
+    std::vector<arma::vec> directions;
     //std::vector<std::vector<arma::vec *>> signVectorSteps;
     uint64_t ssvIterations = 0;
     uint64_t truncation = 0;
@@ -62,6 +63,8 @@ class CentroidDecomposition
     arma::mat stealRel();
     
     void destroyDecomposition();
+
+    void changeTruncation(uint64_t _k);
     
     void resetSignVectors();
     

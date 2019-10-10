@@ -37,7 +37,7 @@ void insert_vector_at_row(arma::mat &matrix, uint64_t i, const arma::vec &vector
 {
     assert(matrix.n_cols == vector.n_elem);
     
-    for (uint64_t j = 0; j < matrix.n_rows; ++j)
+    for (uint64_t j = 0; j < matrix.n_cols; ++j)
     {
         matrix.at(i, j) = vector[j];
     }

@@ -14,11 +14,15 @@ namespace Algorithms
 //
 
 CentroidDecomposition::CentroidDecomposition(arma::mat &mx)
+        : CentroidDecomposition(mx, mx.n_cols)
+{ }
+
+CentroidDecomposition::CentroidDecomposition(arma::mat &mx, uint64_t k)
         : Src(mx),
-          Load(mx.n_rows, mx.n_cols),
-          Rel(mx.n_cols, mx.n_cols),
+          Load(mx.n_rows, k),
+          Rel(mx.n_cols, k),
           signVectors(std::vector<arma::vec>()),
-          truncation(mx.n_cols),
+          truncation(k),
           strategy(defaultSignVectorStrategy)
 {
     Load.zeros();
@@ -28,18 +32,17 @@ CentroidDecomposition::CentroidDecomposition(arma::mat &mx)
     arma::vec signV(mx.n_rows);
     signV.fill(1.0);
     signVectors.emplace_back(std::move(signV));
+
+    arma::vec direction(mx.n_cols);
+    direction.fill(0.0);
+    directions.emplace_back(std::move(direction));
     
     // i in [1,m[
     for (uint64_t i = 1; i < mx.n_cols; ++i)
     {
         signVectors.emplace_back(signVectors[0]);
+        directions.emplace_back(directions[0]);
     }
-}
-
-CentroidDecomposition::CentroidDecomposition(arma::mat &mx, uint64_t k)
-        : CentroidDecomposition(mx)
-{
-    truncation = k;
 }
 
 //
@@ -72,6 +75,13 @@ void CentroidDecomposition::destroyDecomposition()
     Rel.zeros();
 }
 
+void CentroidDecomposition::changeTruncation(uint64_t _k)
+{
+    truncation = _k;
+    Load.resize(Load.n_rows, _k);
+    Rel.resize(Rel.n_rows, _k);
+}
+
 void CentroidDecomposition::resetSignVectors()
 {
     for (uint64_t i = 0; i < Src.n_cols; ++i)
@@ -95,9 +105,14 @@ void CentroidDecomposition::performDecomposition(std::vector<double> *centroidVa
                     : findSignVector(X, i);
         
         //std::cout << Z.toString() << std::endl;
+
+        if (!decomposed && skipSSV)
+        {
+            directions[i] = (X.t() * Z);
+        }
         
-        // C_*i = X^T * Z
-        arma::vec Rel_i = X.t() * Z;
+        // C_*i = X^T * Z, cached by SSV search
+        arma::vec Rel_i = directions[i];
         
         // R_*i = C_*i / ||C_*i||
         double centroid = arma::norm(Rel_i);
@@ -137,7 +152,7 @@ void CentroidDecomposition::performDecomposition(std::vector<double> *centroidVa
 void CentroidDecomposition::increment(const arma::vec &vec)
 {
     Algebra::Operations::increment_matrix(Src, vec);
-    Algebra::Operations::increment_matrix(Load, vec); // doesn't matter, will be overwritten
+    Algebra::Operations::increment_matrix(Load, arma::zeros<arma::mat>(Load.n_cols)); // doesn't matter, will be overwritten
     ++addedRows;
     
     for (uint64_t i = 0; i < Src.n_cols; ++i)
@@ -183,15 +198,13 @@ arma::vec &CentroidDecomposition::findSignVector(arma::mat &mx, uint64_t k)
 arma::vec &CentroidDecomposition::findLocalSignVector(arma::mat &mx, uint64_t k, bool useInit)
 {
     arma::vec &Z = signVectors[k]; // get a reference
-    arma::vec direction;
+    arma::vec &direction = directions[k];
     
     //
     // First pass - init
     //
     if (!decomposed && useInit)
     {
-        direction = arma::vec(mx.n_cols);
-        
         for (uint64_t j = 0; j < mx.n_cols; ++j)
         {
             direction[j] = mx.at(0, j);
@@ -227,6 +240,15 @@ arma::vec &CentroidDecomposition::findLocalSignVector(arma::mat &mx, uint64_t k,
     //
     // 2+ pass - update to Z
     //
+
+    // special step - check for increment, assume Z is incremented by {+1}^AR
+    if (addedRows > 0)
+    {
+        for (uint64_t i = mx.n_rows - addedRows; i < mx.n_rows; ++i)
+        {
+            direction += mx.row(i).t();
+        }
+    }
     
     bool flipped;
     double lastNorm = // cache the current value of (||D||_2)^2 to avoid recalcs
