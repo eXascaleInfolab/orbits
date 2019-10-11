@@ -116,6 +116,10 @@ namespace TestingFramework.Testing
 
                         case ExperimentScenario.McarTsElement:
                             return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
+                            
+                        case ExperimentScenario.McarColumns:
+                            stepSize = columns / 10;
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(stepSize >= 4 ? stepSize : 4, columns, stepSize).ToArray());
 
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario");
@@ -427,9 +431,7 @@ namespace TestingFramework.Testing
                             int mcar_block =
                                 es == ExperimentScenario.McarTsElement
                                 ? 1
-                                : es == ExperimentScenario.McarTsBlock
-                                    ? (rows * mcar_percentage) / 100
-                                    : rows / 100; // fallback is McarTsMultiBlock => fracture by 1%
+                                : rows / 100; // fallback is McarTsMultiBlock => fracture by 1%
                             
                             List<(int, int)> missing = new List<(int, int)>();
                             List<(int, int, int)> missing2 = new List<(int, int, int)>();
@@ -448,6 +450,96 @@ namespace TestingFramework.Testing
                             }
 
                             for (int i = 0; i < activeColumns; i++)
+                            {
+                                for (int k = 0; k < (rows * mcar_percentage / mcar_block) / 100; k++) // upper bound for k is guaranteed 1 by construction of mcar_block
+                                {
+                                    int row = r.Next(0, columnIdx[i].Count);
+                                    row = columnIdx[i][row];
+                                    
+                                    for (int j = 0; j < mcar_block; j++)
+                                    {
+                                        missing.Add((i, mcar_block * row + j));
+                                    }
+                                    
+                                    columnIdx[i].Remove(row);
+                                }
+                            }
+                            
+                            missing = missing.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
+
+                            int currentCol = -1;
+                            int blockStart = -1;
+                            int lastIdx = -1;
+
+                            for (int i = 0; i < missing.Count; i++)
+                            {
+                                (int col, int row) = missing[i];
+
+                                if (currentCol == col) //same col
+                                {
+                                    if (lastIdx == -1) // start of new block
+                                    {
+                                        lastIdx = row;
+                                        blockStart = row;
+                                    }
+                                    else if (lastIdx != row - 1) // jump to the next block
+                                    {
+                                        missing2.Add((col, blockStart, lastIdx - blockStart + 1));
+
+                                        blockStart = lastIdx = row;
+                                    }
+                                    else
+                                    {
+                                        lastIdx = row;
+                                    }
+                                }
+                                else
+                                {
+                                    if (blockStart >= 0)
+                                    {
+                                        missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                                    }
+
+                                    blockStart = lastIdx = row;
+                                    currentCol = col;
+                                }
+                            }
+
+                            if (blockStart >= 0)
+                            {
+                                missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                            }
+
+                            missingBlocks = missing2.ToArray();
+
+                            break;
+                        }
+                        
+                        case ExperimentScenario.McarColumns:
+                        {
+                            int start_lock = rows / 20; // disallow missing values before this index
+                            
+                            const int mcar_percentage = 10;
+                            int mcar_block = rows / 100;
+                            
+                            List<(int, int)> missing = new List<(int, int)>();
+                            List<(int, int, int)> missing2 = new List<(int, int, int)>();
+                            
+                            Random r = new Random(RandomSeed);
+
+                            //int activeColumns = (columns * tcase) / 100; // 10% to 100%
+                            int activeColumns = tcase; // 10% to 100%
+                            
+                            Dictionary<int, List<int>> columnIdx = new Dictionary<int, List<int>>();
+
+                            for (int i = 0; i < activeColumns; i += 2)
+                            {
+                                int start = start_lock / mcar_block;
+                                if (start == 0) start = 1;
+                                columnIdx.Add(i, Enumerable.Range(start, (rows - start_lock) / mcar_block).ToList());
+                            }
+
+                            for (int i = 0; i < activeColumns; i += 2)
                             {
                                 for (int k = 0; k < (rows * mcar_percentage / mcar_block) / 100; k++) // upper bound for k is guaranteed 1 by construction of mcar_block
                                 {
@@ -538,7 +630,7 @@ namespace TestingFramework.Testing
                 ? tcase
                 : rows;
             
-            int m = es == ExperimentScenario.Columns
+            int m = es == ExperimentScenario.Columns || es == ExperimentScenario.McarColumns
                 ? tcase
                 : cols;
             
@@ -555,6 +647,7 @@ namespace TestingFramework.Testing
             {
                 // columns always start from 0, limited by datasize unless it's a column test
                 case ExperimentScenario.Columns:
+                case ExperimentScenario.McarColumns:
                     cTo = tcase;
                     break;
                 
