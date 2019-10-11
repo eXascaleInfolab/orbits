@@ -48,9 +48,7 @@ namespace TestingFramework.Testing
                         case ExperimentScenario.Columns:
                             blockSize = rows / 10;
                             stepSize = columns / 10;
-                            return (new[] {(0, rows - blockSize, blockSize)}, Utils.ClosedSequence(
-                                stepSize >= AlgoPack.TypicalTruncation + 1 ? stepSize : AlgoPack.TypicalTruncation + 1, columns, stepSize
-                            ).ToArray());
+                            return (new[] {(0, rows - blockSize, blockSize)}, Utils.ClosedSequence(stepSize, columns, stepSize).SkipWhile(x => x < 4).ToArray());
                         
                         // full
                         case ExperimentScenario.Blackout:
@@ -84,7 +82,7 @@ namespace TestingFramework.Testing
                             blockSize = rows / 10;
                             stepSize = columns / 10;
                             startOffset = rows / 20;
-                            return (new[] {(0, startOffset, blockSize)}, Utils.ClosedSequence(stepSize >= 4 ? stepSize : 4, columns, stepSize).ToArray());
+                            return (new[] {(0, startOffset, blockSize)}, Utils.ClosedSequence(stepSize, columns, stepSize).SkipWhile(x => x < 4).ToArray());
                         
                         case ExperimentScenario.BlockSlide:
                             blockSize = rows / 5;
@@ -119,7 +117,7 @@ namespace TestingFramework.Testing
                             
                         case ExperimentScenario.McarColumns:
                             stepSize = columns / 10;
-                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(stepSize >= 4 ? stepSize : 4, columns, stepSize).ToArray());
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(stepSize * 2, columns, stepSize * 2).SkipWhile(x => x < 4).ToArray());
 
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario");
