@@ -95,6 +95,7 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.McarTsMultiBlock: return "mcar-matmulbl";
                 case ExperimentScenario.McarTsElement: return "mcar-tselem";
                 case ExperimentScenario.McarColumns: return "mcar-col";
+                case ExperimentScenario.McarLength: return "mcar-len";
                 default: throw new InvalidDataException();
             }
         }
@@ -118,6 +119,7 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.McarTsMultiBlock: return "mcar-ts-multiblock";
                 case ExperimentScenario.McarTsElement: return "mcar-ts-element";
                 case ExperimentScenario.McarColumns: return "mcar-columns";
+                case ExperimentScenario.McarLength: return "mcar=length";
                 default: throw new InvalidDataException();
             }
         }
@@ -141,6 +143,7 @@ namespace TestingFramework.Testing
                 case ExperimentScenario.McarTsMultiBlock: return "percentage of time series with missing values";
                 case ExperimentScenario.McarTsElement: return "percentage of time series with missing values";
                 case ExperimentScenario.McarColumns: return "number of columns";
+                case ExperimentScenario.McarLength: return "number of rows";
                 default: throw new InvalidDataException();
             }
         }
@@ -162,6 +165,7 @@ namespace TestingFramework.Testing
             yield return ExperimentScenario.McarTsMultiBlock;
             yield return ExperimentScenario.McarTsElement;
             yield return ExperimentScenario.McarColumns;
+            yield return ExperimentScenario.McarLength;
         }
 
         public static bool IsLimited(this ExperimentScenario es)
@@ -235,7 +239,7 @@ namespace TestingFramework.Testing
         
         MulticolDisjoint, MulticolOverlap,
         
-        McarMatrixBlock, McarTsBlock, McarTsMultiBlock, McarTsElement, McarColumns
+        McarMatrixBlock, McarTsBlock, McarTsMultiBlock, McarTsElement, McarColumns, McarLength
     }
 
     [ImmutableObject(true)]
