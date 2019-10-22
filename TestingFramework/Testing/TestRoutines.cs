@@ -22,14 +22,6 @@ namespace TestingFramework.Testing
             switch (et)
             {
                 case ExperimentType.Streaming:
-                    switch (es)
-                    {
-                        case ExperimentScenario.McarTsBlock:
-                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
-                        
-                        case ExperimentScenario.McarTsMultiBlock:
-                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
-                    }
                     goto case ExperimentType.Continuous;
                     
                 case ExperimentType.Continuous:
@@ -58,6 +50,24 @@ namespace TestingFramework.Testing
                             blockSize = rows / 10;
                             stepSize = columns / 10;
                             return (new[] {(0, rows - blockSize, blockSize)}, Utils.ClosedSequence(stepSize, columns, stepSize).ToArray());
+
+                        // multicol
+                        case ExperimentScenario.McarTsBlock:
+                        case ExperimentScenario.McarTsMultiBlock:
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
+
+                        case ExperimentScenario.McarTsBlock2:
+                        case ExperimentScenario.McarTsMultiBlock2:
+                            int basePerc = columns < 20 ? 20 : 10;
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(basePerc, 100, basePerc).ToArray());
+
+                        case ExperimentScenario.McarColumns:
+                            stepSize = columns / 10;
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(stepSize * 2, columns, stepSize * 2).SkipWhile(x => x < 4).ToArray());
+
+                        case ExperimentScenario.McarLength:
+                            stepSize = rows / 10;
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(2 * stepSize, rows, stepSize).ToArray());
 
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario or an incompatible combination with experiment type");
@@ -107,10 +117,13 @@ namespace TestingFramework.Testing
                             return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 50, 10).ToArray());
 
                         case ExperimentScenario.McarTsBlock:
-                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
-
                         case ExperimentScenario.McarTsMultiBlock:
                             return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
+
+                        case ExperimentScenario.McarTsBlock2:
+                        case ExperimentScenario.McarTsMultiBlock2:
+                            int basePerc = columns < 20 ? 20 : 10;
+                            return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(basePerc, 100, basePerc).ToArray());
 
                         case ExperimentScenario.McarTsElement:
                             return (new[] {(-1, -1, -1)}, Utils.ClosedSequence(10, 100, 10).ToArray());
@@ -140,8 +153,34 @@ namespace TestingFramework.Testing
             switch (et)
             {
                 case ExperimentType.Streaming:
+                    goto case ExperimentType.Continuous;
+                    
+                case ExperimentType.Continuous:
                     switch (es)
                     {
+                        // single-column
+                        case ExperimentScenario.Missing:
+                            missingBlocks[0].Item3 = tcase;
+                            missingBlocks[0].Item2 = rows - tcase;
+                            break;
+                        
+                        case ExperimentScenario.Length:
+                            missingBlocks[0].Item2 = tcase - missingBlocks[0].Item3;
+                            break;
+
+                        case ExperimentScenario.Columns:
+                            break;//nothing
+                        
+                        // full
+                        case ExperimentScenario.Blackout:
+                            missingBlocks = Enumerable.Range(0, columns).Select(x => (x, rows - tcase, tcase)).ToArray();
+                            break;
+                        
+                        case ExperimentScenario.IncreasingBlockCount:
+                            missingBlocks = Enumerable.Repeat(missingBlocks[0], tcase).Select((x, i) => (i, x.Item2, x.Item3)).ToArray();
+                            break;
+                        
+                        // multicol
                         case ExperimentScenario.McarTsBlock:
                         {
                             Random r = new Random(RandomSeed);
@@ -154,6 +193,23 @@ namespace TestingFramework.Testing
                             {
                                 int start = r.Next(start_lock, rows - mcar_block);
                                 return (x, start, mcar_block);
+                            }).ToArray();
+                            
+                            return;
+                        }
+
+                        case ExperimentScenario.McarTsBlock2:
+                        {
+                            Random r = new Random(RandomSeed);
+                            
+                            int start_lock = rows - rows / 10;
+                            const int mcar_percentage = 1; // 1% of total data
+                            int mcar_block = (rows * mcar_percentage) / 100; // matches init
+
+                            missingBlocks = Enumerable.Range(0, columns * tcase / 200).Select(x =>
+                            {
+                                int start = r.Next(start_lock, rows - mcar_block);
+                                return (x * 2, start, mcar_block);
                             }).ToArray();
                             
                             return;
@@ -247,34 +303,275 @@ namespace TestingFramework.Testing
 
                             return;
                         }
-                    }
-                    goto case ExperimentType.Continuous;
-                    
-                case ExperimentType.Continuous:
-                    switch (es)
-                    {
-                        // single-column
-                        case ExperimentScenario.Missing:
-                            missingBlocks[0].Item3 = tcase;
-                            missingBlocks[0].Item2 = rows - tcase;
-                            break;
                         
-                        case ExperimentScenario.Length:
-                            missingBlocks[0].Item2 = tcase - missingBlocks[0].Item3;
-                            break;
+                        case ExperimentScenario.McarTsMultiBlock2:
+                        {
+                            int start_lock = rows - rows / 10;
+                            
+                            const int mcar_percentage = 1; // 1% of total data
+                            int mcar_block = (rows * mcar_percentage) / 1000;
+                            
+                            List<(int, int)> missing = new List<(int, int)>();
+                            List<(int, int, int)> missing2 = new List<(int, int, int)>();
+                            
+                            Random r = new Random(RandomSeed);
 
-                        case ExperimentScenario.Columns:
-                            break;//nothing
+                            int activeColumns = (columns * tcase) / 100; // 10% to 100%
+                            
+                            Dictionary<int, List<int>> columnIdx = new Dictionary<int, List<int>>();
+
+                            for (int i = 0; i < activeColumns; i += 2)
+                            {
+                                int start = start_lock / mcar_block;
+                                if (start == 0) start = 1;
+                                columnIdx.Add(i, Enumerable.Range(start, (rows - start_lock) / mcar_block).ToList());
+                            }
+
+                            for (int i = 0; i < activeColumns; i += 2)
+                            {
+                                for (int k = 0; k < (rows * mcar_percentage / mcar_block) / 100; k++) // upper bound for k is guaranteed 1 by construction of mcar_block
+                                {
+                                    int row = r.Next(0, columnIdx[i].Count);
+                                    row = columnIdx[i][row];
+                                    
+                                    for (int j = 0; j < mcar_block; j++)
+                                    {
+                                        missing.Add((i, mcar_block * row + j));
+                                    }
+                                    
+                                    columnIdx[i].Remove(row);
+                                }
+                            }
+                            
+                            missing = missing.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
+
+                            int currentCol = -1;
+                            int blockStart = -1;
+                            int lastIdx = -1;
+
+                            for (int i = 0; i < missing.Count; i++)
+                            {
+                                (int col, int row) = missing[i];
+
+                                if (currentCol == col) //same col
+                                {
+                                    if (lastIdx == -1) // start of new block
+                                    {
+                                        lastIdx = row;
+                                        blockStart = row;
+                                    }
+                                    else if (lastIdx != row - 1) // jump to the next block
+                                    {
+                                        missing2.Add((col, blockStart, lastIdx - blockStart + 1));
+
+                                        blockStart = lastIdx = row;
+                                    }
+                                    else
+                                    {
+                                        lastIdx = row;
+                                    }
+                                }
+                                else
+                                {
+                                    if (blockStart >= 0)
+                                    {
+                                        missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                                    }
+
+                                    blockStart = lastIdx = row;
+                                    currentCol = col;
+                                }
+                            }
+
+                            if (blockStart >= 0)
+                            {
+                                missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                            }
+
+                            missingBlocks = missing2.ToArray();
+
+                            return;
+                        }
                         
-                        // full
-                        case ExperimentScenario.Blackout:
-                            missingBlocks = Enumerable.Range(0, columns).Select(x => (x, rows - tcase, tcase)).ToArray();
+                        case ExperimentScenario.McarColumns:
+                        {
+                            int start_lock = rows - rows / 10; // disallow missing values before this index
+                            
+                            const int mcar_percentage = 1;
+                            int mcar_block = rows / 1000;
+                            
+                            List<(int, int)> missing = new List<(int, int)>();
+                            List<(int, int, int)> missing2 = new List<(int, int, int)>();
+                            
+                            Random r = new Random(RandomSeed);
+
+                            //int activeColumns = (columns * tcase) / 100; // 10% to 100%
+                            int activeColumns = tcase; // 10% to 100%
+                            
+                            Dictionary<int, List<int>> columnIdx = new Dictionary<int, List<int>>();
+
+                            for (int i = 0; i < activeColumns; i += 2)
+                            {
+                                int start = start_lock / mcar_block;
+                                if (start == 0) start = 1;
+                                columnIdx.Add(i, Enumerable.Range(start, (rows - start_lock) / mcar_block).ToList());
+                            }
+
+                            for (int i = 0; i < activeColumns; i += 2)
+                            {
+                                for (int k = 0; k < (rows * mcar_percentage / mcar_block) / 100; k++) // upper bound for k is guaranteed 1 by construction of mcar_block
+                                {
+                                    int row = r.Next(0, columnIdx[i].Count);
+                                    row = columnIdx[i][row];
+                                    
+                                    for (int j = 0; j < mcar_block; j++)
+                                    {
+                                        missing.Add((i, mcar_block * row + j));
+                                    }
+                                    
+                                    columnIdx[i].Remove(row);
+                                }
+                            }
+                            
+                            missing = missing.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
+
+                            int currentCol = -1;
+                            int blockStart = -1;
+                            int lastIdx = -1;
+
+                            for (int i = 0; i < missing.Count; i++)
+                            {
+                                (int col, int row) = missing[i];
+
+                                if (currentCol == col) //same col
+                                {
+                                    if (lastIdx == -1) // start of new block
+                                    {
+                                        lastIdx = row;
+                                        blockStart = row;
+                                    }
+                                    else if (lastIdx != row - 1) // jump to the next block
+                                    {
+                                        missing2.Add((col, blockStart, lastIdx - blockStart + 1));
+
+                                        blockStart = lastIdx = row;
+                                    }
+                                    else
+                                    {
+                                        lastIdx = row;
+                                    }
+                                }
+                                else
+                                {
+                                    if (blockStart >= 0)
+                                    {
+                                        missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                                    }
+
+                                    blockStart = lastIdx = row;
+                                    currentCol = col;
+                                }
+                            }
+
+                            if (blockStart >= 0)
+                            {
+                                missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                            }
+
+                            missingBlocks = missing2.ToArray();
+
                             break;
+                        }
                         
-                        case ExperimentScenario.IncreasingBlockCount:
-                            missingBlocks = Enumerable.Repeat(missingBlocks[0], tcase).Select((x, i) => (i, x.Item2, x.Item3)).ToArray();
+                        case ExperimentScenario.McarLength:
+                        {
+                            int start_lock = tcase - rows / 10; // disallow missing values before this index
+                            
+                            const int mcar_percentage = 1;
+                            int mcar_block = rows / 1000;
+                            
+                            List<(int, int)> missing = new List<(int, int)>();
+                            List<(int, int, int)> missing2 = new List<(int, int, int)>();
+                            
+                            Random r = new Random(RandomSeed);
+
+                            int activeColumns = columns;
+                            
+                            Dictionary<int, List<int>> columnIdx = new Dictionary<int, List<int>>();
+
+                            for (int i = 0; i < activeColumns; i += 2)
+                            {
+                                int start = start_lock / mcar_block;
+                                if (start == 0) start = 1;
+                                columnIdx.Add(i, Enumerable.Range(start, (tcase - start_lock) / mcar_block).ToList());
+                            }
+
+                            for (int i = 0; i < activeColumns; i += 2)
+                            {
+                                for (int k = 0; k < (rows * mcar_percentage / mcar_block) / 100; k++) // upper bound for k is guaranteed 1 by construction of mcar_block
+                                {
+                                    int row = r.Next(0, columnIdx[i].Count);
+                                    row = columnIdx[i][row];
+                                    
+                                    for (int j = 0; j < mcar_block; j++)
+                                    {
+                                        missing.Add((i, mcar_block * row + j));
+                                    }
+                                    
+                                    columnIdx[i].Remove(row);
+                                }
+                            }
+                            
+                            missing = missing.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
+
+                            int currentCol = -1;
+                            int blockStart = -1;
+                            int lastIdx = -1;
+
+                            for (int i = 0; i < missing.Count; i++)
+                            {
+                                (int col, int row) = missing[i];
+
+                                if (currentCol == col) //same col
+                                {
+                                    if (lastIdx == -1) // start of new block
+                                    {
+                                        lastIdx = row;
+                                        blockStart = row;
+                                    }
+                                    else if (lastIdx != row - 1) // jump to the next block
+                                    {
+                                        missing2.Add((col, blockStart, lastIdx - blockStart + 1));
+
+                                        blockStart = lastIdx = row;
+                                    }
+                                    else
+                                    {
+                                        lastIdx = row;
+                                    }
+                                }
+                                else
+                                {
+                                    if (blockStart >= 0)
+                                    {
+                                        missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                                    }
+
+                                    blockStart = lastIdx = row;
+                                    currentCol = col;
+                                }
+                            }
+
+                            if (blockStart >= 0)
+                            {
+                                missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                            }
+
+                            missingBlocks = missing2.ToArray();
+
                             break;
-                        
+                        }
+
                         default:
                             throw new ArgumentException("Unrecognized experiment scenario or an incompatible combination with experiment type");
                     }
@@ -423,6 +720,23 @@ namespace TestingFramework.Testing
                             
                             break;
                         }
+
+                        case ExperimentScenario.McarTsBlock2:
+                        {
+                            Random r = new Random(RandomSeed);
+                            
+                            int start_lock = rows / 20;
+                            const int mcar_percentage = 10;
+                            int mcar_block = (rows * mcar_percentage) / 100;
+
+                            missingBlocks = Enumerable.Range(0, columns * tcase / 200).Select(x =>
+                            {
+                                int start = r.Next(start_lock, rows - mcar_block);
+                                return (x * 2, start, mcar_block);
+                            }).ToArray();
+                            
+                            break;
+                        }
                         
                         case ExperimentScenario.McarTsMultiBlock:
                         case ExperimentScenario.McarTsElement:
@@ -452,6 +766,95 @@ namespace TestingFramework.Testing
                             }
 
                             for (int i = 0; i < activeColumns; i++)
+                            {
+                                for (int k = 0; k < (rows * mcar_percentage / mcar_block) / 100; k++) // upper bound for k is guaranteed 1 by construction of mcar_block
+                                {
+                                    int row = r.Next(0, columnIdx[i].Count);
+                                    row = columnIdx[i][row];
+                                    
+                                    for (int j = 0; j < mcar_block; j++)
+                                    {
+                                        missing.Add((i, mcar_block * row + j));
+                                    }
+                                    
+                                    columnIdx[i].Remove(row);
+                                }
+                            }
+                            
+                            missing = missing.OrderBy(x => x.Item1).ThenBy(x => x.Item2).ToList();
+
+                            int currentCol = -1;
+                            int blockStart = -1;
+                            int lastIdx = -1;
+
+                            for (int i = 0; i < missing.Count; i++)
+                            {
+                                (int col, int row) = missing[i];
+
+                                if (currentCol == col) //same col
+                                {
+                                    if (lastIdx == -1) // start of new block
+                                    {
+                                        lastIdx = row;
+                                        blockStart = row;
+                                    }
+                                    else if (lastIdx != row - 1) // jump to the next block
+                                    {
+                                        missing2.Add((col, blockStart, lastIdx - blockStart + 1));
+
+                                        blockStart = lastIdx = row;
+                                    }
+                                    else
+                                    {
+                                        lastIdx = row;
+                                    }
+                                }
+                                else
+                                {
+                                    if (blockStart >= 0)
+                                    {
+                                        missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                                    }
+
+                                    blockStart = lastIdx = row;
+                                    currentCol = col;
+                                }
+                            }
+
+                            if (blockStart >= 0)
+                            {
+                                missing2.Add((currentCol, blockStart, lastIdx - blockStart + 1));
+                            }
+
+                            missingBlocks = missing2.ToArray();
+
+                            break;
+                        }
+                        
+                        case ExperimentScenario.McarTsMultiBlock2:
+                        {
+                            int start_lock = rows / 20; // disallow missing values before this index
+                            
+                            const int mcar_percentage = 10;
+                            int mcar_block = rows / 100;
+                            
+                            List<(int, int)> missing = new List<(int, int)>();
+                            List<(int, int, int)> missing2 = new List<(int, int, int)>();
+                            
+                            Random r = new Random(RandomSeed);
+
+                            int activeColumns = (columns * tcase) / 100; // 10% to 100%
+                            
+                            Dictionary<int, List<int>> columnIdx = new Dictionary<int, List<int>>();
+
+                            for (int i = 0; i < activeColumns; i += 2)
+                            {
+                                int start = start_lock / mcar_block;
+                                if (start == 0) start = 1;
+                                columnIdx.Add(i, Enumerable.Range(start, (rows - start_lock) / mcar_block).ToList());
+                            }
+
+                            for (int i = 0; i < activeColumns; i += 2)
                             {
                                 for (int k = 0; k < (rows * mcar_percentage / mcar_block) / 100; k++) // upper bound for k is guaranteed 1 by construction of mcar_block
                                 {
@@ -841,7 +1244,7 @@ namespace TestingFramework.Testing
                 {
                     string dataSource = $"{code}/{code}_normal.txt";
 
-                    if (et == ExperimentType.Continuous && es == ExperimentScenario.Length)
+                    if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && (es == ExperimentScenario.Length || es == ExperimentScenario.McarLength))
                     {
                         string adjustedDataSource = $"_.temp/{token}_{code}_{tcase}.txt";
                         dataSource = adjustedDataSource;
@@ -1119,7 +1522,7 @@ namespace TestingFramework.Testing
             // test phase
             //
 
-            if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && es == ExperimentScenario.Length)
+            if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && (es == ExperimentScenario.Length || es == ExperimentScenario.McarLength))
             {
                 string dataSource = $"{code}/{code}_normal.txt";
                 
