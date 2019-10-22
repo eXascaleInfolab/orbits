@@ -1224,7 +1224,7 @@ namespace TestingFramework.Testing
             // test phase
             //
 
-            if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && es == ExperimentScenario.Length)
+            if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && (es == ExperimentScenario.Length || es == ExperimentScenario.McarLength))
             {
                 string dataSource = $"{code}/{code}_normal.txt";
                 
@@ -1542,7 +1542,7 @@ namespace TestingFramework.Testing
                 {
                     string dataSource = $"{code}/{code}_normal.txt";
 
-                    if (et == ExperimentType.Continuous && es == ExperimentScenario.Length)
+                    if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && (es == ExperimentScenario.Length || es == ExperimentScenario.McarLength))
                     {
                         string adjustedDataSource = $"_.temp/{token}_{code}_{tcase}.txt";
                         dataSource = adjustedDataSource;
