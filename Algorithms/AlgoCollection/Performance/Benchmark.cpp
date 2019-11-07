@@ -396,9 +396,14 @@ int64_t Recovery_CD_Streaming(arma::mat &mat, uint64_t truncation)
     rmv.autoDetectMissingBlocks();
     rmv.performRecovery(truncation == mat.n_cols);
     
+    rmv.increment_raw(mat.n_rows - streamStart);
+    
     for (uint64_t i = streamStart; i < mat.n_rows; ++i)
     {
-        rmv.increment(mat.row(i).t());
+        for (uint64_t j = 0; j < mat.n_cols; ++j)
+        {
+            before_streaming.at(i, j) = mat.at(i, j);
+        }
     }
     
     begin = std::chrono::steady_clock::now();
@@ -473,9 +478,13 @@ int64_t Recovery_OGDImpute_Streaming(arma::mat &mat, uint64_t truncation)
     // Recovery
     ogd.ARPredict();
     
+    before_streaming.resize(mat.n_rows, mat.n_cols);
     for (uint64_t i = streamStart; i < mat.n_rows; ++i)
     {
-        Algebra::Operations::increment_matrix(before_streaming, mat.row(i).t());
+        for (uint64_t j = 0; j < mat.n_cols; ++j)
+        {
+            before_streaming.at(i, j) = mat.at(i, j);
+        }
     }
     
     begin = std::chrono::steady_clock::now();
@@ -519,10 +528,19 @@ int64_t Recovery_SAGE_Streaming(arma::mat &mat, uint64_t truncation)
     // Recovery
     sage.doGROUSE();
     
+    before_streaming.resize(mat.n_rows, mat.n_cols);
+    
+    for (uint64_t i = 0; i < mat.n_rows; ++i)
+    {
+        for (uint64_t j = streamStart; j < mat.n_cols; ++j)
+        {
+            before_streaming.at(i, j) = mat.at(i, j);
+        }
+    }
+    
     begin = std::chrono::steady_clock::now();
     for (uint64_t i = streamStart; i < mat.n_cols; ++i)
     {
-        Algebra::Operations::add_matrix_col(before_streaming, mat.col(i));
         sage.singleRowIncrementSAGE();
     }
     end = std::chrono::steady_clock::now();
@@ -565,12 +583,17 @@ int64_t Recovery_MDISVD_Streaming(arma::mat &mat, uint64_t truncation)
     
     // Recovery
     isvd.doMDISVD();
+    before_streaming.resize(mat.n_rows, mat.n_cols);
+    
+    for (uint64_t i = 0; i < mat.n_rows; ++i)
+    {
+        for (uint64_t j = streamStart; j < mat.n_cols; ++j)
+        {
+            before_streaming.at(i, j) = mat.at(i, j);
+        }
+    }
     
     begin = std::chrono::steady_clock::now();
-    for (uint64_t i = streamStart; i < mat.n_cols; ++i)
-    {
-        Algebra::Operations::add_matrix_col(before_streaming, mat.col(i));
-    }
     isvd.doMDISVD();
     end = std::chrono::steady_clock::now();
     
@@ -613,11 +636,17 @@ int64_t Recovery_PCA_MME_Streaming(arma::mat &mat, uint64_t truncation)
     // Recovery
     pcamme.doPCA_MME();
     
-    begin = std::chrono::steady_clock::now();
-    for (uint64_t i = streamStart; i < mat.n_cols; ++i)
+    before_streaming.resize(mat.n_rows, mat.n_cols);
+    
+    for (uint64_t i = 0; i < mat.n_rows; ++i)
     {
-        Algebra::Operations::add_matrix_col(before_streaming, mat.col(i));
+        for (uint64_t j = streamStart; j < mat.n_cols; ++j)
+        {
+            before_streaming.at(i, j) = mat.at(i, j);
+        }
     }
+    
+    begin = std::chrono::steady_clock::now();
     pcamme.streamPCA_MME();
     end = std::chrono::steady_clock::now();
     

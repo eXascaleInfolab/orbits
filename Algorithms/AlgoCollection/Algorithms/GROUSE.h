@@ -17,6 +17,7 @@ class GROUSE
     arma::mat R;
     
     uint64_t maxrank;
+    uint64_t lastIndex;
   
   public:
     explicit GROUSE(arma::mat &_input, uint64_t _maxrank);

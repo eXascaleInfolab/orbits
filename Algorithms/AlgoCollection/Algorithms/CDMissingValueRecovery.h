@@ -62,6 +62,8 @@ class CDMissingValueRecovery
     
     void increment(const arma::vec &vec);
     
+    void increment_raw(uint64_t newrows);
+    
     uint64_t performRecovery(bool determineReduction = false);
     
     //

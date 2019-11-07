@@ -75,6 +75,8 @@ class CentroidDecomposition
     
     void increment(const std::vector<double> &vec);
     
+    void increment_raw(uint64_t newrows);
+    
     //
     // Algorithm
     //

@@ -169,13 +169,15 @@ void Algorithms::GROUSE::doGROUSE()
             }
         }
     }
+    
+    lastIndex = input.n_cols;
 }
 
 void GROUSE::singleRowIncrementSAGE()
 {
     // basic input: U, R^T, s.t. X = U*R^T, vector with new values
     
-    const uint64_t i = input.n_cols - 1; // last idx, single inc only, so no modifications within one call
+    const uint64_t i = lastIndex; // last idx, single inc only, so no modifications within one call
     arma::uvec Omega_t = arma::find_finite(input.col(i)); // not int the list like it was in grouse, calculate now
     arma::vec v_t = input.col(i); // new vector
     
@@ -258,6 +260,8 @@ void GROUSE::singleRowIncrementSAGE()
     // step 4 : recover missing values in new data
     
     arma::vec newdata = U * R.row(i).t();
+    
+    lastIndex++;
 }
 
 } // namespace Algorithms

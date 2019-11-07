@@ -166,6 +166,24 @@ void CentroidDecomposition::increment(const std::vector<double> &vec)
     increment(arma::vec(vec));
 }
 
+void CentroidDecomposition::increment_raw(uint64_t newrows)
+{
+    Src.resize(Src.n_rows + newrows, Src.n_cols);
+    Load.resize(Load.n_rows + newrows, Load.n_cols);
+    
+    addedRows += newrows;
+    
+    for (uint64_t j = 0; j < Src.n_cols; ++j)
+    {
+        signVectors[j].resize(signVectors[j].n_elem + newrows);
+        
+        for (uint64_t i = signVectors[j].n_rows - newrows; i < signVectors[j].n_rows; ++i)
+        {
+            signVectors[j][i] = 1.0;
+        }
+    }
+}
+
 //
 // Algorithm
 //

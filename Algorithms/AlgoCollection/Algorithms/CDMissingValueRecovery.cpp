@@ -126,6 +126,14 @@ void CDMissingValueRecovery::increment(const arma::vec &vec)
     }
 }
 
+void CDMissingValueRecovery::increment_raw(uint64_t newrows)
+{
+    cd.increment_raw(newrows);
+    
+    if (useNormalization && false) // not implemented
+    { }
+}
+
 #define RECOVERY_VERBOSE_
 #define determine_reduction_nonstat
 
