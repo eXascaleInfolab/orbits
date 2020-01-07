@@ -308,8 +308,8 @@ namespace TestingFramework.Testing
                         {
                             int start_lock = rows - rows / 10;
                             
-                            const int mcar_percentage = 1; // 1% of total data
-                            int mcar_block = (rows * mcar_percentage) / 1000;
+                            const int mcar_percentage = 5; // 1% of total data
+                            int mcar_block = (rows * mcar_percentage) / 500;
                             
                             List<(int, int)> missing = new List<(int, int)>();
                             List<(int, int, int)> missing2 = new List<(int, int, int)>();
