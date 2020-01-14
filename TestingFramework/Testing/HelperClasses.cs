@@ -215,7 +215,7 @@ namespace TestingFramework.Testing
 
         public static bool IsBlackout(this ExperimentScenario es)
         {
-            return es == ExperimentScenario.Blackout;
+            return es == ExperimentScenario.Blackout || es == ExperimentScenario.IncreasingBlockCount;
         }
         
         //
