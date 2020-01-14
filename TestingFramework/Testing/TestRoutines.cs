@@ -1111,7 +1111,7 @@ namespace TestingFramework.Testing
 
         private static int GetGnuPlotStartingNumber(ExperimentType et, ExperimentScenario es, int nlimit, int tcase)
         {
-            if ((et == ExperimentType.Streaming || et == ExperimentType.Continuous) && es == ExperimentScenario.Length)
+            if (IsCutFromAbove(et, es))
                 return nlimit - tcase;
             
             return 0;
@@ -1153,6 +1153,11 @@ namespace TestingFramework.Testing
             }
 
             return ((rFrom, rTo), (cFrom, cTo));
+        }
+
+        private static bool IsCutFromAbove(ExperimentType et, ExperimentScenario es)
+        {
+            return (et == ExperimentType.Continuous || et == ExperimentType.Streaming) && (es == ExperimentScenario.Length || es == ExperimentScenario.McarLength);
         }
 
         #endregion
@@ -1224,7 +1229,7 @@ namespace TestingFramework.Testing
             // test phase
             //
 
-            if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && (es == ExperimentScenario.Length || es == ExperimentScenario.McarLength))
+            if (IsCutFromAbove(et, es))
             {
                 string dataSource = $"{code}/{code}_normal.txt";
                 
@@ -1244,7 +1249,7 @@ namespace TestingFramework.Testing
                 {
                     string dataSource = $"{code}/{code}_normal.txt";
 
-                    if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && (es == ExperimentScenario.Length || es == ExperimentScenario.McarLength))
+                    if (IsCutFromAbove(et, es))
                     {
                         string adjustedDataSource = $"_.temp/{token}_{code}_{tcase}.txt";
                         dataSource = adjustedDataSource;
@@ -1288,7 +1293,7 @@ namespace TestingFramework.Testing
 
                 string referenceMatrix = $"../{DataWorks.FolderData}{code}/{code}_normal.txt";
                 
-                if (et == ExperimentType.Continuous && es == ExperimentScenario.Length)
+                if (IsCutFromAbove(et, es))
                 {
                     referenceMatrix = $"../{DataWorks.FolderData}_.temp/{token}_{code}_{tcase}.txt";
                 }
@@ -1310,7 +1315,7 @@ namespace TestingFramework.Testing
             {
                 UpdateMissingBlocks(et, es, nlimit, tcase, ref missingBlocks, dataSetColumns);
 
-                int offset = (et == ExperimentType.Continuous && es == ExperimentScenario.Length) ? nlimit - tcase : 0;
+                int offset = IsCutFromAbove(et, es) ? nlimit - tcase : 0;
                 DataWorks.GeneratePrecisionGnuPlot(algorithms, code, nlimit, tcase, missingBlocks, et, offset);
             }
 
@@ -1522,7 +1527,7 @@ namespace TestingFramework.Testing
             // test phase
             //
 
-            if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && (es == ExperimentScenario.Length || es == ExperimentScenario.McarLength))
+            if (IsCutFromAbove(et, es))
             {
                 string dataSource = $"{code}/{code}_normal.txt";
                 
@@ -1542,7 +1547,7 @@ namespace TestingFramework.Testing
                 {
                     string dataSource = $"{code}/{code}_normal.txt";
 
-                    if ((et == ExperimentType.Continuous || et == ExperimentType.Streaming) && (es == ExperimentScenario.Length || es == ExperimentScenario.McarLength))
+                    if (IsCutFromAbove(et, es))
                     {
                         string adjustedDataSource = $"_.temp/{token}_{code}_{tcase}.txt";
                         dataSource = adjustedDataSource;
