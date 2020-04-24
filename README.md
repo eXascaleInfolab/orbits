@@ -1,7 +1,7 @@
 # InCD_benchmark
 
 #### Repository structure
-- Algorithms - missing value recovery algorithms: CDRec, InCD, STMVL, TRMF, TKCM, SPIRIT, TeNMF, GROUSE (SAGE as an online variant), OGDImpute, SSA, M-RNN, DynaMMo, MD_ISVD.
+- Algorithms - missing value recovery algorithms: InCD, TKCM, SPIRIT, GROUSE, OGDImpute, SSA, M-RNN, pcaMME.
 - Datasets - different datasets and time series from different sources.
 - Testing Framework - a program to run automated suite of tests on the datasets with the algorithms mentioned above.
 
