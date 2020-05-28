@@ -42,13 +42,13 @@
 
 To include/exclude an algorithm in/from the benchmark
 - open the file `TestingFramework/config.cfg`
-- update the line `#IgnoreAlgorithms =` with the list of algorithms to exclude
+- update the line `IgnoreAlgorithms =` with the list of algorithms to exclude
 
 ### Datasets customization
 
 To include/exclude a dataset in/from the benchmark
 - open the file `TestingFramework/config.cfg`
-- update the line `#IgnoreAlgorithms =` with the list of algorithms to exclude
+- update the line `Datasets` with the name of dataset to includ
 
 To add a dataset to the benchmark
 - import the file to `TestingFramework/bin/Debug/data/{name}/{name}_normal.txt` (`name` is the name of your data).
