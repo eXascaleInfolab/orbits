@@ -1,10 +1,12 @@
 # ORBITS benchmark 
 
-Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams*. Under review in VLDB 2021.
+- Paper: Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams*. Under review in VLDB 2021.
+- The full benchmark contains 15 recovery algorithms. We enable the 8 most relevant algorithms: ORBITS (incd), TKCM, SPIRIT, GROUSE, OGDImpute, SSA, M-RNN, pcaMME.
+ 
 <!---
 
 #### Repository structure
-- Algorithms - missing blocks recovery algorithms: ORBITS (incd), TKCM, SPIRIT, GROUSE, OGDImpute, SSA, M-RNN, pcaMME.
+- Algorithms - missing blocks recovery algorithms: 
 - Datasets - different datasets and time series from different sources.
 - Testing Framework - a program to run automated suite of tests on the datasets with the algorithms mentioned above.
  --->
@@ -15,7 +17,6 @@ Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBIT
 - Clone this repository.
 - Mono: Install mono from https://www.mono-project.com/download/stable/ and restart the terminal window.
 - All the additional dependencies will be installed using the build script below.
-- The full benchmark contains 15 recovery algorithms. We enable the 8 most relevant algorithms
 
 ## Build
 
