@@ -140,4 +140,4 @@ ___
 
 ## Benchmark customization
 
-The algorithm and dataset customization is identical to Linux (above).
+The algorithm and dataset customization is identical to Linux (see above).
