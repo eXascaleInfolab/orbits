@@ -1,6 +1,6 @@
 # ORBITS benchmark 
 
-Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams*. submitted to the Proceedings of the VLDB Endowment (**PVLDB 2021**)
+Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams*. Submitted to the Proceedings of the VLDB Endowment (**PVLDB 2021**)
 <!---
 
 #### Repository structure
