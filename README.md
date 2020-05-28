@@ -115,8 +115,8 @@ ___
 ```bash
     $ open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
 ```
-- Mono Runtime and Compiler: Install the package provided by Mono in https://www.mono-project.com/download/stable/
-- All other prerequisites will be installed using a build script.
+- Mono: Install mono from https://www.mono-project.com/download/stable/ and restart the terminal window.
+- All other prerequisites will be installed using the build script below.
 
 ### Build & tests
 
