@@ -13,7 +13,7 @@ Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBIT
 
 - Ubuntu 16 or higher (including Ubuntu derivatives, e.g., Xubuntu).
 - Clone this repository.
-- Mono. Install mono from https://www.mono-project.com/download/stable/.
+- Mono: Install mono from https://www.mono-project.com/download/stable/ and restart the terminal window.
 - All the additional dependencies will be installed using the build script.
 
 ## Build
