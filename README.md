@@ -15,6 +15,7 @@ Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBIT
 - Clone this repository.
 - Mono: Install mono from https://www.mono-project.com/download/stable/ and restart the terminal window.
 - All the additional dependencies will be installed using the build script below.
+- The full benchmark contains 15 recovery algorithms. We enable the 8 most relevant algorithms
 
 ## Build
 
