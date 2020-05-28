@@ -131,6 +131,6 @@ ___
     $ mono TestingFramework.exe
 ```
 
-### Benchmark customization
+## Benchmark customization
 
-The process is identical to Linux.
+The algorithm and dataset customization is identical to Linux (above).
