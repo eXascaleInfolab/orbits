@@ -36,7 +36,7 @@ Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBIT
 
 ### Algorithms customization
 
-To include/exclude an algorithm from the benchmark
+To include/exclude an algorithm in/from the benchmark
 - open the file `TestingFramework/config.cfg`
 - update the line `#IgnoreAlgorithms =` with the list of algorithms to exclude
 
