@@ -38,8 +38,7 @@ Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBIT
 
 To include/exclude an algorithm from the benchmark
 - open the file `TestingFramework/config.cfg`
-- add an entry `IgnoreAlgorithms =` and specify the list of algorithm codes to exclude them
-- the line starting with `#IgnoreAlgorithms =` provides codes for all the algorithms in the benchmark
+- update the line `#IgnoreAlgorithms =` with the list of algorithms to exclude
 
 ### Datasets customization
 
