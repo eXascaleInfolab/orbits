@@ -35,7 +35,7 @@
 ```
 
 
-## Benchmark customization
+## Benchmark customization (Optional)
 
 ### Algorithms customization
 
