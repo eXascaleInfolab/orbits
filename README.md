@@ -118,14 +118,14 @@ ___
 - Mono: Install mono from https://www.mono-project.com/download/stable/ and restart the terminal window.
 - All other prerequisites will be installed using the build script below.
 
-### Build & tests
+## Build 
 
-- Restart the terminal window after all the dependencies are installed. Open it in the root folder of the repository.
-- Build all the algorithms and Testing Framework using a script in the root folder (takes up to 10-12 minutes depending which prerequisites are already installed in the system):
+- Build all the algorithms and Testing Framework using the installation script located in the root folder:
 ```bash
     $ sh install_mac.sh
 ```
-- Run the benchmark:
+## Execution
+
 ```bash
     $ cd TestingFramework/bin/Debug/
     $ mono TestingFramework.exe
