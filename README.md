@@ -109,7 +109,7 @@ ___
 - Clone the repository
 ```bash
     $ xcode-select --install
-    $ git clone https://github.com/eXascaleInfolab/bench-vldb19.git
+    $ git clone https://github.com/eXascaleInfolab/bench-incd.git
 ```
 - If you're running macOS 10.14 you also have to install C/C++ headers by typing the command below and going through the installation screen:
 ```bash
