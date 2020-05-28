@@ -9,8 +9,6 @@ Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBIT
 - Testing Framework - a program to run automated suite of tests on the datasets with the algorithms mentioned above.
  --->
 
-___
-
 ## Prerequisites and dependencies (Linux)
 
 - Ubuntu 16 or higher (including Ubuntu derivatives, e.g., Xubuntu).
@@ -18,16 +16,12 @@ ___
 - Mono. Install mono from https://www.mono-project.com/download/stable/.
 - All the additional dependencies will be installed using the build script.
 
-___
-
 ## Build
 
 - Build all the algorithms and Testing Framework using the installation script located in the root folder:
 ```bash
     $ sh install_linux.sh
 ```
-
-___
 
 ## Execution
 
@@ -37,10 +31,8 @@ ___
     $ mono TestingFramework.exe 
 ```
 
-___
 
 ## Benchmark customization
-
 
 ### Algorithms customization
 
@@ -108,7 +100,10 @@ To exclude an algorithm from the benchmark
 - the line starting with `#IgnoreAlgorithms =` provides codes for all the algorithms in the benchmark
 
 -->
-### Prerequisites and dependencies (macOS) -- Experimental
+
+___
+
+## Prerequisites and dependencies (macOS) -- Experimental
 
 - The benchmark runs on macOS with a few caveats:
 - - TRMF algorithm is disabled (it doesn't work under octave on macOS).
@@ -127,7 +122,7 @@ To exclude an algorithm from the benchmark
 - Mono Runtime and Compiler: Install the package provided by Mono in https://www.mono-project.com/download/stable/
 - All other prerequisites will be installed using a build script.
 
-#### Build & tests
+### Build & tests
 
 - Restart the terminal window after all the dependencies are installed. Open it in the root folder of the repository.
 - Build all the algorithms and Testing Framework using a script in the root folder (takes up to 10-12 minutes depending which prerequisites are already installed in the system):
@@ -140,6 +135,6 @@ To exclude an algorithm from the benchmark
     $ mono TestingFramework.exe
 ```
 
-#### Customize datasets and algorithms
+### Benchmark customization
 
 The process is identical to Linux.
