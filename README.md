@@ -1,7 +1,8 @@
 # ORBITS benchmark 
 
 - **Paper**: Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams*. Under review in VLDB 2021.
-- **Benchmark**: The full benchmark contains 15 recovery algorithms. We enable the 8 most relevant algorithms: ORBITS (incd), TKCM, SPIRIT, GROUSE, OGDImpute, SSA, M-RNN, pcaMME.
+- **Benchmark**: The full benchmark contains 15 recovery algorithms. We enable the 8 most relevant algorithms: ORBITS (incd), TKCM, SPIRIT, GROUSE, OGDImpute, SSA, M-RNN, pcaMME. To enable the full benchmark refer to the *Algorithms customization* section below.
+- **Scenarios**: The benchmark will execute the full set of 15 different recovery scenarios and generate all corresponding plots.
  
 <!---
 
