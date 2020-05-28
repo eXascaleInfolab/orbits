@@ -1,3 +1,62 @@
+# ORBITS benchmark 
+
+Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams*. submitted to the Proceedings of the VLDB Endowment (**PVLDB 2021**)
+<!---
+
+#### Repository structure
+- Algorithms - missing blocks recovery algorithms: ORBITS (incd), TKCM, SPIRIT, GROUSE, OGDImpute, SSA, M-RNN, pcaMME.
+- Datasets - different datasets and time series from different sources.
+- Testing Framework - a program to run automated suite of tests on the datasets with the algorithms mentioned above.
+ --->
+
+___
+
+## Prerequisites and dependencies (Linux)
+
+- Ubuntu 16 or higher (including Ubuntu derivatives, e.g., Xubuntu).
+- Clone this repository.
+- Mono. Install mono from https://www.mono-project.com/download/stable/.
+- All the additional dependencies will be installed using the build script.
+
+___
+
+## Build
+
+- Build all the algorithms and Testing Framework using the installation script located in the root folder:
+```bash
+    $ sh install_linux.sh
+```
+
+___
+
+## Execution
+
+
+```bash
+    $ cd TestingFramework/bin/Debug/
+    $ mono TestingFramework.exe 
+```
+
+___
+
+## Benchmark customization
+
+
+### Algorithms customization
+
+To include/exclude an algorithm from the benchmark
+- open the file `TestingFramework/config.cfg`
+- add an entry `IgnoreAlgorithms =` and specify the list of algorithm codes to exclude them
+- the line starting with `#IgnoreAlgorithms =` provides codes for all the algorithms in the benchmark
+
+### Datasets customization
+
+To add a dataset to the benchmark
+- import the file to `TestingFramework/bin/Debug/data/{name}/{name}_normal.txt` (`name` is the name of your data).
+- Requirements: rows>= 1'000, columns>= 10, column separator: empty space, row separator: newli
+
+
+<!--
 # InCD_benchmark
 
 #### Repository structure
@@ -48,7 +107,7 @@ To exclude an algorithm from the benchmark
 - add an entry `IgnoreAlgorithms =` and specify the list of algorithm codes to exclude them
 - the line starting with `#IgnoreAlgorithms =` provides codes for all the algorithms in the benchmark
 
-
+-->
 ### Prerequisites and dependencies (macOS) -- Experimental
 
 - The benchmark runs on macOS with a few caveats:
