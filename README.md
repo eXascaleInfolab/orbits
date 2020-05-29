@@ -118,12 +118,11 @@ ___
     $ xcode-select --install
     $ git clone https://github.com/eXascaleInfolab/bench-incd.git
 ```
-- If you're running macOS 10.14 you also have to install C/C++ headers by typing the command below and going through the installation screen:
+- If you're running macOS 10.14, you need to install C/C++ headers using the command below:
 ```bash
     $ open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
 ```
 - Mono: Install mono from https://www.mono-project.com/download/stable/ and restart the terminal window.
-- All other prerequisites will be installed using the build script below.
 
 ## Build 
 
