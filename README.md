@@ -39,7 +39,7 @@ To include/exclude an algorithm in/from the benchmark
 
 - To include an existing dataset from `TestingFramework/bin/Debug/data/`
   - open the file `TestingFramework/config.cfg`
-  - Add the name of dataset to the line `Datasets=`
+  - Add the name of dataset to the line `Datasets =`
 
 - To add a new dataset to the benchmark
   - import the file to `TestingFramework/bin/Debug/data/{name}/{name}_normal.txt` (`name` is the name of your data).
