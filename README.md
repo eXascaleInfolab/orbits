@@ -52,12 +52,12 @@ ___
 
 - The benchmark runs on macOS but takes longer than Linux. 
 - macOS 10.13 or higher, homebrew
-- Clone the repository
+- Clone the current repository
 ```bash
     $ xcode-select --install
     $ git clone https://github.com/eXascaleInfolab/bench-incd.git
 ```
-- If you're running macOS 10.14, you need to install C/C++ headers using the command below:
+- If you are running macOS 10.14, you need to install C/C++ headers using the following command:
 ```bash
     $ open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
 ```
