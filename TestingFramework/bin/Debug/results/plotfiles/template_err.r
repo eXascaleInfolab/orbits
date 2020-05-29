@@ -1,6 +1,7 @@
 
 # options
 #########################
+options(scipen = 999)
 lengths <- seq.int(from = {start}, to = {end}, by = {tick});
 
 global_path <- "error/results/";
