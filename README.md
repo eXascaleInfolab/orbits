@@ -43,7 +43,7 @@ To include/exclude an existing algorithm in/from the benchmark
 
 - To add your own dataset to the benchmark
   - import the file to `TestingFramework/bin/Debug/data/{name}/{name}_normal.txt` (`name` is the name of your data).
-  - Requirements: rows>= 1'000; columns>= 10; column separator: empty space; row separator: newline
+  - Requirements: rows>= 1'000; columns>= 10; column separator = empty space; row separator = newline
 
 
 ___
