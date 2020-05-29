@@ -47,9 +47,9 @@ namespace TestingFramework.Testing
         {
             switch (et)
             {
-                case ExperimentType.Continuous: return "off-e";
-                case ExperimentType.Recovery: return "off-m";
-                case ExperimentType.Streaming: return "onl-e";
+                case ExperimentType.Continuous: return "btc-e";
+                case ExperimentType.Recovery: return "btc-m";
+                case ExperimentType.Streaming: return "str-e";
                 default: throw new InvalidDataException();
             }
         }
@@ -58,9 +58,9 @@ namespace TestingFramework.Testing
         {
             switch (et)
             {
-                case ExperimentType.Continuous: return "offline_end";
-                case ExperimentType.Recovery: return "offline_mid";
-                case ExperimentType.Streaming: return "online_end";
+                case ExperimentType.Continuous: return "batch_end";
+                case ExperimentType.Recovery: return "batch_mid";
+                case ExperimentType.Streaming: return "streaming_end";
                 default: throw new InvalidDataException();
             }
         }

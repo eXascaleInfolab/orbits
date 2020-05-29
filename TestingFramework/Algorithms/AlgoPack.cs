@@ -98,7 +98,7 @@ namespace TestingFramework.Algorithms
     
     public partial class IncrementalCentroidDecompositionAlgorithm
     {
-        public override string AlgCode => "cdrec";
+        public override string AlgCode => "orbits";
         protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
