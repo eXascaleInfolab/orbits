@@ -5,14 +5,6 @@
 - **Datasets**: The full benchmark contains 10 different datasets. We enable the 4 most relevant datasets: gas, motion, bafu and soccer. To enable the full set of datasets, please refer to the *Datasets customization* section below.
 - **Scenarios**: The benchmark will execute the full set of 15 different recovery scenarios and generate all corresponding plots.
  
-<!---
-
-#### Repository structure
-- Algorithms - missing blocks recovery algorithms: 
-- Datasets - different datasets and time series from different sources.
-- Testing Framework - a program to run automated suite of tests on the datasets with the algorithms mentioned above.
- --->
-
 ## Prerequisites and dependencies (Linux)
 
 - Ubuntu 16 or higher (including Ubuntu derivatives, e.g., Xubuntu).
@@ -53,6 +45,40 @@ To include/exclude an algorithm in/from the benchmark
   - import the file to `TestingFramework/bin/Debug/data/{name}/{name}_normal.txt` (`name` is the name of your data).
   - Requirements: rows>= 1'000, columns>= 10, column separator: empty space, row separator: newline
 
+
+___
+
+## Prerequisites and dependencies (macOS) -- Experimental
+
+- The benchmark runs on macOS but takes longer than Linux. 
+- macOS 10.13 or higher, homebrew
+- Clone the repository
+```bash
+    $ xcode-select --install
+    $ git clone https://github.com/eXascaleInfolab/bench-incd.git
+```
+- If you're running macOS 10.14, you need to install C/C++ headers using the command below:
+```bash
+    $ open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
+```
+- Mono: Install mono from https://www.mono-project.com/download/stable/ and restart the terminal window.
+
+## Build 
+
+- Build all the algorithms and Testing Framework using the installation script located in the root folder:
+```bash
+    $ sh install_mac.sh
+```
+## Execution
+
+```bash
+    $ cd TestingFramework/bin/Debug/
+    $ mono TestingFramework.exe
+```
+
+## Benchmark customization
+
+The algorithm and dataset customization is identical to Linux (see above).
 
 <!--
 # InCD_benchmark
@@ -107,36 +133,3 @@ To exclude an algorithm from the benchmark
 
 -->
 
-___
-
-## Prerequisites and dependencies (macOS) -- Experimental
-
-- The benchmark runs on macOS but takes longer than Linux. 
-- macOS 10.13 or higher, homebrew
-- Clone the repository
-```bash
-    $ xcode-select --install
-    $ git clone https://github.com/eXascaleInfolab/bench-incd.git
-```
-- If you're running macOS 10.14, you need to install C/C++ headers using the command below:
-```bash
-    $ open /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg
-```
-- Mono: Install mono from https://www.mono-project.com/download/stable/ and restart the terminal window.
-
-## Build 
-
-- Build all the algorithms and Testing Framework using the installation script located in the root folder:
-```bash
-    $ sh install_mac.sh
-```
-## Execution
-
-```bash
-    $ cd TestingFramework/bin/Debug/
-    $ mono TestingFramework.exe
-```
-
-## Benchmark customization
-
-The algorithm and dataset customization is identical to Linux (see above).
