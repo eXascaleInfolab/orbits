@@ -45,7 +45,7 @@ To include/exclude an algorithm in/from the benchmark
 
 ### Datasets customization
 
-- To include an existing dataset in the benchmark
+- To include an existing dataset from `TestingFramework/bin/Debug/data/`
   - open the file `TestingFramework/config.cfg`
   - Add the name of dataset to the line `Datasets`
 
