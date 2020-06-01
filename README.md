@@ -26,7 +26,7 @@
     $ mono TestingFramework.exe 
 ```
 
-- The full test suite with the default setup will take a sizeable amount of time to run (up to 3 days depending on the hardware) and will produce up to 3GB of output files with all recovered data and plots. We recommend to run TKCM and MRNN separately.
+- The full test suite with the default setup will take a sizeable amount of time to run (up to 3 days depending on the hardware) and will produce up to 3GB of output files with all recovered data and plots. 
 
 ## Benchmark customization (Optional)
 
@@ -35,7 +35,7 @@
 To include/exclude an existing algorithm in/from the benchmark
 - open the file `TestingFramework/config.cfg`
 - update the line `IgnoreAlgorithms =` with the list of algorithms to exclude
-
+- We recommend to run TKCM and MRNN separately.
 ### Datasets customization
 
 - To include an existing dataset from `TestingFramework/bin/Debug/data/`
