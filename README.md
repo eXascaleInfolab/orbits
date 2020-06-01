@@ -26,7 +26,8 @@
     $ mono TestingFramework.exe 
 ```
 
-- *Remark*: The benchmark will take up to three days to finish (excluding TKCM and MRNN). We recommend to run TKCM and MRNN separately as both algorithms are time-consuming. 
+*Remark*: The full test suite with the default setup will take a sizeable amount of time to run (up to 3 days depending on the hardware) and will produce up to 3GB of output files with all recovered data and plots. We recommend to run TKCM and MRNN separately.
+
 ## Benchmark customization (Optional)
 
 ### Algorithms customization
