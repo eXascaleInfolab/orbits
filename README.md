@@ -26,7 +26,7 @@
     $ mono TestingFramework.exe 
 ```
 
-
+- *Remark*: The benchmark will take up to three days to finish (excluding TKCM and MRNN). We recommend to run TKCM and MRNN separately as both algorithms are time-consuming. 
 ## Benchmark customization (Optional)
 
 ### Algorithms customization
