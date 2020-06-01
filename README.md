@@ -48,7 +48,7 @@ To include/exclude an existing algorithm in/from the benchmark
 
 
 ___
-
+___
 ## Prerequisites and dependencies (macOS) 
 
 - The benchmark runs also on macOS, but takes much longer than Linux. 
