@@ -49,9 +49,9 @@ To include/exclude an existing algorithm in/from the benchmark
 
 ___
 
-## Prerequisites and dependencies (macOS) -- Experimental
+## Prerequisites and dependencies (macOS) 
 
-- The benchmark runs on macOS but takes longer than Linux. 
+- The benchmark runs also on macOS, but takes much longer than Linux. 
 - macOS 10.13 or higher, homebrew
 - Clone the current repository
 ```bash
