@@ -9,7 +9,7 @@
 
 - Ubuntu 16 or 18 (including Ubuntu derivatives, e.g., Xubuntu).
 - Clone this repository.
-- Mono: Install mono from https://www.mono-project.com/download/stable/ and restart the terminal window.
+- Mono: Install mono from https://www.mono-project.com/download/stable/.
 
 ## Build
 
