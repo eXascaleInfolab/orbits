@@ -35,7 +35,7 @@
 
 To include/exclude an existing algorithm in/from the benchmark
 - open the file `TestingFramework/config.cfg`
-- update the line `IgnoreAlgorithms =` with the list of algorithms to exclude
+- update the line `EnabledAlgorithms =` with the list of algorithms to include
 
 ### Datasets customization
 
