@@ -38,7 +38,7 @@ To include/exclude an existing algorithm in/from the benchmark
 - We recommend to run TKCM and MRNN separately.
 ### Datasets customization
 
-- To include an existing dataset from `TestingFramework/bin/Debug/data/`
+- To include an existing dataset (from `TestingFramework/bin/Debug/data/`)
   - open the file `TestingFramework/config.cfg`
   - Add the name of dataset to the line `Datasets =`
 
