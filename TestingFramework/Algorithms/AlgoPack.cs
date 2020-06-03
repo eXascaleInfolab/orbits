@@ -74,9 +74,14 @@ namespace TestingFramework.Algorithms
                 foreach (var et in EnumMethods.AllExperimentTypes())
                 {
                     string etDir = $"{exDir}{et.ToLongString()}/";
+                    string scenFile = $"{etDir}{et.ToLongString()}_scenarios.txt";
                     if (!Directory.Exists(etDir))
                     {
                         Directory.CreateDirectory(etDir);
+                    }
+                    if (!File.Exists(scenFile))
+                    {
+                        File.Copy($"{DataWorks.FolderResults}plotfiles/{et.ToLongString()}.txt", scenFile);
                     }
 
                     foreach (var es in EnumMethods.AllExperimentScenarios().Where(x => et.IsMatch(x)))

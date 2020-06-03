@@ -62,7 +62,7 @@ namespace TestingFramework
                         disableTrmf = Convert.ToBoolean(entry.Value);
                         break;
 
-                    case "IgnoreAlgorithms":
+                    case "EnabledAlgorithms":
                         ignoreList.AddRange(entry.Value.Split(',').Select(x => x.Trim().ToLower()));
                         break;
                     
@@ -98,10 +98,10 @@ namespace TestingFramework
             
             if (disableTrmf)
             {
-                ignoreList.Add(AlgoPack.Trmf.AlgCode.ToLower()); // possible duplicate, but it doesn't matter
+                ignoreList.Remove(AlgoPack.Trmf.AlgCode.ToLower());
             }
 
-            AlgoPack.ListAlgorithms = AlgoPack.ListAlgorithms.Where(x => !ignoreList.Contains(x.AlgCode.ToLower())).ToArray();
+            AlgoPack.ListAlgorithms = AlgoPack.ListAlgorithms.Where(x => ignoreList.Contains(x.AlgCode.ToLower())).ToArray();
             AlgoPack.ListAlgorithmsStreaming = AlgoPack.ListAlgorithms.Where(x => x.IsStreaming).ToArray();
             AlgoPack.ListAlgorithmsMulticolumn = AlgoPack.ListAlgorithms.Where(x => x.IsMulticolumn).ToArray();
             
