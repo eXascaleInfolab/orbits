@@ -33,13 +33,13 @@
 
 ### Algorithms customization
 
-To include/exclude an existing algorithm in/from the benchmark
+To enable an additional algorithm
 - open the file `TestingFramework/config.cfg`
-- update the line `EnabledAlgorithms =` with the list of algorithms to include
+- add the name of the algorithm to the line `EnabledAlgorithms =`
 
 ### Datasets customization
 
-- To include an existing dataset (from `TestingFramework/bin/Debug/data/`)
+- To enable an additional dataset (from `TestingFramework/bin/Debug/data/`)
   - open the file `TestingFramework/config.cfg`
   - Add the name of dataset to the line `Datasets =`
 
