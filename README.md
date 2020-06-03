@@ -35,7 +35,7 @@
 To include/exclude an existing algorithm in/from the benchmark
 - open the file `TestingFramework/config.cfg`
 - update the line `IgnoreAlgorithms =` with the list of algorithms to exclude
-- We recommend to run TKCM and MRNN separately.
+
 ### Datasets customization
 
 - To include an existing dataset (from `TestingFramework/bin/Debug/data/`)
