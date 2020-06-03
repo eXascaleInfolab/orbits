@@ -7,7 +7,7 @@
  
 ## Prerequisites and dependencies (Linux)
 
-- Ubuntu 16 or higher (including Ubuntu derivatives, e.g., Xubuntu).
+- Ubuntu 16 or 18 (including Ubuntu derivatives, e.g., Xubuntu).
 - Clone this repository.
 - Mono: Install mono from https://www.mono-project.com/download/stable/ and restart the terminal window.
 
