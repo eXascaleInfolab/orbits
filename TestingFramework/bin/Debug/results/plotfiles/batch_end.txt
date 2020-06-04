@@ -1,13 +1,13 @@
 N = lentgh of time series 
 M = number of time series
-B = missing block
+MB = missing block
 W = 10% * N
 
 batch_end
 
-missingpercentage   | N = max; M = max; size of single missing block varies between 10% and 80% of the series. Position: end of 1st series.
+missingpercentage   | N = max; M = max; size of single single block varies between 10% and 80% of the series. Position: end of 1st series.
 length              | M = max; B= 10% * N;  N varies between 20% and 100% of the series. Position: end of 1st series.
-columns             | N = fixed; M = varies from min(10% of columns, 4) to 100% of columns, step 10%; Missing Block - at the end of the 1st time series, size = W
+columns             | N = fixed; size missing block = W, M = varies from min(10% of columns, 4) to 100% of columns, step 10%; Missing Block - at the end of the 1st time series, 
 blackout            | N = fixed; M = fixed; Missing block - 10 to 100 rows, step 10 of each time series, located at the end
 multicol-increasing | N = fixed, M = fixed, Missing data - 10 to 100% of time series to have missing blocks; Missing block - W at the end of time series
 mcar-ts-block       | N = fixed; M = fixed; Missing data - 10 to 100% of time series to have missing blocks; Missing block - 1 per time series, size = 10% * W, start = random within W from end; fixed seed
