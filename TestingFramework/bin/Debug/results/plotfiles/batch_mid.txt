@@ -1,1 +1,23 @@
-tba
+N = lentgh of time series 
+M = number of time series
+
+W = 10% * N
+
+batch_mid
+
+missingpercentage   | N = max; M = max; size of a single single block varies between 10% and 80% of the series, position: at 5% of 1st series from the top.
+length              | M = max; N varies between 20% and 100% of the series. size of a single missing block is 10% * N, position: at 5% of 1st series from the top.
+columns             | N = max; M = varies from min(10% of columns, 4) to 100% of columns; size of a single missing block is W, position: at 5% of 1st series from the top.
+blackout            | N = max; M = max; Missing data - 10 to 100 rows in each time series, position: at 5% of all series from the top.
+multicol-increasing | N = max, M = max, Missing data - 10 to 100% time series are incomplete; Missing blocks are of size W at the end of an incomplete time series.
+multicol-disjoint   | TBA
+multicol-overlap    | TBA
+mcar-matrix-block   | TBA
+mcar-ts-block       | N = max; M = max; Missing data - 10 to 100% time series are incomplete; Missing block - 1 per incomplete time series, size = 10% * W, position: random except top 20% of the series.
+mcar-ts-block2      | same as ts-block, but only every second incomplete time series.
+mcar-ts-multiblock  | N = max; M = max; Missing data - 10 to 100% time series are incomplete; sub-blocks of 2% * W are removed at random from each incomplete TS until a total of 10% * W of all points in this TS are missing. position: random except top 20% of the series.
+mcar-ts-multiblock2 | same as ts-multiblock, but only every second incomplete time series.
+mcar-columns        | N = max; M = varies from max(10% of columns, 4) to 100% of columns, step 10%; Missing blocks - 10% * W of every second time series total in sub-blocks of 1% * W, start = random except top 20% of the series.
+mcar-length         | M = max; N varies from 20% of the size to 100% of the size by steps of 10%; Missing blocks - 10% * W of every second time series total in sub-blocks of 1% * W, start = random except top 20% of the series.
+
+* all mcar scenarios use random number generator with fixed seed and will produce the same blocks every run
