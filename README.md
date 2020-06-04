@@ -1,7 +1,7 @@
 # Benchmark of streaming recovery techniques in time series
 
 - **Paper**: Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams*. Under review in VLDB 2021.
-- **Algorithms**: The full benchmark contains 14 recovery algorithms (all but 2 are rewritten in C++). By default, only the 7 most relevant online algorithms will be evaluated: ORBITS, SPIRIT, GROUSE, OGDImpute, pcaMME, TKCM and M-RNN. To enable any additional algorithm, please refer to the *Algorithms customization* section below.
+- **Algorithms**: The full benchmark contains 14 batch and online recovery algorithms (all but 2 are rewritten in C++). By default, only the 7 most relevant online algorithms will be evaluated: ORBITS, SPIRIT, GROUSE, OGDImpute, pcaMME, TKCM and M-RNN. To enable any additional algorithm, please refer to the *Algorithms customization* section below.
 - **Datasets**: The full benchmark contains 10 different datasets. By default, only the 3 most relevant datasets will be evaluated: gas, motion and bafu. To enable soccer (or any additional dataset), please refer to the *Datasets customization* section below.
 - **Scenarios**: The benchmark will execute the full set of 15 different recovery scenarios and generate all the corresponding plots (batch and streaming).
  
