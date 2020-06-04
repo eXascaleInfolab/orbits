@@ -1,6 +1,6 @@
 N = lentgh of time series 
 M = number of time series
-B= size of missing block
+B= missing block
 
 W = 10% * N
 
