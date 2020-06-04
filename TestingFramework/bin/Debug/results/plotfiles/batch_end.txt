@@ -8,7 +8,7 @@ batch_end
 missingpercentage   | N = max; M = max; size of the missing block varies between 10% and 80% of the series; position: end of 1st series.
 length              | M = max; N varies between 20% and 100% of max(N); size of the missing block = W; position: end of 1st series.
 columns             | N = max; M = varies between min(10% of columns, 4) and max(M); size of the missing block = W;  position: end of 1st series.
-blackout            | N = max; M = max; Missing data - 10 to 100 rows in each time series, position: end of 1st series.
+blackout            | N = max; M = max; Missing data varies between 10 and 100 values of each series; position: end of series.
 multicol-increasing | N = max, M = max, Missing data - 10 to 100% time series are incomplete; Missing blocks are of size W at the end of an incomplete time series.
 mcar-ts-block       | N = max; M = max; Missing data - 10 to 100% time series are incomplete; Missing block - 1 per incomplete time series, size = 10% * W, position: random within W from end.
 mcar-ts-block2      | same as ts-block, but only every second incomplete time series.
