@@ -14,7 +14,7 @@ mcar-ts-block       | N = max; M = max;number of incomplete series varies betwee
 mcar-ts-block2      | same as ts-block, but for every second incomplete time series.
 mcar-ts-multiblock  | N = max; M = max; number of incomplete series varies between 10% of columns and Max(M); sub-blocks of 2% * W are removed at random from each incomplete series until a total of 10% * W of all points in the series are missing. position: random within W from the end.
 mcar-ts-multiblock2 | same as ts-multiblock, but every second incomplete time series.
-mcar-columns        | N = max; M = varies from max(10% of columns, 4) to 100% of columns, step 10%; Missing blocks - 10% * W of every second series total in sub-blocks of 1% * W, start = random within W from the end.
-mcar-length         | M = max; N varies from 20% of the size to 100% of the size by steps of 10%; Missing blocks - 10% * W of every second series total in sub-blocks of 1% * W, start = random within W from the end.
+mcar-columns        | N = max; M = varies between max(10% of columns, 4) and MAX(M), step 10%; Missing blocks - 10% * W of every second series total in sub-blocks of 1% * W, start = random within W from the end.
+mcar-length         | M = max; N varies from 20% of the length and MAX(N); Missing blocks:  10% * W of every second series total in sub-blocks of 1% * W, start = random within W from the end.
 
 * all mcar scenarios use random number generator with fixed seed and will produce the same blocks every run
