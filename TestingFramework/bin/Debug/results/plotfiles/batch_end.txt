@@ -12,7 +12,7 @@ blackout            | N = fixed; M = fixed; Missing block - 10 to 100 rows, step
 multicol-increasing | N = fixed, M = fixed, Missing data - 10 to 100% of time series to have missing blocks; Missing block - W at the end of time series
 mcar-ts-block       | N = fixed; M = fixed; Missing data - 10 to 100% of time series to have missing blocks; Missing block - 1 per time series, size = 10% * W, start = random within W from end; fixed seed
 mcar-ts-block2      | same as ts-block, but only every second time series
-mcar-ts-multiblock  | N = fixed; M = fixed; Missing data - 10 to 100% of time series to have missing blocks; sub-blocks of 2% * W are removed at random from each TS involved until a total of 10% * W of all points in involved TS are missing. start = random within W from end; fixed seed
+mcar-ts-multiblock  | N = fixed; M = fixed; Missing data - 10 to 100% of time series with missing blocks; sub-blocks of 2% * W are removed at random from each TS  until a total of 10% * W of all points in involved TS are missing. start = random within W from end; fixed seed
 mcar-ts-multiblock2 | same as ts-multiblock, but only every second time series
 mcar-columns        | N = fixed; M = varies from max(10% of columns, 4) to 100% of columns, step 10%; Missing blocks - 10% * W of every second time series total in sub-blocks of 1% * W, start = random within W from end; fixed seed
 mcar-length         | M = fixed; N varies from 20% of the size to 100% of the size by steps of 10%; Missing blocks - 10% * W of every second time series total in sub-blocks of 1% * W, start = random within W from end; fixed seed
