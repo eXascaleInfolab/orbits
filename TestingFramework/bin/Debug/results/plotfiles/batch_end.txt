@@ -5,7 +5,7 @@ W = 10% * N
 
 batch_end
 
-missingpercentage   | N = fixed; M = fixed; Missing block - at the end of the 1st time series of size 10% to 80%, step 10% of the length.
+missingpercentage   | N = fixed; M = fixed; Missing block ranges between 10% to 80% at the end of 1st series.
 length              | M = fixed; N varies from 20% of the size to 100% of the size by steps of 10%; Missing Block - at the end of the 1st time series, size = W
 columns             | N = fixed; M = varies from min(10% of columns, 4) to 100% of columns, step 10%; Missing Block - at the end of the 1st time series, size = W
 blackout            | N = fixed; M = fixed; Missing block - 10 to 100 rows, step 10 of each time series, located at the end
