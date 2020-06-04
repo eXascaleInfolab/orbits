@@ -1,18 +1,20 @@
 N = lentgh of time series 
 M = number of time series
-MB = missing block
+
 W = 10% * N
 
 batch_end
 
-missingpercentage   | N = max; M = max; size of single single block varies between 10% and 80% of the series. Position: end of 1st series.
-length              | M = max; B= 10% * N;  N varies between 20% and 100% of the series. Position: end of 1st series.
-columns             | N = fixed; size missing block = W, M = varies from min(10% of columns, 4) to 100% of columns, step 10%; Missing Block - at the end of the 1st time series, 
-blackout            | N = fixed; M = fixed; Missing block - 10 to 100 rows, step 10 of each time series, located at the end
-multicol-increasing | N = fixed, M = fixed, Missing data - 10 to 100% of time series to have missing blocks; Missing block - W at the end of time series
-mcar-ts-block       | N = fixed; M = fixed; Missing data - 10 to 100% of time series to have missing blocks; Missing block - 1 per time series, size = 10% * W, start = random within W from end; fixed seed
-mcar-ts-block2      | same as ts-block, but only every second time series
-mcar-ts-multiblock  | N = fixed; M = fixed; Missing data - 10 to 100% of time series with missing blocks; sub-blocks of 2% * W are removed at random from each TS  until a total of 10% * W of all points in involved TS are missing. start = random within W from end; fixed seed
-mcar-ts-multiblock2 | same as ts-multiblock, but only every second time series
-mcar-columns        | N = fixed; M = varies from max(10% of columns, 4) to 100% of columns, step 10%; Missing blocks - 10% * W of every second time series total in sub-blocks of 1% * W, start = random within W from end; fixed seed
-mcar-length         | M = fixed; N varies from 20% of the size to 100% of the size by steps of 10%; Missing blocks - 10% * W of every second time series total in sub-blocks of 1% * W, start = random within W from end; fixed seed
+missingpercentage   | N = max; M = max; size of a single single block varies between 10% and 80% of the series, position: end of 1st series.
+length              | M = max; N varies between 20% and 100% of the series. size of a single missing block is 10% * N, position: end of 1st series.
+columns             | N = max; M = varies from min(10% of columns, 4) to 100% of columns; size of a single missing block is W, position: end of 1st series.
+blackout            | N = max; M = max; Missing data - 10 to 100 rows in each time series, position: end of 1st series.
+multicol-increasing | N = max, M = max, Missing data - 10 to 100% time series are incomplete; Missing blocks are of size W at the end of an incomplete time series.
+mcar-ts-block       | N = max; M = max; Missing data - 10 to 100% time series are incomplete; Missing block - 1 per incomplete time series, size = 10% * W, position: random within W from end.
+mcar-ts-block2      | same as ts-block, but only every second incomplete time series.
+mcar-ts-multiblock  | N = max; M = max; Missing data - 10 to 100% time series are incomplete; sub-blocks of 2% * W are removed at random from each incomplete TS until a total of 10% * W of all points in this TS are missing. position: random within W from end.
+mcar-ts-multiblock2 | same as ts-multiblock, but only every second incomplete time series.
+mcar-columns        | N = max; M = varies from max(10% of columns, 4) to 100% of columns, step 10%; Missing blocks - 10% * W of every second time series total in sub-blocks of 1% * W, start = random within W from end.
+mcar-length         | M = max; N varies from 20% of the size to 100% of the size by steps of 10%; Missing blocks - 10% * W of every second time series total in sub-blocks of 1% * W, start = random within W from end.
+
+* all mcar scenarios use random number generator with fixed seed and will produce the same blocks every run
