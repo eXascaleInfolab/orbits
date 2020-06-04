@@ -1,5 +1,5 @@
-N = number of rows in the data set
-M = number of columns in the data set
+N = lentgh of time series 
+M = number of time series
 
 W = 10% * N
 
