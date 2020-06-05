@@ -26,7 +26,7 @@
     $ mono TestingFramework.exe 
 ```
 
-- The full test suite with the default setup will take a sizeable amount of time to run (up to 2 days depending on the hardware) and will produce up to 3GB of output files with all recovered data and plots. 
+- The full test suite with the default setup will take a sizeable amount of time to run (up to 30 hours depending on the hardware) and will produce up to 20GB of output files with all recovered data and plots. 
 
 ## Benchmark customization (Optional)
 
