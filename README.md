@@ -27,7 +27,7 @@
 ```
 
 -**Results**: The accuracy results will be added for each scenario to `Plots/precision/../error/results/values`. The runtime results will be added for each scenario to `Plots/runtime/../results/`
-- **Warning**: The full test suite with the default setup will take a sizeable amount of time to run (~30 hours depending on the hardware) and will produce up to 20GB of output files with all recovered data and plots. 
+-**Warning**: The full test suite with the default setup will take a sizeable amount of time to run (~30 hours depending on the hardware) and will produce up to 20GB of output files with all recovered data and plots. 
 
 ## Benchmark customization (Optional)
 
