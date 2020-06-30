@@ -5,7 +5,7 @@
 - **Datasets**: The full benchmark contains 10 different datasets. By default, only the 3 most relevant datasets will be evaluated: gas (drfit10), motion and bafu. To enable soccer (or any additional dataset), please refer to the *Datasets customization* section below.
 - **Scenarios**: The benchmark will execute the full set of 11 different recovery scenarios and report the error using RMSE, MSE and MAE. 
   - The streaming scenarios are described in `TestingFramework/bin/Debug/results/plotfiles/streaming_end.txt` 
-  - The offline scenarios are described in `TestingFramework/bin/Debug/results/plotfiles/batch_mid.txt` 
+  - The batch scenarios are described in `TestingFramework/bin/Debug/results/plotfiles/batch_mid.txt` 
  
 ## Prerequisites and dependencies (Linux)
 
