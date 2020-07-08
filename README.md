@@ -45,7 +45,7 @@ To enable an additional algorithm
 - All the datasets used in this paper can be found in: `TestingFramework/bin/Debug/data/`
 - To enable an additional dataset
   - open the file `TestingFramework/config.cfg`
-  - Add the name of dataset to the line `Datasets =`
+  - Add the name of the dataset to the line `Datasets =`
 
 - To add a new dataset to the benchmark
   - import the file to `TestingFramework/bin/Debug/data/{name}/{name}_normal.txt` (`name` is the name of your data).
