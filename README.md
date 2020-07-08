@@ -47,7 +47,7 @@ To enable an additional algorithm
   - open the file `TestingFramework/config.cfg`
   - Add the name of dataset to the line `Datasets =`
 
-- To add your own dataset to the benchmark
+- To add a new dataset to the benchmark
   - import the file to `TestingFramework/bin/Debug/data/{name}/{name}_normal.txt` (`name` is the name of your data).
   - Requirements: rows>= 1'000; columns>= 10; column separator = space; row separator = newline
 
