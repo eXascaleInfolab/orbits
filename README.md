@@ -36,9 +36,7 @@
 
 ### Algorithms customization
 
-To enable an additional algorithm
-- open the file `TestingFramework/config.cfg`
-- add the name of the algorithm to the line `EnabledAlgorithms =`
+To enable an additional algorithm: open the file `TestingFramework/config.cfg` and add the name of the algorithm to the line `EnabledAlgorithms =`
 
 ### Datasets customization
 
