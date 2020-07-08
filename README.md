@@ -42,7 +42,7 @@ To enable an additional algorithm
 
 ### Datasets customization
 
-- All the datasets used in this paper can be found in: TestingFramework/bin/Debug/data/
+- All the datasets used in this paper can be found in: `TestingFramework/bin/Debug/data/`
 - To enable an additional dataset
   - open the file `TestingFramework/config.cfg`
   - Add the name of dataset to the line `Datasets =`
