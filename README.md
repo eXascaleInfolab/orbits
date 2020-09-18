@@ -4,7 +4,7 @@
 - **Algorithms**: The benchmark evaluates the following algorithms: ORBITS, SPIRIT, GROUSE, OGDImpute, pcaMME, TKCM and M-RNN. To update the list of algorithms, please refer to the *Algorithms customization* section below.
 - **Datasets**: The full benchmark contains 10 different datasets. By default, only the 3 most relevant datasets will be evaluated: gas (drfit10), motion and bafu. To enable soccer (or any additional dataset), please refer to the *Datasets customization* section below.
 - **Scenarios**: The benchmark will execute the full set of 11 different recovery scenarios and report the error using RMSE, MSE and MAE. 
-  - The online scenarios are listed in `TestingFramework/bin/Debug/results/plotfiles/streaming_end.txt` 
+  - The online scenarios are listed [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/bin/Debug/results/plotfiles/streaming_end.txt). 
   - The batch scenarios are listed in `TestingFramework/bin/Debug/results/plotfiles/batch_mid.txt` 
  
 ## Prerequisites and dependencies 
