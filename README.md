@@ -7,7 +7,7 @@
   - The online scenarios are listed in `TestingFramework/bin/Debug/results/plotfiles/streaming_end.txt` 
   - The batch scenarios are listed in `TestingFramework/bin/Debug/results/plotfiles/batch_mid.txt` 
  
-## Prerequisites and dependencies (Linux)
+## Prerequisites and dependencies 
 
 - Ubuntu 16 or 18 (including Ubuntu derivatives, e.g., Xubuntu).
 - Clone this repository.
@@ -52,6 +52,7 @@ To enable an additional algorithm
   - Requirements: rows>= 1'000; columns>= 10; column separator = space; row separator = newline
 
 
+<!--
 ___
 ___
 ## Prerequisites and dependencies (macOS) 
@@ -87,7 +88,6 @@ ___
 
 The algorithm and dataset customization is identical to Linux (see above).
 
-<!--
 # InCD_benchmark
 
 #### Repository structure
