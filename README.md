@@ -28,7 +28,7 @@
     $ mono TestingFramework.exe 
 ```
 
-- **Results**: All the results will be added to a new folder `Plots/`. The accuracy results of all algorithms will be sequentially added for each scenario and dataset to:  `Plots/precision/../../../error/results/values/`. The runtime results of all algorithms will be added to: `Plots/runtime/../../../results/`.
+- **Results**: All the results will be added to a new folder `Plots/`. The accuracy results of all algorithms will be sequentially added for each scenario and dataset to:  `Plots/precision/.../.../.../error/results/values/`. The runtime results of all algorithms will be added to: `Plots/runtime/.../.../.../results/`.
 
 - **Warning**: The full test suite with the default setup will take a sizeable amount of time to run (~30 hours depending on the hardware) and will produce up to 20GB of output files with all recovered data and plots. 
 
