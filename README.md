@@ -61,7 +61,7 @@ ___
 - Clone the current repository
 ```bash
     $ xcode-select --install
-    $ git clone https://github.com/eXascaleInfolab/bench-incd.git
+    $ git clone https://github.com/eXascaleInfolab/orbits.git
 ```
 - Mono: Install mono from https://www.mono-project.com/download/stable/ and restart the terminal window.
 
