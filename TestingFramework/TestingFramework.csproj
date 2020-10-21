@@ -64,7 +64,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Testing\DataWorks.cs" />
     <Compile Include="Testing\HelperClasses.cs" />
-    <Compile Include="Testing\SingularExperiments.cs" />
     <Compile Include="Testing\TestRoutines.cs" />
     <Compile Include="Testing\Utils.cs" />
   </ItemGroup>

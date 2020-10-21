@@ -155,55 +155,6 @@ namespace TestingFramework
             }
             
             FullRun(runPrecision, runRuntime);
-            
-            //
-            // multi-run for 1...N runtime tests and averaging the results from them
-            //
-
-            #if false
-            {
-                for (int i = 1; i <= 3; i++)
-                {
-                    DataWorks.FolderPlotsRemote = DataWorks.FolderPlotsRemoteBase + i + "/";
-                    if (!Directory.Exists(DataWorks.FolderPlotsRemote))
-                    {
-                        Directory.CreateDirectory(DataWorks.FolderPlotsRemote);
-                        AlgoPack.EnsureFolderStructure();
-                    }
-
-                    FullRuntime();
-                    //FullStreaming();
-                }
-                DataWorks.FolderPlotsRemote = DataWorks.FolderPlotsRemoteBase;
-            }
-    
-            //SingularExperiments.AverageRTRuns(codes, codesLimited, 5);
-            #endif
-            
-            #if false
-            {
-                string cmptype = "meaninit_vert";
-                
-                var sw_prec = new StreamWriter(File.Open($"prec_report_{cmptype}.txt", FileMode.Create));
-                var sw_rt = new StreamWriter(File.Open($"rt_report_{cmptype}.txt", FileMode.Create));
-                
-                SingularExperiments.MsePerformanceReport(codes, codesLimited, sw_prec.WriteLine, cmptype);
-                SingularExperiments.SSVIterPerformanceReport(codes, codesLimited, sw_rt.WriteLine, cmptype);
-                
-                sw_prec.Close();
-                sw_rt.Close();
-            }
-            #endif  
-            //
-            // time series
-            //
-            
-            #if false
-            {
-                var data = DataWorks.TimeSeries("BAFU", "*.asc", 3, Utils.Specific.ParseWasserstand, new DateTime(2005, 1, 1), true);
-                DataWorks.TimeSeriesMerge(data, "BAFU_total.txt");
-            }
-            #endif
 
             FinalSequence();
         }
