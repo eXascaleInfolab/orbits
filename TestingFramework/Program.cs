@@ -19,13 +19,13 @@ namespace TestingFramework
             string[] codesLimited = null;
 
             List<string> ignoreList = new List<string>();
+            
+            List<string> scenarios = new List<string>();
 
             Dictionary<string, string> config =
                 args.Length == 0
                     ? Utils.ReadConfigFile()
                     : Utils.ReadConfigFile(args[0]);
-
-            bool disableTrmf = false;
 
             bool runPrecision = true;
             bool runRuntime = true;
@@ -49,6 +49,10 @@ namespace TestingFramework
                             .Where(c => DataWorks.CountMatrixColumns($"{c}/{c}_normal.txt") > 4)
                             .ToArray();
                         break;
+                        
+                    case "Scenarios":
+                        scenarios.AddRange(entry.Value.Split(',').Select(x => x.Trim().ToLower()));
+                        break;
                     
                     case "EnableStreaming":
                         EnumMethods.EnableStreaming = Convert.ToBoolean(entry.Value);
@@ -57,11 +61,11 @@ namespace TestingFramework
                     case "EnableContinuous":
                         EnumMethods.EnableContinuous = Convert.ToBoolean(entry.Value);
                         break;
-                    
-                    case "DisableTrmf":
-                        disableTrmf = Convert.ToBoolean(entry.Value);
+                        
+                    case "EnableBatchMid":
+                        EnumMethods.EnableBatchMid = Convert.ToBoolean(entry.Value);
                         break;
-
+                    
                     case "EnabledAlgorithms":
                         ignoreList.AddRange(entry.Value.Split(',').Select(x => x.Trim().ToLower()));
                         break;
@@ -95,11 +99,6 @@ namespace TestingFramework
             {
                 throw new InvalidProgramException("Invalid config file: datasets are not supplied (Datasets=) or the list is empty");
             }
-            
-            if (disableTrmf)
-            {
-                ignoreList.Remove(AlgoPack.Trmf.AlgCode.ToLower());
-            }
 
             AlgoPack.ListAlgorithms = AlgoPack.ListAlgorithms.Where(x => ignoreList.Contains(x.AlgCode.ToLower())).ToArray();
             AlgoPack.ListAlgorithmsStreaming = AlgoPack.ListAlgorithms.Where(x => x.IsStreaming).ToArray();
@@ -108,13 +107,32 @@ namespace TestingFramework
             AlgoPack.CleanUncollectedResults();
             AlgoPack.EnsureFolderStructure();
             
+            List<ExperimentScenario> activeScenarios = new List<ExperimentScenario>();
+            
+            foreach (string scen in scenarios)
+            {
+                bool found = false;
+                foreach (ExperimentScenario es in EnumMethods.AllExperimentScenarios())
+                {
+                    if (scen == es.ToLongString())
+                    {
+                        found = true;
+                        activeScenarios.Add(es);
+                    }
+                }
+                if (!found)
+                {
+                    throw new InvalidProgramException("Invalid config file: list of scenarios contains entries which are not supported by the testing framework");
+                }
+            }
+            
             void FullRun(bool enablePrecision, bool enableRuntime)
             {
                 foreach (string code in codes)
                 {
                     if (EnumMethods.EnableContinuous)
                     {
-                        foreach (ExperimentScenario es in EnumMethods.AllExperimentScenarios().Where(EnumMethods.IsContinuous))
+                        foreach (ExperimentScenario es in activeScenarios.Where(EnumMethods.IsContinuous))
                         {
                             if (es.IsLimited() && !codesLimited.Contains(code)) continue;
                             if (enablePrecision) TestRoutines.PrecisionTest(ExperimentType.Continuous, es, code);
@@ -122,16 +140,19 @@ namespace TestingFramework
                         }
                     }
                     
-                    foreach (ExperimentScenario es in EnumMethods.AllExperimentScenarios().Where(EnumMethods.IsBatchMid))
+                    if (EnumMethods.EnableBatchMid)
                     {
-                        if (es.IsLimited() && !codesLimited.Contains(code)) continue;
-                        if (enablePrecision) TestRoutines.PrecisionTest(ExperimentType.Recovery, es, code);
-                        if (enableRuntime) TestRoutines.RuntimeTest(ExperimentType.Recovery, es, code);
+                        foreach (ExperimentScenario es in activeScenarios.Where(EnumMethods.IsBatchMid))
+                        {
+                            if (es.IsLimited() && !codesLimited.Contains(code)) continue;
+                            if (enablePrecision) TestRoutines.PrecisionTest(ExperimentType.Recovery, es, code);
+                            if (enableRuntime) TestRoutines.RuntimeTest(ExperimentType.Recovery, es, code);
+                        }
                     }
-
+                    
                     if (EnumMethods.EnableStreaming)
                     {
-                        foreach (ExperimentScenario es in EnumMethods.AllExperimentScenarios().Where(EnumMethods.IsStreaming))
+                        foreach (ExperimentScenario es in activeScenarios.Where(EnumMethods.IsStreaming))
                         {
                             if (es.IsLimited() && !codesLimited.Contains(code)) continue;
                             if (enablePrecision) TestRoutines.PrecisionTest(ExperimentType.Streaming, es, code);

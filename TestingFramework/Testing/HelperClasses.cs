@@ -7,8 +7,9 @@ namespace TestingFramework.Testing
 {
     public static class EnumMethods
     {
-        public static bool EnableStreaming = false;
-        public static bool EnableContinuous = false;
+        public static bool EnableStreaming = true;
+        public static bool EnableContinuous = true;
+        public static bool EnableBatchMid = true;
         
         //
         // Experiments
