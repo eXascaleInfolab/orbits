@@ -187,6 +187,15 @@ namespace TestingFramework.Testing
             int count = enumerated.Count();
             var result = new StringBuilder();
             
+            if (count == 0)
+            {
+                return "";
+            }
+            if (count == 1)
+            {
+                return enumerated.ElementAt(0);
+            }
+            
             for (int i = 0; i < count - 1; i++)
             {
                 result.Append(enumerated.ElementAt(i));

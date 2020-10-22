@@ -22,8 +22,8 @@ namespace TestingFramework.Testing
         //
         public const string FolderData = "data/";
         
-        public const string FolderResults = "results/";
-        public const string FolderResultsPlots = "results/plots/";
+        public const string FolderResults = ".tech/";
+        public const string FolderResultsPlots = ".tech/plots/";
 
         public const string FolderTimeseries = "timeseries/";
 
