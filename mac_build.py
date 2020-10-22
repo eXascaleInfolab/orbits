@@ -33,26 +33,5 @@ if not (execExists("msbuild") and execExists("mono")):
 
 launchProcess("msbuild", "TestingFramework.sln", "TestingFramework");
 
-### build all algorithms
-
-# TRMF
-# not needed (unsupported)
-
-# instead we disable it in the testing framework
-filename = "TestingFramework/config.cfg";
-
-instream = open(filename, "r");
-lines = instream.readlines();
-
-nrows = len(lines);
-
-for i in xrange(nrows):
-    lines[i] = lines[i].replace("#DisableTrmf", "DisableTrmf");
-
-
-with open(filename, 'w') as f:
-    f.writelines(lines);
-
-
 # All others
 launchProcess("make", "mac", "Algorithms/AlgoCollection");

@@ -29,26 +29,9 @@ if not (execExists("msbuild") and execExists("mono")):
     exit();
 
 
-matlabExec = "octave";
-
-if (execExists("octave")):
-    matlabExec = "octave";
-elif (execExists("matlab")):
-    matlabExec = "matlab";
-else:
-    print "error: octave or matlab are not detected in the system";
-    print "aborting build";
-    exit();
-
-
 ### build TestingFramework
 
 launchProcess("msbuild", "TestingFramework.sln", "TestingFramework");
-
-### build all algorithms
-
-# TRMF
-launchProcess(matlabExec, "--eval \"install\"", "Algorithms/trmf");
 
 # All others
 launchProcess("make", "all", "Algorithms/AlgoCollection");

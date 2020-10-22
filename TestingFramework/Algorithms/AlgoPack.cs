@@ -14,7 +14,6 @@ namespace TestingFramework.Algorithms
         // static
         public static readonly Algorithm InCd = new IncrementalCentroidDecompositionAlgorithm();
         public static readonly Algorithm Tkcm = new TkcmAlgorithm();
-        public static readonly Algorithm Trmf = new TrmfAlgorithm();
         public static readonly Algorithm Spirit = new SpiritAlgorithm();
         public static readonly Algorithm Stmvl = new StmvlAlgorithm();
         public static readonly Algorithm Nnmf = new NnmfAlgorithm();
@@ -30,7 +29,7 @@ namespace TestingFramework.Algorithms
         //example:
         //    public static readonly Algorithm Example = new ExampleAlgorithm();
         
-        public static Algorithm[] ListAlgorithms = { InCd, Tkcm, Trmf, Spirit, Stmvl, Nnmf, Grouse, ArImp, Ssa, Mrnn, DynaMMo, MdIsvd, SvdImp, PcaMme }; //initial full list of all algos
+        public static Algorithm[] ListAlgorithms = { InCd, Tkcm, Spirit, Stmvl, Nnmf, Grouse, ArImp, Ssa, Mrnn, DynaMMo, MdIsvd, SvdImp, PcaMme }; //initial full list of all algos
         public static Algorithm[] ListAlgorithmsMulticolumn = null;
         public static Algorithm[] ListAlgorithmsStreaming = null;
 
@@ -146,14 +145,6 @@ namespace TestingFramework.Algorithms
         protected override string SubFolderDataOut => "out/";
         public override bool IsStreaming => true;
         public override bool IsMulticolumn => false;
-    }
-
-    public partial class TrmfAlgorithm
-    {
-        public override string AlgCode => "trmf";
-        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}trmf/trmf/";
-        protected override string SubFolderDataIn => "../data/in/";
-        protected override string SubFolderDataOut => "../data/out/";
     }
     
     public partial class GrouseAlgorithm
