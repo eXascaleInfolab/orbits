@@ -1,24 +1,31 @@
 # Benchmark of streaming recovery techniques in time series
 
-- **Paper**: Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams*. Under review in VLDB 2021.
+- **Paper**: Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams*. To appear in pVLDB 2021.
 - **Algorithms**: The benchmark evaluates the following algorithms: ORBITS, SPIRIT, GROUSE, OGDImpute, pcaMME, TKCM and M-RNN. To update the list of algorithms, please refer to the *Algorithms customization* section below.
 - **Datasets**: The full benchmark contains 10 different datasets. By default, only the 3 most relevant datasets will be evaluated: gas (drfit10), motion and bafu. To enable soccer (or any additional dataset), please refer to the *Datasets customization* section below.
-- **Scenarios**: The benchmark will execute the full set of 11 different recovery scenarios and report the error using RMSE, MSE and MAE. The online scenarios are described [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/bin/Debug/results/plotfiles/streaming_end.txt) while 
-the batch scenarios are described [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/bin/Debug/results/plotfiles/batch_mid.txt). 
+- **Scenarios**: The benchmark will execute the full set of 11 different (online and offline) recovery scenarios and report the error using RMSE, MSE and MAE. 
+The full list of recovery scenarios can be found [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/README.md).
+<!--
+The online scenarios are described [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/bin/Debug/results/plotfiles/streaming_end.txt) while the batch scenarios are described [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/bin/Debug/results/plotfiles/batch_mid.txt). 
+-->
+
+[**Prerequisites**](#prerequisites) | [**Build**](#build) | [**Execution**](#execution) | [**Benchmark customization**](#benchmark-customization)  | [**Contributors**](#contributors) | [**Citation**](#citation)
+___ 
  
-## Prerequisites and dependencies 
+## Prerequisites
 
 - Ubuntu 16 or 18 (including Ubuntu derivatives, e.g., Xubuntu).
 - Clone this repository.
 - Mono: Install mono from https://www.mono-project.com/download/stable/ (takes few minutes)
 
+___
 ## Build
 
 - Build the Testing Framework using the installation script located in the root folder (takes ~ 1min):
 ```bash
     $ sh install_linux.sh
 ```
-
+___
 ## Execution
 
 
@@ -31,7 +38,8 @@ the batch scenarios are described [here](https://github.com/eXascaleInfolab/orbi
 
 - **Warning**: The full test suite with the default setup will take a sizeable amount of time to run (~30 hours depending on the hardware) and will produce up to 20GB of output files with all recovered data and plots. 
 
-## Benchmark customization (Optional)
+___
+## Benchmark Customization (Optional)
 
 ### Algorithms customization
 
@@ -49,6 +57,18 @@ To enable an additional algorithm
 - To add a new dataset to the benchmark
   - import the file to `TestingFramework/bin/Debug/data/{name}/{name}_normal.txt` (`name` is the name of your data).
   - Requirements: rows>= 1'000; columns>= 10; column separator = space; row separator = newline
+___
+## Citation
+```bibtex
+@inproceedings{orbits2021vldb,
+ author    = {Mourad Khayati and Ines Arous and Zakhar Tymchenko and Philippe Cudr{\'{e}}{-}Mauroux},
+ title     = {ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams},
+ booktitle = {Proceedings of the VLDB Endowment},
+ volume    = {14},
+ number    = {3},
+ year      = {2021}
+}
+```
 
 
 <!--
