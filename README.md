@@ -9,7 +9,7 @@ The full list of recovery scenarios can be found [here](https://github.com/eXasc
 The online scenarios are described [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/bin/Debug/results/plotfiles/streaming_end.txt) while the batch scenarios are described [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/bin/Debug/results/plotfiles/batch_mid.txt). 
 -->
 
-[**Prerequisites**](#prerequisites) | [**Build**](#build) | [**Execution**](#execution) | [**Benchmark customization**](#benchmark-customization)  | [**Contributors**](#contributors) | [**Citation**](#citation)
+[**Prerequisites**](#prerequisites) | [**Build**](#build) | [**Execution**](#execution) | [**Benchmark Customization**](#benchmark-customization) | [**Citation**](#citation)
 ___ 
  
 ## Prerequisites
@@ -39,7 +39,7 @@ ___
 - **Warning**: The full test suite with the default setup will take a sizeable amount of time to run (~30 hours depending on the hardware) and will produce up to 20GB of output files with all recovered data and plots. 
 
 ___
-## Benchmark Customization (Optional)
+## Benchmark Customization 
 
 ### Algorithms customization
 
@@ -57,6 +57,8 @@ To enable an additional algorithm
 - To add a new dataset to the benchmark
   - import the file to `TestingFramework/bin/Debug/data/{name}/{name}_normal.txt` (`name` is the name of your data).
   - Requirements: rows>= 1'000; columns>= 10; column separator = space; row separator = newline
+ 
+
 ___
 ## Citation
 ```bibtex
