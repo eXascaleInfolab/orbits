@@ -315,7 +315,7 @@ namespace TestingFramework.Testing
         public static void GeneratePrecisionGnuPlot(IEnumerable<Algorithm> algorithms, string code, int nlimit, int tcase, (int, int, int)[] missingBlocks, ExperimentType et, int offset = 0)
         {
             const string lineTemplate =
-                "'data/{len}/{algo_file}.txt' index 0 using 1:2 title '{algo_code}' with {algo_style}, \\";
+                "'recovery/values/{len}/{algo_file}.txt' index 0 using 1:2 title '{algo_code}' with {algo_style}, \\";
 
             var allAlgos = new List<string>();
 
@@ -340,7 +340,7 @@ namespace TestingFramework.Testing
                 ("{len}", tcase.ToString()),
                 ("{code}", code),
                 ("{nlimit}", nlimit.ToString()),
-                ("{mbsize}", missingBlocks[0].Item3.ToString()),
+                ("{mbsize}", Math.Min(missingBlocks[0].Item3, 2500).ToString()),
                 ("{mbstart}", (missingBlocks[0].Item2 + offset).ToString()), //offset'd
                 ("{allplots}", result));
         }
@@ -348,7 +348,7 @@ namespace TestingFramework.Testing
         public static void GenerateMseGnuPlot(IEnumerable<Algorithm> algorithms, string code, int caseStart, int caseEnd, int caseTick, ExperimentScenario es, ExperimentType et)
         {
             const string lineTemplate =
-                "'error/results/values/rmse/RMSE_{algo_file}.dat' index 0 using 1:2 title '{algo_code}' with {algo_style}, \\";
+                "'error/rmse/RMSE_{algo_file}.dat' index 0 using 1:2 title '{algo_code}' with {algo_style}, \\";
 
             var allAlgos = new List<string>();
 
@@ -384,7 +384,7 @@ namespace TestingFramework.Testing
         public static void GenerateRuntimeGnuPlot(IEnumerable<Algorithm> algorithms, string code, int caseStart, int caseEnd, int caseTick, ExperimentType et, ExperimentScenario es)
         {
             const string lineTemplate =
-                "'results/{algo_file}_runtime.txt' index 0 using 1:2 title '{algo_code}' with {algo_style}, \\";
+                "'runtime/values/{algo_file}_runtime.txt' index 0 using 1:2 title '{algo_code}' with {algo_style}, \\";
 
             var allAlgos = new List<string>();
             

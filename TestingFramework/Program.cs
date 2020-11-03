@@ -105,7 +105,6 @@ namespace TestingFramework
             AlgoPack.ListAlgorithmsMulticolumn = AlgoPack.ListAlgorithms.Where(x => x.IsMulticolumn).ToArray();
             
             AlgoPack.CleanUncollectedResults();
-            AlgoPack.EnsureFolderStructure();
             
             List<ExperimentScenario> activeScenarios = new List<ExperimentScenario>();
             
@@ -132,6 +131,8 @@ namespace TestingFramework
                 {
                     if (EnumMethods.EnableContinuous)
                     {
+                        AlgoPack.EnsureFolderStructure(ExperimentType.Continuous, activeScenarios.Where(EnumMethods.IsContinuous).Select(es => es.ToLongString()).ToList());
+
                         foreach (ExperimentScenario es in activeScenarios.Where(EnumMethods.IsContinuous))
                         {
                             if (es.IsLimited() && !codesLimited.Contains(code)) continue;
@@ -142,6 +143,8 @@ namespace TestingFramework
                     
                     if (EnumMethods.EnableBatchMid)
                     {
+                        AlgoPack.EnsureFolderStructure(ExperimentType.Recovery, activeScenarios.Where(EnumMethods.IsBatchMid).Select(es => es.ToLongString()).ToList());
+
                         foreach (ExperimentScenario es in activeScenarios.Where(EnumMethods.IsBatchMid))
                         {
                             if (es.IsLimited() && !codesLimited.Contains(code)) continue;
@@ -152,6 +155,8 @@ namespace TestingFramework
                     
                     if (EnumMethods.EnableStreaming)
                     {
+                        AlgoPack.EnsureFolderStructure(ExperimentType.Streaming, activeScenarios.Where(EnumMethods.IsStreaming).Select(es => es.ToLongString()).ToList());
+
                         foreach (ExperimentScenario es in activeScenarios.Where(EnumMethods.IsStreaming))
                         {
                             if (es.IsLimited() && !codesLimited.Contains(code)) continue;

@@ -1,5 +1,5 @@
 set terminal postscript eps enhanced color "Helvetica" 30
-set output "figs/{code}_rt.eps"
+set output "runtime/plots/{code}_rt.eps"
 
 set xrange [{caseStart}:{caseEnd}]
 set xtics {caseStart},{caseTick}
@@ -15,7 +15,7 @@ plot\
 	{rt}
 
 
-set output "figs/{code}_rt_log.eps"
+set output "runtime/plots/{code}_rt_log.eps"
 set log y
 
 plot\

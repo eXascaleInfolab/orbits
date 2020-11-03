@@ -1,8 +1,9 @@
 set terminal postscript eps enhanced color "Helvetica" 30
-set output "error/figs/{code}_mse.eps"
+set output "error/plots/{code}_mse.eps"
 
 set xrange [{caseStart}-1:{caseEnd}+1]
 set xtics {caseStart},{caseTick}
+set yrange [0:2]
 #set log y
 
 set key above width -2 vertical maxrows 3
@@ -15,13 +16,13 @@ plot\
 	{mse}
 
 
-set output "error/figs/{code}_rmse.eps"
+set output "error/plots/{code}_rmse.eps"
 set ylabel "root mean squared error" offset 1.5 
 
 plot\
 	{rmse}
 
-set output "error/figs/{code}_mae.eps"
+set output "error/plots/{code}_mae.eps"
 set ylabel "mean absolute error" offset 1.5 
 
 plot\

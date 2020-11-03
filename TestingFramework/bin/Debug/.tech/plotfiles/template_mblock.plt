@@ -1,5 +1,5 @@
 set terminal png size 15*{mbsize},720
-set output "recovery/figs/{code}_m{len}.png"
+set output "recovery/plots/{code}_m{len}.png"
 
 set xrange [{mbstart}:{mbstart}+{mbsize}]
 set xtics 0,25
@@ -14,6 +14,6 @@ set xlabel "data point"
 set ylabel "value" offset 1.5 
 
 plot\
-	'data/reference.txt' index 0 using 1:2 title 'real' with linespoints lt 1 dt 3 lw 3 pt 5 lc rgbcolor "black" pointsize 1, \
+	'recovery/values/reference.txt' index 0 using 1:2 title 'real' with linespoints lt 1 dt 3 lw 3 pt 5 lc rgbcolor "black" pointsize 1, \
 	{allplots}
 

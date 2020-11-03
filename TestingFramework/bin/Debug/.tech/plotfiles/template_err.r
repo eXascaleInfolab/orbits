@@ -4,13 +4,13 @@
 options(scipen = 999)
 lengths <- seq.int(from = {start}, to = {end}, by = {tick});
 
-global_path <- "error/results/";
+global_path <- "error/";
 
-output_mse <- paste(global_path, "values/mse/MSE_", sep="");
-output_rmse <- paste(global_path, "values/rmse/RMSE_", sep="");
-output_mae <- paste(global_path, "values/mae/MAE_", sep="");
-output_cor <- paste(global_path, "../misc/stat_err.dat", sep="");
-input_missingmat <- paste(global_path, "recovered_matrices/recoveredMat", sep="");
+output_mse <- paste(global_path, "mse/MSE_", sep="");
+output_rmse <- paste(global_path, "rmse/RMSE_", sep="");
+output_mae <- paste(global_path, "mae/MAE_", sep="");
+output_cor <- paste(global_path, "correlation.dat", sep="");
+input_missingmat <- paste("recovery/values/recovered_matrices/recoveredMat", sep="");
 
 list_algos <- c({allAlgos});
 

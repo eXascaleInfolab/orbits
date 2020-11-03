@@ -22,12 +22,11 @@ def launchR(arg):
 
 
 # plots
-mainFolder = "recovery/scripts/"
-errFolder = "error/results/"
+mainFolder = "scripts/precision/"
 
 # ref+mse
-launchR(errFolder + "error_calculation.r");
-launchGP(errFolder + "{code}_mse.plt");
+launchR(mainFolder + "error_calculation.r");
+launchGP(mainFolder + "{code}_mse.plt");
 
 #launchGP(mainFolder + "reference_plot.plt");
 

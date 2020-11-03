@@ -58,39 +58,16 @@ namespace TestingFramework.Algorithms
                 .ForEach(File.Delete);
         }
 
-        public static void EnsureFolderStructure()
+        public static void EnsureFolderStructure(ExperimentType et, List<string> scenarios)
         {
-            string root = DataWorks.FolderPlotsRemote;
+            string root = DataWorks.FolderPlotsRemote + $"{et.ToLongString()}/";
 
-            foreach (var ex in EnumMethods.AllExperiments())
+            foreach (var es in EnumMethods.AllExperimentScenarios().Where(x => scenarios.Contains(x.ToLongString())))
             {
-                string exDir = $"{root}{ex.ToLongString()}/";
-                if (!Directory.Exists(exDir))
+                string esDir = $"{root}{es.ToLongString()}/";
+                if (!Directory.Exists(esDir))
                 {
-                    Directory.CreateDirectory(exDir);
-                }
-
-                foreach (var et in EnumMethods.AllExperimentTypes())
-                {
-                    string etDir = $"{exDir}{et.ToLongString()}/";
-                    string scenFile = $"{etDir}{et.ToLongString()}_scenarios.txt";
-                    if (!Directory.Exists(etDir))
-                    {
-                        Directory.CreateDirectory(etDir);
-                    }
-                    if (!File.Exists(scenFile))
-                    {
-                        File.Copy($"{DataWorks.FolderResults}plotfiles/{et.ToLongString()}.txt", scenFile);
-                    }
-
-                    foreach (var es in EnumMethods.AllExperimentScenarios().Where(x => et.IsMatch(x)))
-                    {
-                        string esDir = $"{etDir}{es.ToLongString()}/";
-                        if (!Directory.Exists(esDir))
-                        {
-                            Directory.CreateDirectory(esDir);
-                        }
-                    }
+                    Directory.CreateDirectory(esDir);
                 }
             }
         }
