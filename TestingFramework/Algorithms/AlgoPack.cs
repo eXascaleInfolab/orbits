@@ -15,21 +15,16 @@ namespace TestingFramework.Algorithms
         public static readonly Algorithm InCd = new IncrementalCentroidDecompositionAlgorithm();
         public static readonly Algorithm Tkcm = new TkcmAlgorithm();
         public static readonly Algorithm Spirit = new SpiritAlgorithm();
-        public static readonly Algorithm Stmvl = new StmvlAlgorithm();
-        public static readonly Algorithm Nnmf = new NnmfAlgorithm();
         public static readonly Algorithm Grouse = new GrouseAlgorithm();
         public static readonly Algorithm ArImp = new AutoRegressionAlgorithm();
         public static readonly Algorithm Ssa = new SSAAlgorithm();
         public static readonly Algorithm Mrnn = new MRNNAlgorithm();
-        public static readonly Algorithm DynaMMo = new DynaMMoAlgorithm();
-        public static readonly Algorithm MdIsvd = new MDISVDAlgorithm();
-        public static readonly Algorithm SvdImp = new SVDImputeAlgorithm();
         public static readonly Algorithm PcaMme = new PCAMMEAlgorithm();
         
         //example:
         //    public static readonly Algorithm Example = new ExampleAlgorithm();
         
-        public static Algorithm[] ListAlgorithms = { InCd, Tkcm, Spirit, Stmvl, Nnmf, Grouse, ArImp, Ssa, Mrnn, DynaMMo, MdIsvd, SvdImp, PcaMme }; //initial full list of all algos
+        public static Algorithm[] ListAlgorithms = { InCd, Tkcm, Spirit, Grouse, ArImp, Ssa, Mrnn, PcaMme }; //initial full list of all algos
         public static Algorithm[] ListAlgorithmsMulticolumn = null;
         public static Algorithm[] ListAlgorithmsStreaming = null;
 
@@ -86,15 +81,6 @@ namespace TestingFramework.Algorithms
         public override bool IsStreaming => true;
     }
 
-    public partial class NnmfAlgorithm
-    {
-        public override string AlgCode => "te-nmf";
-        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
-        protected override string SubFolderDataIn => "in/";
-        protected override string SubFolderDataOut => "out/";
-        public override bool IsPlottable => false;
-    }
-
     public partial class SpiritAlgorithm
     {
         public override string AlgCode => "spirit";
@@ -104,14 +90,6 @@ namespace TestingFramework.Algorithms
         public override bool IsStreaming => true;
         public override bool IsMulticolumn => false;
         public override bool IsPlottable => false;
-    }
-
-    public partial class StmvlAlgorithm
-    {
-        public override string AlgCode => "stmvl";
-        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
-        protected override string SubFolderDataIn => "in/";
-        protected override string SubFolderDataOut => "out/";
     }
 
     public partial class TkcmAlgorithm
@@ -163,34 +141,6 @@ namespace TestingFramework.Algorithms
         public override bool IsStreaming => true;
     }
 
-    public partial class DynaMMoAlgorithm
-    {
-        public override string AlgCode => "dynammo";
-        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
-        protected override string SubFolderDataIn => "in/";
-        protected override string SubFolderDataOut => "out/";
-        public override bool IsPlottable => false;
-    }
-    
-    public partial class MDISVDAlgorithm
-    {
-        public override string AlgCode => "md-isvd";
-        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
-        protected override string SubFolderDataIn => "in/";
-        protected override string SubFolderDataOut => "out/";
-        public override bool IsStreaming => true;
-        public override bool IsPlottable => false;
-    }
-    
-    public partial class SVDImputeAlgorithm
-    {
-        public override string AlgCode => "svdimp";
-        protected override string _EnvPath => $"{AlgoPack.GlobalAlgorithmsLocation}AlgoCollection/_data/";
-        protected override string SubFolderDataIn => "in/";
-        protected override string SubFolderDataOut => "out/";
-        public override bool IsPlottable => false;
-    }
-    
     public partial class PCAMMEAlgorithm
     {
         public override string AlgCode => "pca-mme";

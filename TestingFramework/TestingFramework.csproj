@@ -47,17 +47,12 @@
     <Compile Include="Algorithms\AlgoPack.cs" />
     <Compile Include="Algorithms\Algorithm.cs" />
     <Compile Include="Algorithms\AutoRegressionAlgorithm.cs" />
-    <Compile Include="Algorithms\DynaMMoAlgorithm.cs" />
     <Compile Include="Algorithms\GrouseAlgorithm.cs" />
     <Compile Include="Algorithms\IncrementalCentroidDecompositionAlgorithm.cs" />
-    <Compile Include="Algorithms\MDISVDAlgorithm.cs" />
     <Compile Include="Algorithms\MRNNAlgorithm.cs" />
-    <Compile Include="Algorithms\NnmfAlgorithm.cs" />
     <Compile Include="Algorithms\PCAMMEAlgorithm.cs" />
     <Compile Include="Algorithms\SpiritAlgorithm.cs" />
     <Compile Include="Algorithms\SSAAlgorithm.cs" />
-    <Compile Include="Algorithms\StmvlAlgorithm.cs" />
-    <Compile Include="Algorithms\SVDImputeAlgorithm.cs" />
     <Compile Include="Algorithms\TkcmAlgorithm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
