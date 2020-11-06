@@ -1187,7 +1187,7 @@ namespace TestingFramework.Testing
                 algorithms = algorithms.Intersect(AlgoPack.ListAlgorithmsStreaming);
             }
             
-            if (nlimit >= 100_000)
+            if (nlimit >= 100_000) // discards algorithms from running on >100K datasets. comment out of enable them again
             {
                 algorithms = algorithms.Where(alg => alg.AlgCode != "tkcm" && alg.AlgCode != "m-rnn");
             }
@@ -1502,7 +1502,7 @@ namespace TestingFramework.Testing
                 algorithms = algorithms.Intersect(AlgoPack.ListAlgorithmsStreaming);
             }
             
-            if (nlimit >= 100_000)
+            if (nlimit >= 100_000) // discards algorithms from running on >100K datasets. comment out of enable them again
             {
                 algorithms = algorithms.Where(alg => alg.AlgCode != "tkcm" && alg.AlgCode != "m-rnn");
             }
