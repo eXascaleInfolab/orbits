@@ -1187,6 +1187,11 @@ namespace TestingFramework.Testing
                 algorithms = algorithms.Intersect(AlgoPack.ListAlgorithmsStreaming);
             }
             
+            if (nlimit > 100_000)
+            {
+                algorithms = algorithms.Where(alg => alg.AlgCode != "tkcm" && alg.AlgCode != "m-rnn");
+            }
+            
             if (!es.IsSingleColumn())
             {
                 algorithms = algorithms.Intersect(AlgoPack.ListAlgorithmsMulticolumn);
