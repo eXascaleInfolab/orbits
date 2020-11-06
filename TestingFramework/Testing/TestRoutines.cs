@@ -1187,7 +1187,7 @@ namespace TestingFramework.Testing
                 algorithms = algorithms.Intersect(AlgoPack.ListAlgorithmsStreaming);
             }
             
-            if (nlimit > 100_000)
+            if (nlimit >= 100_000)
             {
                 algorithms = algorithms.Where(alg => alg.AlgCode != "tkcm" && alg.AlgCode != "m-rnn");
             }
@@ -1500,6 +1500,11 @@ namespace TestingFramework.Testing
             if (et == ExperimentType.Streaming)
             {
                 algorithms = algorithms.Intersect(AlgoPack.ListAlgorithmsStreaming);
+            }
+            
+            if (nlimit >= 100_000)
+            {
+                algorithms = algorithms.Where(alg => alg.AlgCode != "tkcm" && alg.AlgCode != "m-rnn");
             }
             
             if (!es.IsSingleColumn())
