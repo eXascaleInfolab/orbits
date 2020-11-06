@@ -12,17 +12,9 @@
 
 #include "../Algorithms/CDMissingValueRecovery.h"
 #include "../Algorithms/TKCM.h"
-#include "../Algorithms/ST_MVL.h"
 #include "../Algorithms/SPIRIT.h"
 #include "../Algorithms/GROUSE.h"
-#include "../Algorithms/NMFMissingValueRecovery.h"
-#include "../Algorithms/DynaMMo.h"
-#include "../Algorithms/SVT.h"
-#include "../Algorithms/ROSL.h"
-#include "../Algorithms/IterativeSVD.h"
-#include "../Algorithms/SoftImpute.h"
 #include "../Algorithms/OGDImpute.h"
-#include "../Algorithms/MD_ISVDAlgorithm.h"
 #include "../Algorithms/PCA_MME.h"
 
 using namespace Algorithms;
@@ -92,28 +84,6 @@ int64_t Recovery_TKCM(arma::mat &mat, uint64_t truncation)
     return result;
 }
 
-int64_t Recovery_ST_MVL(arma::mat &mat, const std::string &latlong, uint64_t truncation)
-{
-    // Local
-    int64_t result;
-    ST_MVL stmvl(mat, latlong, 4.0, 0.85, truncation);
-    
-    std::chrono::steady_clock::time_point begin;
-    std::chrono::steady_clock::time_point end;
-    
-    // Recovery
-    
-    begin = std::chrono::steady_clock::now();
-    stmvl.Run(true);
-    end = std::chrono::steady_clock::now();
-    
-    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (STMVL): " << result << std::endl;
-    
-    verifyRecovery(mat);
-    return result;
-}
-
 int64_t Recovery_SPIRIT(arma::mat &mat, uint64_t truncation)
 {
     // Local
@@ -161,131 +131,6 @@ int64_t Recovery_GROUSE(arma::mat &mat, uint64_t truncation)
     return result;
 }
 
-int64_t Recovery_NNMF(arma::mat &mat, uint64_t truncation)
-{
-    // Local
-    int64_t result;
-    
-    std::chrono::steady_clock::time_point begin;
-    std::chrono::steady_clock::time_point end;
-    
-    // Recovery
-    begin = std::chrono::steady_clock::now();
-    NMFMissingValueRecovery::doNMFRecovery(mat, truncation);
-    end = std::chrono::steady_clock::now();
-    
-    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (TeNMF): " << result << std::endl;
-    
-    verifyRecovery(mat);
-    return result;
-}
-
-int64_t Recovery_DynaMMo(arma::mat &mat, uint64_t truncation)
-{
-    // Local
-    int64_t result;
-    
-    std::chrono::steady_clock::time_point begin;
-    std::chrono::steady_clock::time_point end;
-    
-    // Recovery
-    
-    mat = mat.t();
-    
-    begin = std::chrono::steady_clock::now();
-    DynaMMo::doDynaMMo(mat, truncation, 100, true);
-    end = std::chrono::steady_clock::now();
-    
-    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (DynaMMo): " << result << std::endl;
-    
-    mat = mat.t();
-    
-    verifyRecovery(mat);
-    return result;
-}
-
-int64_t Recovery_SVT(arma::mat &mat)
-{
-    // Local
-    int64_t result;
-    
-    std::chrono::steady_clock::time_point begin;
-    std::chrono::steady_clock::time_point end;
-    
-    // Recovery
-    begin = std::chrono::steady_clock::now();
-    SVT::doSVT(mat);
-    end = std::chrono::steady_clock::now();
-    
-    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (SVT): " << result << std::endl;
-    
-    verifyRecovery(mat);
-    return result;
-}
-
-int64_t Recovery_ROSL(arma::mat &mat, uint64_t truncation)
-{
-    // Local
-    int64_t result;
-    
-    std::chrono::steady_clock::time_point begin;
-    std::chrono::steady_clock::time_point end;
-    
-    // Recovery
-    begin = std::chrono::steady_clock::now();
-    ROSL::ROSL_Recovery(mat, truncation, 0.6);
-    end = std::chrono::steady_clock::now();
-    
-    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (ROSL): " << result << std::endl;
-    
-    verifyRecovery(mat);
-    return result;
-}
-
-int64_t Recovery_IterativeSVD(arma::mat &mat, uint64_t truncation)
-{
-    // Local
-    int64_t result;
-    
-    std::chrono::steady_clock::time_point begin;
-    std::chrono::steady_clock::time_point end;
-    
-    // Recovery
-    begin = std::chrono::steady_clock::now();
-    IterativeSVD::recoveryIterativeSVD(mat, truncation);
-    end = std::chrono::steady_clock::now();
-    
-    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (SVDImpute): " << result << std::endl;
-    
-    verifyRecovery(mat);
-    return result;
-}
-
-int64_t Recovery_SoftImpute(arma::mat &mat, uint64_t truncation)
-{
-    // Local
-    int64_t result;
-    
-    std::chrono::steady_clock::time_point begin;
-    std::chrono::steady_clock::time_point end;
-    
-    // Recovery
-    begin = std::chrono::steady_clock::now();
-    SoftImpute::doSoftImpute(mat, truncation);
-    end = std::chrono::steady_clock::now();
-    
-    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (SoftImpute): " << result << std::endl;
-    
-    verifyRecovery(mat);
-    return result;
-}
-
 int64_t Recovery_OGDImpute(arma::mat &mat, uint64_t truncation)
 {
     // Local
@@ -303,33 +148,6 @@ int64_t Recovery_OGDImpute(arma::mat &mat, uint64_t truncation)
     
     result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
     std::cout << "Time (OGDImp): " << result << std::endl;
-    
-    verifyRecovery(mat);
-    return result;
-}
-
-int64_t Recovery_MDISVD(arma::mat &mat, uint64_t truncation)
-{
-    // Local
-    int64_t result;
-    
-    std::chrono::steady_clock::time_point begin;
-    std::chrono::steady_clock::time_point end;
-    
-    // Recovery
-    
-    mat = mat.t();
-    
-    MD_SVD isvd(mat, truncation);
-    
-    begin = std::chrono::steady_clock::now();
-    isvd.doMDISVD();
-    end = std::chrono::steady_clock::now();
-    
-    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (MD-ISVD): " << result << std::endl;
-    
-    mat = mat.t();
     
     verifyRecovery(mat);
     return result;
@@ -555,58 +373,6 @@ int64_t Recovery_SAGE_Streaming(arma::mat &mat, uint64_t truncation)
     return result;
 }
 
-int64_t Recovery_MDISVD_Streaming(arma::mat &mat, uint64_t truncation)
-{
-    uint64_t streamStart = 0;
-    
-    for (uint64_t i = 0; i < mat.n_rows; ++i)
-    {
-        if (std::isnan(mat.at(i, 0)))
-        {
-            streamStart = i;
-            break;
-        }
-    }// [!] despite transposing we search for the first index row-wise and later use it as column index
-    
-    uint64_t cutoff10 = mat.n_rows - (mat.n_rows / 10);
-    streamStart = std::min(streamStart, cutoff10);
-    
-    mat = mat.t();
-    
-    arma::mat before_streaming = mat.submat(arma::span::all, arma::span(0, streamStart - 1));
-    
-    // Local
-    int64_t result;
-    MD_SVD isvd(before_streaming, truncation);
-    std::chrono::steady_clock::time_point begin;
-    std::chrono::steady_clock::time_point end;
-    
-    // Recovery
-    isvd.doMDISVD();
-    before_streaming.resize(mat.n_rows, mat.n_cols);
-    
-    for (uint64_t i = 0; i < mat.n_rows; ++i)
-    {
-        for (uint64_t j = streamStart; j < mat.n_cols; ++j)
-        {
-            before_streaming.at(i, j) = mat.at(i, j);
-        }
-    }
-    
-    begin = std::chrono::steady_clock::now();
-    isvd.doMDISVD();
-    end = std::chrono::steady_clock::now();
-    
-    result = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count();
-    std::cout << "Time (MD-ISVD,stream): " << result << std::endl;
-    
-    mat = std::move(before_streaming);
-    verifyRecovery(mat);
-    mat = mat.t();
-    
-    return result;
-}
-
 int64_t Recovery_PCA_MME_Streaming(arma::mat &mat, uint64_t truncation)
 {
     uint64_t streamStart = 0;
@@ -685,10 +451,6 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
         {
             return Recovery_SAGE_Streaming(mat, truncation);
         }
-        else if (algorithm == "mdisvd")
-        {
-            return Recovery_MDISVD_Streaming(mat, truncation);
-        }
         else if (algorithm == "pca-mme")
         {
             return Recovery_PCA_MME_Streaming(mat, truncation);
@@ -708,10 +470,6 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
     {
         return Recovery_TKCM(mat, truncation);
     }
-    else if (algorithm == "st-mvl")
-    {
-        return Recovery_ST_MVL(mat, xtra, truncation);
-    }
     else if (algorithm == "spirit")
     {
         return Recovery_SPIRIT(mat, truncation);
@@ -720,37 +478,9 @@ int64_t Recovery(arma::mat &mat, uint64_t truncation,
     {
         return Recovery_GROUSE(mat, truncation);
     }
-    else if (algorithm == "nnmf")
-    {
-        return Recovery_NNMF(mat, truncation);
-    }
-    else if (algorithm == "dynammo")
-    {
-        return Recovery_DynaMMo(mat, truncation);
-    }
-    else if (algorithm == "svt")
-    {
-        return Recovery_SVT(mat);
-    }
-    else if (algorithm == "rosl")
-    {
-        return Recovery_ROSL(mat, truncation);
-    }
-    else if (algorithm == "itersvd")
-    {
-        return Recovery_IterativeSVD(mat, truncation);
-    }
-    else if (algorithm == "softimpute")
-    {
-        return Recovery_SoftImpute(mat, truncation);
-    }
     else if (algorithm == "ogdimpute")
     {
         return Recovery_OGDImpute(mat, truncation);
-    }
-    else if (algorithm == "mdisvd")
-    {
-        return Recovery_MDISVD(mat, truncation);
     }
     else if (algorithm == "pca-mme")
     {
