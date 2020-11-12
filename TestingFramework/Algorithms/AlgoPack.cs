@@ -89,7 +89,6 @@ namespace TestingFramework.Algorithms
         protected override string SubFolderDataOut => "out/";
         public override bool IsStreaming => true;
         public override bool IsMulticolumn => false;
-        public override bool IsPlottable => false;
     }
 
     public partial class TkcmAlgorithm
@@ -109,7 +108,6 @@ namespace TestingFramework.Algorithms
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
         public override bool IsStreaming => true;
-        public override bool IsPlottable => false;
         public override bool IsBlackout => false;
     }
 
@@ -120,7 +118,6 @@ namespace TestingFramework.Algorithms
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
         public override bool IsStreaming => true;
-        public override bool IsPlottable => false;
     }
 
     public partial class SSAAlgorithm
@@ -148,7 +145,6 @@ namespace TestingFramework.Algorithms
         protected override string SubFolderDataIn => "in/";
         protected override string SubFolderDataOut => "out/";
         public override bool IsStreaming => true;
-        public override bool IsPlottable => true;
     }
 
     /*///////////////////////////////////////////////////////////*/
