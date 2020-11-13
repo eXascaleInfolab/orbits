@@ -38,7 +38,7 @@ ___
 
 - **Results**: All results will be added to `Results` folder. The accuracy results and plots of all algorithms will be sequentially added for each scenario and dataset to: `Results/.../.../.../error/`. The runtime results and plots of all algorithms will be added to: `Results/.../.../.../runtime/`. 
 
-- **Warning**: The test suite with the default setup will take a sizeable amount of time to run (~40 hours depending on the hardware) and will produce up to 15GB of output files with all recovered data and plots.
+- **Warning**: The test suite with the default setup will take a sizeable amount of time to run (~30 hours depending on the hardware) and will produce up to 15GB of output files with all recovered data and plots.
 
 ___
 ## Benchmark Customization 
