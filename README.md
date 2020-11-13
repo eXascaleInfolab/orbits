@@ -1,8 +1,8 @@
 # Benchmark of streaming recovery techniques in time series
 
 - **Paper**: Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams*. PVLDB 2021.
-- **Algorithms**: The benchmark evaluates the following algorithms: ORBITS, SPIRIT, GROUSE, OGDImpute, pcaMME, TKCM and M-RNN (disabled by default as it takes too long). To update the list of algorithms, please refer to the *Algorithms customization* section below.
-- **Datasets**: The full benchmark contains 10 different datasets. By default, only the 4 most relevant datasets will be evaluated: gas (drfit10), motion, bafu and soccer. To enable any additional dataset, please refer to the *Datasets customization* section below.
+- **Algorithms**: The benchmark evaluates the following algorithms: ORBITS, SPIRIT, GROUSE, OGDImpute, pcaMME, TKCM and M-RNN (disabled by default as it takes too long). To enable/disbale any algorithm, please refer to the *Algorithms customization* section below.
+- **Datasets**: The full benchmark contains 10 different datasets. By default, only the 4 most relevant datasets will be evaluated: gas (drfit10), motion, bafu and soccer. To To enable/disbale any dataset, please refer to the *Datasets customization* section below.
 - **Scenarios**: The benchmark will execute the full set of 11 different (online and offline) recovery scenarios and report the error using RMSE, MSE and MAE. 
 The full list of recovery scenarios can be found [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/README.md).
 <!--
