@@ -6,7 +6,7 @@
 - **Scenarios**: The benchmark will execute the full set of 11 recovery scenarios and report the error using RMSE, MSE and MAE. 
 A detailed description of the recovery scenarios can be found [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/README.md).
 
-<sup>*</sup>disabled by default as it takes too long to run
+<sup>*</sup>disabled by default as it takes a couple of days to run.
 <!--
 The online scenarios are described [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/bin/Debug/results/plotfiles/streaming_end.txt) while the batch scenarios are described [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/bin/Debug/results/plotfiles/batch_mid.txt). 
 -->
