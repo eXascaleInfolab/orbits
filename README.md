@@ -49,11 +49,6 @@ To enable an additional algorithm
 - open the file `TestingFramework/config.cfg`
 - add the name of the algorithm to the line `EnabledAlgorithms =`
 
-### Scenario customization
-
-To enable a scenario
-- open the file `TestingFramework/config.cfg`
-- add the name of the algorithm to the line `Scenarios =`
 
 ### Datasets customization
 
@@ -65,7 +60,14 @@ To enable a scenario
 - To add a new dataset to the benchmark
   - import the file to `TestingFramework/bin/Debug/data/{name}/{name}_normal.txt` (`name` is the name of your data).
   - Requirements: rows>= 1'000; columns>= 10; column separator = space; row separator = newline
- 
+
+
+### Scenario customization
+
+To enable an additional recovery scenario
+- open the file `TestingFramework/config.cfg`
+- add the name of the scenario to the line `Scenarios =`
+
 
 ___
 ## Citation
