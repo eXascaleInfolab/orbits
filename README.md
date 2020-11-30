@@ -36,7 +36,7 @@ ___
     $ mono TestingFramework.exe 
 ```
 
-- **Results**: All results will be added to `Results` folder. The accuracy results of all algorithms will be sequentially added for each scenario and dataset to: `Results/.../.../.../error/`. The runtime results of all algorithms will be added to: `Results/.../.../.../runtime/`. The plots of the recovered blocks will be added to the folder `Results/.../.../.../plots/.
+- **Results**: All results will be added to `Results` folder. The accuracy results of all algorithms will be sequentially added for each scenario and dataset to: `Results/.../.../.../error/`. The runtime results of all algorithms will be added to: `Results/.../.../.../runtime/`. The plots of the recovered blocks will be added to the folder `Results/.../.../.../plots/`.
 
 - **Warning**: The test suite with the default setup will take a sizeable amount of time to run (~30 hours depending on the hardware) and will produce up to 15GB of output files with all recovered data and plots.
 
