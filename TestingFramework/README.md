@@ -11,7 +11,7 @@ M = number of time series
 
 W = 10% * N
 
-#### Batch End:
+### Batch End:
 
 missingpercentage:
 - N = max; M = max;
@@ -55,7 +55,7 @@ mcar-length\*:
 - M = max; N varies between 20% and 100% of max(N);
 - Missing blocks:  10% * W of every second series total in sub-blocks of 1% * W, start = random within W from the end.
 
-#### Streaming End:
+### Streaming End:
 
 missingpercentage:
 - N = max; M = max;
@@ -101,7 +101,7 @@ mcar-length\*:
 
 <!--
 
-#### Batch Mid
+### Batch Mid
 
 missingpercentage:
 - N = max; M = max;
@@ -158,6 +158,6 @@ mcar-length\*:
 
 -->
 
-#### Remarks
+### Remarks
 
 \* mcar scenario uses random number generator with fixed seed and will produce the same blocks every run
