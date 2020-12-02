@@ -1,4 +1,4 @@
-# Benchmark of streaming recovery techniques in time series
+# Overview
 
 - **Paper**: Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: *ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams*. PVLDB 2021.
 - **Algorithms**: The benchmark evaluates the following algorithms: ORBITS, SPIRIT, GROUSE, OGDImpute, pcaMME, TKCM and M-RNN<sup>*</sup>. To enable/disable any algorithm, please refer to the *Algorithms customization* section below.
