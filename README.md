@@ -1,5 +1,4 @@
 # Overview
-<img src="orbits_logo.png" width="50" height="50">
 - **Paper**: Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: [ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams](http://vldb.org/pvldb/vol14/p294-khayati.pdf). PVLDB 2021.
 - **Algorithms**: The benchmark evaluates all the algorithms mentioned in the paper: ORBITS, SPIRIT, GROUSE, OGDImpute, pcaMME, TKCM and M-RNN<sup>*</sup>. To enable/disable any algorithm, please refer to the *Algorithms customization* section below.
 - **Datasets**: The benchmark evaluates all the datasets used in the paper: gas (drfit10), motion, bafu and soccer<sup>*</sup>. To enable/disable any dataset, please refer to the *Datasets customization* section below.
