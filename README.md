@@ -1,8 +1,8 @@
 # Overview
 
 - **Paper**: Mourad Khayati, Ines Arous, Zakhar Tymchenko and Philippe Cudré-Mauroux: [ORBITS: Online Recovery of Missing Values in Multiple Time Series Streams](http://vldb.org/pvldb/vol14/p294-khayati.pdf). PVLDB 2021.
-- **Algorithms**: The benchmark evaluates the following algorithms: ORBITS, SPIRIT, GROUSE, OGDImpute, pcaMME, TKCM and M-RNN<sup>*</sup>. To enable/disable any algorithm, please refer to the *Algorithms customization* section below.
-- **Datasets**: The full benchmark evaluates 4 different datasets: gas (drfit10), motion, bafu and soccer<sup>*</sup>. To enable/disable any dataset, please refer to the *Datasets customization* section below.
+- **Algorithms**: The benchmark evaluates all the algorithms mentioned in the paper: ORBITS, SPIRIT, GROUSE, OGDImpute, pcaMME, TKCM and M-RNN<sup>*</sup>. To enable/disable any algorithm, please refer to the *Algorithms customization* section below.
+- **Datasets**: The benchmark evaluates all the datasets used in the paper: gas (drfit10), motion, bafu and soccer<sup>*</sup>. To enable/disable any dataset, please refer to the *Datasets customization* section below.
 - **Scenarios**: The benchmark will execute the full set of 11 recovery scenarios and report the error using RMSE, MSE and MAE. 
 A detailed description of the recovery scenarios can be found [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/README.md).
 
