@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <mlpack/core.hpp>
+#include <armadillo>
 
 #include "../MathIO/MatrixReadWrite.h"
 #include "../Algebra/MissingBlock.hpp"
