@@ -18,7 +18,7 @@ ___
  
 ## Prerequisites
 
-- Ubuntu 16, 18, or 20 (including Ubuntu derivatives, e.g., Xubuntu).
+- Ubuntu 18 or 20 (including Ubuntu derivatives, e.g., Xubuntu).
 - Clone this repository.
 - Mono: Install mono from https://www.mono-project.com/download/stable/ (takes few minutes)
 
