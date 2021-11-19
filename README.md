@@ -7,6 +7,7 @@
 - **Datasets**: The benchmark evaluates all the datasets used in the paper: gas (drfit10), motion, bafu and soccer<sup>*</sup>. To enable/disable any dataset, please refer to the *Datasets customization* section below.
 - **Scenarios**: The benchmark will execute the full set of 11 recovery scenarios and report the error using RMSE, MSE and MAE. 
 A detailed description of the recovery scenarios can be found [here](https://github.com/eXascaleInfolab/orbits/blob/master/TestingFramework/README.md).
+- **Reproducibilty**: We create a dedicated [repo](https://github.com/eXascaleInfolab/orbits_repro) for the reproducibility of all the results reported in this paper. 
 
 <sup>*</sup>disabled by default as it takes a couple of days to run.
 <!--
