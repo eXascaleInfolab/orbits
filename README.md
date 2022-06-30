@@ -43,6 +43,15 @@ ___
 
 - **Warning**: The test suite with the default setup will take ~20 hours to finish. 
 
+- **Scenarios creation**: To compare your technique against the benchmark results, we provide a command to export the missing scenarios/patterns:
+
+```bash
+    $ cd TestingFramework/bin/Debug/
+    $ mono TestingFramework.exe export data1,data2,data3
+```
+
+This will produce contaminated data (where supposed missing values are designated as NaN) in the `Export/` folder for each streaming scenario in the benchmark.
+
 ___
 ## Benchmark Customization 
 
@@ -71,15 +80,7 @@ To enable an additional recovery scenario
 - open the file `TestingFramework/config.cfg`
 - add the name of the scenario to the line `Scenarios =`
 
-### Running the benchmark to only export the missing values from scenarios
 
-To export the scenarios run the following command:
-```bash
-    $ cd TestingFramework/bin/Debug/
-    $ mono TestingFramework.exe export data1,data2,data3
-```
-
-This will produce contaminated data (where supposed missing values are designated as NaN) in the `Export/` folder for each streaming scenario in the benchmark.
 
 ___
 ## Citation
