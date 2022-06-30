@@ -43,14 +43,14 @@ ___
 
 - **Warning**: The test suite with the default setup will take ~20 hours to finish. 
 
-- **Scenarios creation**: To compare your technique against the benchmark results, we provide a command to export the missing scenarios/patterns:
+- **Scenarios creation**: To compare (externally) your technique against the benchmark results, we provide a command to export the missing scenarios/patterns for a given dataset:
 
 ```bash
     $ cd TestingFramework/bin/Debug/
-    $ mono TestingFramework.exe export data1,data2,data3
+    $ mono TestingFramework.exe export dataset_name
 ```
 
-This will produce contaminated data (where supposed missing values are designated as NaN) in the `Export/` folder for each streaming scenario in the benchmark.
+This command will produce contaminated data (where missing values are designated as NaN) in the `Export/` folder for each streaming scenario in the benchmark.
 
 ___
 ## Benchmark Customization 
