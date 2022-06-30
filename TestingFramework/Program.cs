@@ -14,6 +14,12 @@ namespace TestingFramework
         {
             // technical
             Console.CancelKeyPress += InterruptHandler;
+
+            if (args.Length > 0 && args[0].ToLower() == "export")
+            {
+                MvExport(args);
+                return;
+            }
             
             string[] codes = null;
             string[] codesLimited = null;
@@ -183,6 +189,41 @@ namespace TestingFramework
             FullRun(runPrecision, runRuntime);
 
             FinalSequence();
+        }
+
+        private static void MvExport(string[] args)
+        {
+            if (args.Length < 2)
+            {
+                Console.WriteLine("Please provide the list of comma-separated datasets to export missing values.");
+                Console.WriteLine("Usage: mono TestingFramework.exe export data1,data2,data3");
+            }
+
+            var et = ExperimentType.Continuous;
+            const string EXPORT_DIR = "./Export/";
+
+            Directory.CreateDirectory(EXPORT_DIR);
+
+            foreach (string data in args.Skip(1).StringJoin(" ").Split(',').Select(x => x.Trim()))
+            {
+                string dataDir = EXPORT_DIR + data + "/";
+                Directory.CreateDirectory(dataDir);
+                
+                foreach (ExperimentScenario es in EnumMethods.AllExperimentScenarios())
+                {
+                    if (!es.IsContinuous()) continue;
+                    
+                    string scenDir = dataDir + es.ToLongString() + "/";
+                    Directory.CreateDirectory(scenDir);
+
+                    // dummy setup
+                    AlgoPack.ListAlgorithms = AlgoPack.ListAlgorithmsStreaming = AlgoPack.ListAlgorithmsMulticolumn =
+                        new Algorithm[] {new MissingValueExportAlgorithm(scenDir)};
+
+                    // precision test has a trigger for not doing anything + early termination for mvexport
+                    TestRoutines.PrecisionTest(et, es, data);
+                }
+            }
         }
 
         private static void FinalSequence()

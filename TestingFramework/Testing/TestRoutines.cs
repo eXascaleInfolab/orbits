@@ -1268,6 +1268,11 @@ namespace TestingFramework.Testing
                     alg.GenerateData(dataSource, code, tcase, missingBlocks, rowRange, columnRange);
                     alg.RunExperiment(ex, et, es, data, tcase);
                 }
+                
+                // all ticks processed, output for export is created in the loop above as part of GenerateData/6
+                // also it's always the only algorithm so breaking top-level loop changes nothing
+                // runexperiment does nothing
+                if (alg.AlgCode == "mvexport") return;
 
                 alg.CollectResults(ex, DataWorks.FolderResults,
                     lengths.Select(x => alg.EnumerateOutputFiles(x)).Flatten().ToArray());
