@@ -199,7 +199,7 @@ namespace TestingFramework
                 Console.WriteLine("Usage: mono TestingFramework.exe export data1,data2,data3");
             }
 
-            var et = ExperimentType.Continuous;
+            var et = ExperimentType.Recovery;
             const string EXPORT_DIR = "./Export/";
 
             Directory.CreateDirectory(EXPORT_DIR);
@@ -211,7 +211,7 @@ namespace TestingFramework
                 
                 foreach (ExperimentScenario es in EnumMethods.AllExperimentScenarios())
                 {
-                    if (!es.IsContinuous()) continue;
+                    if (es.IsContinuous()) continue;
                     
                     string scenDir = dataDir + es.ToLongString() + "/";
                     Directory.CreateDirectory(scenDir);
